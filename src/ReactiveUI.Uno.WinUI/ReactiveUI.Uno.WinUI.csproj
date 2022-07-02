@@ -1,0 +1,57 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard20;MonoAndroid12.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos;net6.0-maccatalyst;net6.0-windows10.0.17763.0</TargetFrameworks>
+    <PackageId>ReactiveUI.Uno.WinUI</PackageId>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno WinUI</PackageDescription>
+    <DefineConstants>$(DefineConstants);HAS_UNO;HAS_WINUI</DefineConstants>
+    <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;unoplatform;winui</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <DefineConstants>$(DefineConstants);WASM</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-windows10'))">
+    <DefineConstants>$(DefineConstants);HAS_UNO_WINUI</DefineConstants>
+  </PropertyGroup>
+
+  <!--<ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    --><!-- Hack to get around invalid version of Java.Interop --><!--
+    <Reference Include="Java.Interop">
+       --><!-- Path to a VS 2019 Java.Interop.dll --><!--
+       <HintPath>..\Java.Interop.dll</HintPath>
+    </Reference> 
+  </ItemGroup>-->
+
+  <ItemGroup Condition=" !$(TargetFramework.StartsWith('net6.0-windows10')) ">
+    <PackageReference Include="Uno.WinUI" Version="4.4.13" />
+  </ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows10')) ">
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.2" />
+  </ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    <PackageReference Include="Reactive.Wasm" Version="1.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI" Version="18.2.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
+    <Compile Include="..\ReactiveUI.Uno\ActivationForViewFetcher.cs" Link="ActivationForViewFetcher.cs" />
+    <Compile Include="..\ReactiveUI.Uno\ActivationHelper.cs" Link="ActivationHelper.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\AutoDataTemplateBindingHook.cs" Link="Common\AutoDataTemplateBindingHook.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\BooleanToVisibilityHint.cs" Link="Common\BooleanToVisibilityHint.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\BooleanToVisibilityTypeConverter.cs" Link="Common\BooleanToVisibilityTypeConverter.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\PlatformOperations.cs" Link="Common\PlatformOperations.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\ReactivePage.cs" Link="Common\ReactivePage.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\ReactiveUserControl.cs" Link="Common\ReactiveUserControl.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\RoutedViewHost.cs" Link="Common\RoutedViewHost.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Common\ViewModelViewHost.cs" Link="Common\ViewModelViewHost.cs" />
+    <Compile Include="..\ReactiveUI.Uno\CoreDispatcherScheduler.cs" Link="CoreDispatcherScheduler.cs" />
+    <Compile Include="..\ReactiveUI.Uno\DependencyObjectObservableForProperty.cs" Link="DependencyObjectObservableForProperty.cs" />
+    <Compile Include="..\ReactiveUI.Uno\Registrations.cs" Link="Registrations.cs" />
+    <Compile Include="..\ReactiveUI.Uno\TransitioningContentControl.Empty.cs" Link="TransitioningContentControl.Empty.cs" />
+    <Compile Include="..\ReactiveUI.Uno\WinRTAppDataDriver.cs" Link="WinRTAppDataDriver.cs" />
+  </ItemGroup>
+</Project>
