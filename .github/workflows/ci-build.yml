@@ -1,0 +1,20 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  productNamespacePrefix: "ReactiveUI"
+
+jobs:
+  build:
+    uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
+    with:
+      configuration: Release
+      productNamespacePrefix: "ReactiveUI"
+      useVisualStudioPreview: false
+      useMauiCheckDotNetTool: false
+      solutionFile: "reactiveui.uno.sln"
