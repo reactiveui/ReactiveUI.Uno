@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net6.0-windows10')) ">
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221116.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     <PackageReference Include="Reactive.Wasm" Version="1.2.2" />
