@@ -27,6 +27,6 @@
 
   <ItemGroup>
     <PackageReference Include="Uno.UI" Version="4.9.20" />
-    <PackageReference Include="ReactiveUI" Version="18.4.34" />
+    <PackageReference Include="ReactiveUI" Version="19.2.1" />
   </ItemGroup>
 </Project>
