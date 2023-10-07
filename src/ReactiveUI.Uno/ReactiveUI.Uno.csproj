@@ -1,6 +1,6 @@
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard20;MonoAndroid12.0;MonoAndroid12.1;MonoAndroid13.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos;net6.0-maccatalyst;net7.0-android;net7.0-ios;net7.0-macos;net7.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;MonoAndroid12.0;MonoAndroid12.1;MonoAndroid13.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos;net6.0-maccatalyst;net7.0-android;net7.0-ios;net7.0-macos;net7.0-maccatalyst</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno</PackageDescription>
     <DefineConstants>$(DefineConstants);HAS_UNO</DefineConstants>
@@ -27,6 +27,6 @@
 
   <ItemGroup>
     <PackageReference Include="Uno.UI" Version="4.10.26" />
-    <PackageReference Include="ReactiveUI" Version="19.4.1" />
+    <PackageReference Include="ReactiveUI" Version="19.*" />
   </ItemGroup>
 </Project>
