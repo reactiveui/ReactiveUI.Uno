@@ -4,60 +4,60 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 #else
 using Windows.UI.Xaml;
 #endif
 
-namespace ReactiveUI.Uno
+namespace ReactiveUI.Uno;
+
+/// <summary>
+/// This type convert converts between Boolean and XAML Visibility - the
+/// conversionHint is a BooleanToVisibilityHint.
+/// </summary>
+public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
 {
-    /// <summary>
-    /// This type convert converts between Boolean and XAML Visibility - the
-    /// conversionHint is a BooleanToVisibilityHint.
-    /// </summary>
-    public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
+    /// <inheritdoc/>
+    public int GetAffinityForObjects(Type fromType, Type toType)
     {
-        /// <inheritdoc/>
-        public int GetAffinityForObjects(Type fromType, Type toType)
+        if (fromType == typeof(bool) && toType == typeof(Visibility))
         {
-            if (fromType == typeof(bool) && toType == typeof(Visibility))
-            {
-                return 10;
-            }
-
-            if (fromType == typeof(Visibility) && toType == typeof(bool))
-            {
-                return 10;
-            }
-
-            return 0;
+            return 10;
         }
 
-        /// <inheritdoc/>
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
+        if (fromType == typeof(Visibility) && toType == typeof(bool))
         {
-            var hint = conversionHint is BooleanToVisibilityHint visibilityHint ?
-                visibilityHint :
-                BooleanToVisibilityHint.None;
+            return 10;
+        }
 
-            if (toType == typeof(Visibility) && from is bool fromBool)
-            {
-                var fromAsBool = (hint & BooleanToVisibilityHint.Inverse) != 0 ? !fromBool : fromBool;
-                result = fromAsBool ? Visibility.Visible : Visibility.Collapsed;
-                return true;
-            }
+        return 0;
+    }
 
-            if (from is Visibility fromAsVis)
-            {
-                result = fromAsVis == Visibility.Visible ^ (hint & BooleanToVisibilityHint.Inverse) == 0;
-            }
-            else
-            {
-                result = Visibility.Visible;
-            }
+    /// <inheritdoc/>
+    public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
+    {
+        var hint = conversionHint is BooleanToVisibilityHint visibilityHint ?
+            visibilityHint :
+            BooleanToVisibilityHint.None;
 
+        if (toType == typeof(Visibility) && from is bool fromBool)
+        {
+            var fromAsBool = (hint & BooleanToVisibilityHint.Inverse) != 0 ? !fromBool : fromBool;
+            result = fromAsBool ? Visibility.Visible : Visibility.Collapsed;
             return true;
         }
+
+        if (from is Visibility fromAsVis)
+        {
+            result = fromAsVis == Visibility.Visible ^ (hint & BooleanToVisibilityHint.Inverse) == 0;
+        }
+        else
+        {
+            result = Visibility.Visible;
+        }
+
+        return true;
     }
 }

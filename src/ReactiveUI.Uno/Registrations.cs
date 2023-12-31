@@ -5,55 +5,47 @@
 
 using System;
 using System.Reactive.Concurrency;
-using System.Reactive.PlatformServices;
 
-namespace ReactiveUI.Uno
+namespace ReactiveUI.Uno;
+
+/// <summary>
+/// UWP platform registrations.
+/// </summary>
+/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+public class Registrations : IWantsToRegisterStuff
 {
-    /// <summary>
-    /// UWP platform registrations.
-    /// </summary>
-    /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-    public class Registrations : IWantsToRegisterStuff
+    /// <inheritdoc/>
+    public void Register(Action<Func<object>, Type> registerFunction)
     {
-        /// <inheritdoc/>
-        public void Register(Action<Func<object>, Type> registerFunction)
-        {
-            ArgumentNullException.ThrowIfNull(registerFunction);
+        ArgumentNullException.ThrowIfNull(registerFunction);
 
-            registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-            registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-            registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-            registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
-            registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-            registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+        registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+        registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 
-#if NETSTANDARD
-            if (WasmPlatformEnlightenmentProvider.IsWasm)
-            {
-                RxApp.TaskpoolScheduler = WasmScheduler.Default;
-                RxApp.MainThreadScheduler = WasmScheduler.Default;
-            }
-            else
+        RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+#if WINDOWS10_0_19041_0
+        RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
+#else
+        RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 #endif
-            {
-                RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-                RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
-            }
-        }
     }
 }

@@ -5,24 +5,23 @@
 
 using System;
 
-namespace ReactiveUI.Uno
+namespace ReactiveUI.Uno;
+
+/// <summary>
+/// Returns the current orientation of the device on Windows.
+/// </summary>
+public class PlatformOperations : IPlatformOperations
 {
-    /// <summary>
-    /// Returns the current orientation of the device on Windows.
-    /// </summary>
-    public class PlatformOperations : IPlatformOperations
+    /// <inheritdoc/>
+    public string? GetOrientation()
     {
-        /// <inheritdoc/>
-        public string? GetOrientation()
+        try
         {
-            try
-            {
-                return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
+        }
+        catch (Exception)
+        {
+            return null;
         }
     }
 }

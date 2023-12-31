@@ -3,19 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 #if HAS_WINUI
 using Microsoft.UI.Xaml.Controls;
 #else
 using Windows.UI.Xaml.Controls;
 #endif
 
-namespace ReactiveUI.Uno
+namespace ReactiveUI.Uno;
+
+/// <summary>
+/// A control with a single transition.
+/// </summary>
+public partial class TransitioningContentControl : ContentControl
 {
-    /// <summary>
-    /// A control with a single transition.
-    /// </summary>
-    public partial class TransitioningContentControl : ContentControl
-    {
-    }
 }

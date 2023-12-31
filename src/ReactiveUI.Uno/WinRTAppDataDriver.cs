@@ -14,7 +14,7 @@ using System.Text;
 using Windows.Storage;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
-namespace ReactiveUI;
+namespace ReactiveUI.Uno;
 
 /// <summary>
 /// Loads and saves state to persistent storage.
@@ -39,10 +39,7 @@ public class WinRTAppDataDriver : ISuspensionDriver
     /// <inheritdoc/>
     public IObservable<Unit> SaveState(object state)
     {
-        if (state is null)
-        {
-            throw new ArgumentNullException(nameof(state));
-        }
+        ArgumentNullException.ThrowIfNull(state);
 
         try
         {
