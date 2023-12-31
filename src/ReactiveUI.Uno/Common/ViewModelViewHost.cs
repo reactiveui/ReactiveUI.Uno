@@ -12,37 +12,22 @@ using Splat;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-#elif NETFX_CORE || HAS_UNO
+#else
 
 using System.Windows;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-#else
-
-using System.Windows;
-using System.Windows.Controls;
-
 #endif
-
-#if HAS_UNO
 
 namespace ReactiveUI.Uno
-#else
-
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// This content control will automatically load the View associated with
     /// the ViewModel property and display it. This control is very useful
     /// inside a DataTemplate to display the View associated with a ViewModel.
     /// </summary>
-    public
-#if HAS_UNO
-        partial
-#endif
-        class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+    public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
     {
         /// <summary>
         /// The default content dependency property.
@@ -64,20 +49,13 @@ namespace ReactiveUI
 
         private string? _viewContract;
 
-        static ViewModelViewHost()
-        {
-            var a = ActivationHelper.UnoActivated;
-        }
+        static ViewModelViewHost() => _ = ActivationHelper.UnoActivated;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
         /// </summary>
         public ViewModelViewHost()
         {
-#if NETFX_CORE
-            DefaultStyleKey = typeof(ViewModelViewHost);
-#endif
-
             var platform = Locator.Current.GetService<IPlatformOperations>();
             Func<string?> platformGetter = () => default;
 
@@ -97,7 +75,7 @@ namespace ReactiveUI
                 : Observable.FromEvent<SizeChangedEventHandler, string?>(
                   eventHandler =>
                   {
-                      void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter()!);
+                      void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
                       return Handler;
                   },
                   x => SizeChanged += x,

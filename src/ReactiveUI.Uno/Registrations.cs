@@ -18,10 +18,7 @@ namespace ReactiveUI.Uno
         /// <inheritdoc/>
         public void Register(Action<Func<object>, Type> registerFunction)
         {
-            if (registerFunction is null)
-            {
-                throw new ArgumentNullException(nameof(registerFunction));
-            }
+            ArgumentNullException.ThrowIfNull(registerFunction);
 
             registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
             registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));

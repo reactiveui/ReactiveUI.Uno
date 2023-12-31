@@ -8,19 +8,12 @@ using System.Diagnostics.CodeAnalysis;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#elif NETFX_CORE || HAS_UNO
+#else
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-#else
-using System.Windows;
-using System.Windows.Controls;
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// A <see cref="UserControl"/> that is reactive.
@@ -85,15 +78,10 @@ namespace ReactiveUI
     /// <typeparam name="TViewModel">
     /// The type of the view model backing the view.
     /// </typeparam>
-#if HAS_UNO && IOS
+#if IOS
     [global::Foundation.Register]
 #endif
-    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-    public
-#if HAS_UNO
-        partial
-#endif
-        class ReactiveUserControl<TViewModel> :
+    public partial class ReactiveUserControl<TViewModel> :
             UserControl, IViewFor<TViewModel>
             where TViewModel : class
     {
@@ -107,12 +95,8 @@ namespace ReactiveUI
                 typeof(ReactiveUserControl<TViewModel>),
                 new PropertyMetadata(null));
 
-        static ReactiveUserControl()
-        {
-            var a = ActivationHelper.UnoActivated;
-        }
+        static ReactiveUserControl() => _ = ActivationHelper.UnoActivated;
 
-#if HAS_UNO
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
         /// </summary>
@@ -151,7 +135,6 @@ namespace ReactiveUI
             : base(handle)
         {
         }
-#endif
 #endif
 
         /// <summary>

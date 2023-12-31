@@ -11,34 +11,20 @@ using Splat;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#elif NETFX_CORE || HAS_UNO
+#else
 using System.Windows;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-#else
-
-using System.Windows;
-using System.Windows.Controls;
-
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// This control hosts the View associated with a Router, and will display
     /// the View and wire up the ViewModel whenever a new ViewModel is
     /// navigated to. Put this control as the only control in your Window.
     /// </summary>
-    public
-#if HAS_UNO
-        partial
-#endif
-        class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
+    public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
     {
         /// <summary>
         /// The router dependency property.
@@ -60,19 +46,13 @@ namespace ReactiveUI
 
         private string? _viewContract;
 
-        static RoutedViewHost()
-        {
-            var a = ActivationHelper.UnoActivated;
-        }
+        static RoutedViewHost() => _ = ActivationHelper.UnoActivated;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
         /// </summary>
         public RoutedViewHost()
         {
-#if NETFX_CORE
-            DefaultStyleKey = typeof(RoutedViewHost);
-#endif
             HorizontalContentAlignment = HorizontalAlignment.Stretch;
             VerticalContentAlignment = VerticalAlignment.Stretch;
 
@@ -176,13 +156,7 @@ namespace ReactiveUI
             }
 
             var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-            var view = viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel);
-
-            if (view is null)
-            {
-                throw new Exception($"Couldn't find view for '{x.viewModel}'.");
-            }
-
+            var view = (viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel)) ?? throw new Exception($"Couldn't find view for '{x.viewModel}'.");
             view.ViewModel = x.viewModel;
             Content = view;
         }

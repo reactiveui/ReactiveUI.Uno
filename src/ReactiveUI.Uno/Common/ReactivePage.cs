@@ -7,19 +7,12 @@ using System;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#elif NETFX_CORE || HAS_UNO
+#else
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-#else
-using System.Windows;
-using System.Windows.Controls;
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// A <see cref="Page"/> that is reactive.
@@ -84,14 +77,10 @@ namespace ReactiveUI
     /// <typeparam name="TViewModel">
     /// The type of the view model backing the view.
     /// </typeparam>
-#if HAS_UNO && IOS
+#if IOS
     [global::Foundation.Register]
 #endif
-    public
-#if HAS_UNO
-        partial
-#endif
-        class ReactivePage<TViewModel> :
+    public partial class ReactivePage<TViewModel> :
             Page, IViewFor<TViewModel>
             where TViewModel : class
     {
@@ -105,12 +94,8 @@ namespace ReactiveUI
                 typeof(ReactivePage<TViewModel>),
                 new PropertyMetadata(null));
 
-        static ReactivePage()
-        {
-            var a = ActivationHelper.UnoActivated;
-        }
+        static ReactivePage() => _ = ActivationHelper.UnoActivated;
 
-#if HAS_UNO
         /// <summary>
         /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
         /// </summary>
@@ -149,7 +134,6 @@ namespace ReactiveUI
             : base(handle)
         {
         }
-#endif
 #endif
 
         /// <summary>

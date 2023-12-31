@@ -1,32 +1,12 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;MonoAndroid12.0;MonoAndroid12.1;MonoAndroid13.0;Xamarin.iOS10;Xamarin.Mac20;net6.0-android;net6.0-ios;net6.0-macos;net6.0-maccatalyst;net7.0-android;net7.0-ios;net7.0-macos;net7.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>$(UnoTargetFrameworks)</TargetFrameworks>
     <PackageId>ReactiveUI.Uno</PackageId>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno</PackageDescription>
-    <DefineConstants>$(DefineConstants);HAS_UNO</DefineConstants>
-    <NoWarn>$(NoWarn);SA1648;CA1816;CA1001;CS0108;CS0114;CS3021;CS1574;CA1303</NoWarn>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;unoplatform</PackageTags>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <DefineConstants>$(DefineConstants);WASM</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Reference Include="Xamarin.Mac">
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-      <HintPath Condition="Exists('c:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\Extensions\Xamarin.VisualStudio')">c:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\Extensions\Xamarin.VisualStudio\Xamarin.Mac.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-    <PackageReference Include="Reactive.Wasm" Version="1.2.2" />
-  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Uno.UI" Version="4.10.26" />
+    <PackageReference Include="Uno.UI" Version="5.0.118" />
     <PackageReference Include="ReactiveUI" Version="19.*" />
   </ItemGroup>
 </Project>

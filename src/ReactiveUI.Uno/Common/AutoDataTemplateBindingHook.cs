@@ -11,21 +11,13 @@ using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
-#elif NETFX_CORE || HAS_UNO
+#else
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
-#else
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Markup;
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
@@ -37,39 +29,19 @@ namespace ReactiveUI
         /// <summary>
         /// Gets the default item template.
         /// </summary>
-        [SuppressMessage("Design", "CA1307: Use the currency locale settings", Justification = "Not available on all platforms.")]
         public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(() =>
         {
-#if NETFX_CORE || HAS_UNO
             const string template =
 @"<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>
     <xaml:ViewModelViewHost ViewModel=""{Binding}"" VerticalContentAlignment=""Stretch"" HorizontalContentAlignment=""Stretch"" IsTabStop=""False"" />
 </DataTemplate>";
             return (DataTemplate)XamlReader.Load(template);
-#else
-            const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                     "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
-                 "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
-             "</DataTemplate>";
-
-            var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
-            assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
-
-#if HAS_WINUI
-            return (DataTemplate)XamlReader.Load(template.Replace("__ASSEMBLYNAME__", assemblyName));
-#else
-            return (DataTemplate)XamlReader.Parse(template.Replace("__ASSEMBLYNAME__", assemblyName));
-#endif
-#endif
         });
 
         /// <inheritdoc/>
         public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
         {
-            if (getCurrentViewProperties is null)
-            {
-                throw new ArgumentNullException(nameof(getCurrentViewProperties));
-            }
+            ArgumentNullException.ThrowIfNull(getCurrentViewProperties);
 
             var viewProperties = getCurrentViewProperties();
             var lastViewProperty = viewProperties.LastOrDefault();

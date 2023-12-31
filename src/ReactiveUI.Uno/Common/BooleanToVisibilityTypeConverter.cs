@@ -6,17 +6,11 @@
 using System;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
-#elif NETFX_CORE || HAS_UNO
-using Windows.UI.Xaml;
 #else
-using System.Windows;
+using Windows.UI.Xaml;
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// This type convert converts between Boolean and XAML Visibility - the
@@ -50,13 +44,7 @@ namespace ReactiveUI
             if (toType == typeof(Visibility) && from is bool fromBool)
             {
                 var fromAsBool = (hint & BooleanToVisibilityHint.Inverse) != 0 ? !fromBool : fromBool;
-
-#if !NETFX_CORE && !HAS_UNO && !HAS_WINUI
-                var notVisible = (hint & BooleanToVisibilityHint.UseHidden) != 0 ? Visibility.Hidden : Visibility.Collapsed;
-#else
-                var notVisible = Visibility.Collapsed;
-#endif
-                result = fromAsBool ? Visibility.Visible : notVisible;
+                result = fromAsBool ? Visibility.Visible : Visibility.Collapsed;
                 return true;
             }
 

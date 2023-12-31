@@ -7,22 +7,15 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
-#elif NETFX_CORE || HAS_UNO
-using Windows.UI.Xaml;
 #else
-using System.Windows;
+using Windows.UI.Xaml;
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// Enum that hints at the visibility of a ui element.
     /// </summary>
-    [SuppressMessage("Name", "CA1714: Flags enums should have plural names", Justification = "For legacy support")]
     [Flags]
     public enum BooleanToVisibilityHint
     {
@@ -35,12 +28,5 @@ namespace ReactiveUI
         /// Inverse the action of the boolean type conversion, when it's true collapse the visibility.
         /// </summary>
         Inverse = 1 << 1,
-
-#if !NETFX_CORE && !HAS_UNO
-        /// <summary>
-        /// Use the hidden version rather than the Collapsed.
-        /// </summary>
-        UseHidden = 1 << 2,
-#endif
     }
 }

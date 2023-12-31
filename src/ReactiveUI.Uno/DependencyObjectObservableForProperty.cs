@@ -16,11 +16,7 @@ using Microsoft.UI.Xaml;
 using Windows.UI.Xaml;
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// Creates a observable for a property if available that is based on a DependencyProperty.
@@ -46,10 +42,7 @@ namespace ReactiveUI
         /// <inheritdoc/>
         public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
         {
-            if (sender is null)
-            {
-                throw new ArgumentNullException(nameof(sender));
-            }
+            ArgumentNullException.ThrowIfNull(sender);
 
             if (sender is not DependencyObject depSender)
             {

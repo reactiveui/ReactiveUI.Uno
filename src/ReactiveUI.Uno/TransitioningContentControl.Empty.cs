@@ -10,21 +10,12 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls;
 #endif
 
-#if HAS_UNO
 namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
 {
     /// <summary>
     /// A control with a single transition.
     /// </summary>
-    [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = "Deliberate usage")]
-    public
-#if HAS_UNO
-        partial
-#endif
-        class TransitioningContentControl : ContentControl
+    public partial class TransitioningContentControl : ContentControl
     {
     }
 }
