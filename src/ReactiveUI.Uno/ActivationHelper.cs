@@ -5,30 +5,28 @@
 
 using Splat;
 
-namespace ReactiveUI.Uno
-{
-    internal static class ActivationHelper
-    {
+namespace ReactiveUI.Uno;
 
-        static ActivationHelper()
+internal static class ActivationHelper
+{
+    static ActivationHelper()
+    {
+        if (UnoActivated)
         {
-            if (UnoActivated)
+            return;
+        }
+
+        UnoActivated = true;
+        Locator.RegisterResolverCallbackChanged(() =>
+        {
+            if (Locator.CurrentMutable is null)
             {
                 return;
             }
 
-            UnoActivated = true;
-            Locator.RegisterResolverCallbackChanged(() =>
-            {
-                if (Locator.CurrentMutable is null)
-                {
-                    return;
-                }
-
-                new Registrations().Register((f, t) => Locator.CurrentMutable.RegisterConstant(f(), t));
-            });
-        }
-
-        internal static bool UnoActivated { get; }
+            new Registrations().Register((f, t) => Locator.CurrentMutable.RegisterConstant(f(), t));
+        });
     }
+
+    internal static bool UnoActivated { get; }
 }

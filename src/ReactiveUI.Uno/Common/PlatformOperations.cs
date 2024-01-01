@@ -5,32 +5,23 @@
 
 using System;
 
-#if HAS_UNO
-namespace ReactiveUI.Uno
-#else
-namespace ReactiveUI
-#endif
+namespace ReactiveUI.Uno;
+
+/// <summary>
+/// Returns the current orientation of the device on Windows.
+/// </summary>
+public class PlatformOperations : IPlatformOperations
 {
-    /// <summary>
-    /// Returns the current orientation of the device on Windows.
-    /// </summary>
-    public class PlatformOperations : IPlatformOperations
+    /// <inheritdoc/>
+    public string? GetOrientation()
     {
-        /// <inheritdoc/>
-        public string? GetOrientation()
+        try
         {
-#if NETFX_CORE || HAS_UNO
-            try
-            {
-                return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-#else
+            return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
+        }
+        catch (Exception)
+        {
             return null;
-#endif
         }
     }
 }

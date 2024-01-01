@@ -7,49 +7,19 @@
     <EnableVSTestReferences>false</EnableVSTestReferences>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <DefineConstants>$(DefineConstants);NETSTANDARD;PORTABLE</DefineConstants>
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-ios'))">
+    <DefineConstants>$(DefineConstants);IOS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
-    <DefineConstants>$(DefineConstants);NET_461;XAML</DefineConstants>
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-macos'))">
+    <DefineConstants>$(DefineConstants);MAC</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('uap'))">
-    <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
-    <DefineConstants>$(DefineConstants);NETFX_CORE;XAML;WINDOWS_UWP</DefineConstants>
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-tvos'))">
+    <DefineConstants>$(DefineConstants);TVOS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;IOS</DefineConstants>
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-android'))">
+    <DefineConstants>$(DefineConstants);ANDROID</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-ios')) or $(TargetFramework.StartsWith('net7.0-ios'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;IOS</DefineConstants>
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-maccatalyst'))">
+    <DefineConstants>$(DefineConstants);MACCATALYST</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac'))">
-    <DefineConstants>$(DefineConstants);MONO;COCOA;MAC</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-macos')) or $(TargetFramework.StartsWith('net7.0-macos'))">
-    <DefineConstants>$(DefineConstants);MONO;COCOA;MAC</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.TVOS'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;TVOS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-tvos')) or $(TargetFramework.StartsWith('net7.0-tvos'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;TVOS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('Xamarin.WatchOS'))">
-    <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;WATCHOS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('MonoAndroid'))">
-    <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-    <DesignTimeBuild>false</DesignTimeBuild>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-android')) or $(TargetFramework.StartsWith('net7.0-android'))">
-    <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('tizen'))">
-    <DefineConstants>$(DefineConstants);TIZEN</DefineConstants>
-  </PropertyGroup>
-
-  <!--<Target Name="ValidateNugetProperties" Condition="!$(IsTestProject) or $(IsTestProject) == ''" BeforeTargets="Compile">
-    <Error Condition="$(PackageDescription) == '' or $(PackageDescription) == $(DefaultPackageDescription)" Text="The Nuget PackageDescription property needs to be set for the project. Currently : '$(PackageDescription)'" />
-  </Target>-->
 </Project>

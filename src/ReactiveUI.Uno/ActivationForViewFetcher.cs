@@ -7,56 +7,54 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
+using Windows.Foundation;
 
 #if HAS_UNO_WINUI
 using Microsoft.UI.Xaml;
-using Windows.Foundation;
 #else
-using Windows.Foundation;
 using Windows.UI.Xaml;
 #endif
 
-namespace ReactiveUI.Uno
-{
-    /// <summary>
-    /// ActivationForViewFetcher is how ReactiveUI determine when a
-    /// View is activated or deactivated. This is usually only used when porting
-    /// ReactiveUI to a new UI framework.
-    /// </summary>
-    public class ActivationForViewFetcher : IActivationForViewFetcher
-    {
-        /// <inheritdoc/>
-        public int GetAffinityForView(Type view) => typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
+namespace ReactiveUI.Uno;
 
-        /// <inheritdoc/>
-        public IObservable<bool> GetActivationForView(IActivatableView view)
+/// <summary>
+/// ActivationForViewFetcher is how ReactiveUI determine when a
+/// View is activated or deactivated. This is usually only used when porting
+/// ReactiveUI to a new UI framework.
+/// </summary>
+public class ActivationForViewFetcher : IActivationForViewFetcher
+{
+    /// <inheritdoc/>
+    public int GetAffinityForView(Type view) => typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
+
+    /// <inheritdoc/>
+    public IObservable<bool> GetActivationForView(IActivatableView view)
+    {
+        if (view is not FrameworkElement fe)
         {
-            if (view is not FrameworkElement fe)
-            {
-                return Observable<bool>.Empty;
-            }
+            return Observable<bool>.Empty;
+        }
 
 #pragma warning disable SA1114 // Parameter list after.
-            var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
+        var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
 
-                eventHandler => (_, _) => eventHandler(true),
-                x => fe.Loading += x,
-                x => fe.Loading -= x);
+            eventHandler => (_, _) => eventHandler(true),
+            x => fe.Loading += x,
+            x => fe.Loading -= x);
 
-            var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
-                handler =>
-                {
-                    void EventHandler(object sender, RoutedEventArgs e) => handler(false);
-                    return EventHandler;
-                },
-                x => fe.Unloaded += x,
-                x => fe.Unloaded -= x);
+        var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
+            handler =>
+            {
+                void EventHandler(object sender, RoutedEventArgs e) => handler(false);
+                return EventHandler;
+            },
+            x => fe.Unloaded += x,
+            x => fe.Unloaded -= x);
 
-            return viewLoaded
-                .Merge(viewUnloaded)
-                .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observables.False)
-                .Switch()
-                .DistinctUntilChanged();
-        }
+        return viewLoaded
+            .Merge(viewUnloaded)
+            .Select(b => b ? fe.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observables.False)
+            .Switch()
+            .DistinctUntilChanged();
     }
 }
