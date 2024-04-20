@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Uno.WinUI" Version="5.1.80" />
+    <PackageReference Include="Uno.WinUI" Version="5.1.104" />
     <PackageReference Include="ReactiveUI" Version="19.*" />
   </ItemGroup>
   <ItemGroup>
