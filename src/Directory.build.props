@@ -34,7 +34,7 @@
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;unoplatform</PackageTags>
-    <UnoTargetFrameworks>net7.0;net7.0-android;net7.0-ios;net7.0-maccatalyst;net7.0-macos;net8.0;net8.0-android;net8.0-ios;net8.0-maccatalyst;net8.0-macos</UnoTargetFrameworks>
+    <UnoTargetFrameworks>net8.0;net8.0-android;net8.0-ios;net8.0-maccatalyst;net8.0-macos</UnoTargetFrameworks>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -76,9 +76,9 @@
   </ItemGroup>
 
   <ItemGroup>	
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.141" PrivateAssets="all" />	
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.143" PrivateAssets="all" />	
     <PackageReference Include="stylecop.analyzers" Version="1.2.0-beta.556" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="4.12.4" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.12.5" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
