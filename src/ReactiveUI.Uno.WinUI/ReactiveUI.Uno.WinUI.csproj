@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(UnoTargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
     <PackageId>ReactiveUI.Uno.WinUI</PackageId>
@@ -17,7 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Uno.WinUI" Version="5.3.144" />
-    <PackageReference Include="ReactiveUI" Version="20.1.52" />
+    <PackageReference Include="ReactiveUI" Version="20.1.63" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Uno\Common\*.cs" LinkBase="Common\" />

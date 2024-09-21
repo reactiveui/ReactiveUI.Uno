@@ -15,6 +15,4 @@ jobs:
     with:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
-      useVisualStudioPreview: false
-      useMauiCheckDotNetTool: false
       solutionFile: "reactiveui.uno.sln"
