@@ -90,7 +90,7 @@ public partial class ReactiveUserControl<TViewModel> :
     /// </summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-            "ViewModel",
+            nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactiveUserControl<TViewModel>),
             new PropertyMetadata(null));

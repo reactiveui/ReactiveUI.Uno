@@ -5,6 +5,7 @@
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno WinUI</PackageDescription>
     <DefineConstants>$(DefineConstants);HAS_WINUI</DefineConstants>
     <PackageTags>$(PackageTags);winui</PackageTags>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework.EndsWith('0-windows10.0.19041.0'))">
