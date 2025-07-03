@@ -6,7 +6,11 @@
 using System;
 using System.Reactive.Concurrency;
 
+#if HAS_WINUI
+namespace ReactiveUI.Uno.WinUI;
+#else
 namespace ReactiveUI.Uno;
+#endif
 
 /// <summary>
 /// UWP platform registrations.
