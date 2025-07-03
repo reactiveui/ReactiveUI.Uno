@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(UnoTargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>$(UnoTargetFrameworks);net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</TargetFrameworks>
     <PackageId>ReactiveUI.Uno.WinUI</PackageId>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Uno WinUI</PackageDescription>
     <DefineConstants>$(DefineConstants);HAS_WINUI</DefineConstants>
@@ -12,12 +12,12 @@
     <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-windows10.0.19041.0'))">
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240627000" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Uno.WinUI" Version="5.3.144" />
-    <PackageReference Include="ReactiveUI" Version="20.1.63" />
+    <PackageReference Include="Uno.WinUI" Version="6.0.797" />
+    <PackageReference Include="ReactiveUI" Version="20.4.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Uno\Common\*.cs" LinkBase="Common\" />
