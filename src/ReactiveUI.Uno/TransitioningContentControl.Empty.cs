@@ -14,6 +14,4 @@ namespace ReactiveUI.Uno;
 /// <summary>
 /// A control with a single transition.
 /// </summary>
-public partial class TransitioningContentControl : ContentControl
-{
-}
+public partial class TransitioningContentControl : ContentControl;

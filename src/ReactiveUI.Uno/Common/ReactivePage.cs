@@ -90,7 +90,7 @@ public partial class ReactivePage<TViewModel> :
     /// </summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-            "ViewModel",
+            nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactivePage<TViewModel>),
             new PropertyMetadata(null));
