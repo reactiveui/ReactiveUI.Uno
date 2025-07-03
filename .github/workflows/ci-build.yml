@@ -13,6 +13,8 @@ jobs:
   build:
     uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
     with:
+      useVisualStudioPreview: true
+      useUNO: true
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
       solutionFile: "reactiveui.uno.sln"
