@@ -1,6 +1,6 @@
-﻿// Copyright (c) 2024 .NET Foundation and Contributors. All rights reserved.
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+﻿// Copyright (c) 2025 ReactiveUI and Contributors. All rights reserved.
+// Licensed to reactiveui and contributors under one or more agreements.
+// The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System;
@@ -86,14 +86,13 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
             (viewModel, contract) => (viewModel, contract));
 
         this.WhenActivated(d =>
-        {
+
             // NB: The DistinctUntilChanged is useful because most views in
             // WinRT will end up getting here twice - once for configuring
             // the RoutedViewHost's ViewModel, and once on load via SizeChanged
             d(vmAndContract.DistinctUntilChanged<(IRoutableViewModel? viewModel, string? contract)>().Subscribe(
                 ResolveViewForViewModel,
-                ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
-        });
+                ex => RxApp.DefaultExceptionHandler.OnNext(ex))));
     }
 
     /// <summary>
