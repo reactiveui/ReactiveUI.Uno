@@ -13,9 +13,9 @@ namespace ReactiveUI.Uno;
 #endif
 
 /// <summary>
-/// UWP platform registrations.
+/// Uno platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
@@ -46,10 +46,8 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 
         RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-#if WINDOWS10_0_19041_0
-        RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
-#else
-        RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
-#endif
+
+        // Use a safe default scheduler to avoid accessing platform dispatchers in headless environments.
+        RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
     }
 }

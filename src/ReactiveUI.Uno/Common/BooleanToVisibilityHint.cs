@@ -14,18 +14,18 @@ using Windows.UI.Xaml;
 namespace ReactiveUI.Uno;
 
 /// <summary>
-/// Enum that hints at the visibility of a ui element.
+/// Hints to control how <see cref="bool"/> to <see cref="Visibility"/> conversion behaves.
 /// </summary>
 [Flags]
 public enum BooleanToVisibilityHint
 {
     /// <summary>
-    /// Do not modify the boolean type conversion from it's default action of using the Visibility.Collapsed.
+    /// No special behavior. true => <see cref="Visibility.Visible"/>, false => <see cref="Visibility.Collapsed"/>.
     /// </summary>
     None = 0,
 
     /// <summary>
-    /// Inverse the action of the boolean type conversion, when it's true collapse the visibility.
+    /// Invert the conversion behavior. true => <see cref="Visibility.Collapsed"/>, false => <see cref="Visibility.Visible"/>.
     /// </summary>
     Inverse = 1 << 1,
 }

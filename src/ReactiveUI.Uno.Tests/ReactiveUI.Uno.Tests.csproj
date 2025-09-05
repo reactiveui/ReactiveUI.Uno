@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RunAnalyzers>false</RunAnalyzers>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI" Version="21.0.1" />
+    <PackageReference Include="ReactiveUI.Testing" Version="21.0.1" />
+    <PackageReference Include="Splat" Version="16.1.1" />
+    <PackageReference Include="Moq" Version="4.20.70" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
+  </ItemGroup>
+
+</Project>

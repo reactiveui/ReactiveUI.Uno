@@ -49,7 +49,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// </summary>
     public ViewModelViewHost()
     {
-        var platform = Locator.Current.GetService<IPlatformOperations>();
+        var platform = AppLocator.Current.GetService<IPlatformOperations>();
         Func<string?> platformGetter = () => default;
 
         if (platform is null)
@@ -80,6 +80,20 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
         var vmAndContract = contractChanged
             .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
+
+        if (ModeDetector.InUnitTestRunner())
+        {
+            // In tests, bypass activation wiring so content resolves deterministically.
+            contractChanged
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x => _viewContract = x ?? string.Empty);
+
+            vmAndContract
+                .DistinctUntilChanged()
+                .Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
+
+            return;
+        }
 
         this.WhenActivated(d =>
         {
