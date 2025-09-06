@@ -3,15 +3,12 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.IO;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Text;
-using Windows.Storage;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace ReactiveUI.Uno;
@@ -22,6 +19,8 @@ namespace ReactiveUI.Uno;
 public class WinRTAppDataDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
+    [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
     public IObservable<object> LoadState() =>
         ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").AsTask().ToObservable()
                        .SelectMany(x => FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8).AsTask())
@@ -37,6 +36,8 @@ public class WinRTAppDataDriver : ISuspensionDriver
                        });
 
     /// <inheritdoc/>
+    [RequiresDynamicCode("SaveState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState implementations may use serialization which may require unreferenced code")]
     public IObservable<Unit> SaveState(object state)
     {
         ArgumentNullException.ThrowIfNull(state);
@@ -61,6 +62,8 @@ public class WinRTAppDataDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
+    [RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
+    [RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
     public IObservable<Unit> InvalidateState() =>
         ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").AsTask().ToObservable()
                        .SelectMany(x => x.DeleteAsync().AsTask().ToObservable());

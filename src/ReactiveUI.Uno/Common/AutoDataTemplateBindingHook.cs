@@ -3,18 +3,8 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq;
-
-#if HAS_WINUI
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml.Markup;
-#else
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Markup;
-#endif
 
 namespace ReactiveUI.Uno;
 
@@ -40,6 +30,8 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     });
 
     /// <inheritdoc/>
+    [RequiresDynamicCode("ExecuteHook uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ExecuteHook uses methods that may require unreferenced code")]
     public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
     {
         ArgumentNullException.ThrowIfNull(getCurrentViewProperties);

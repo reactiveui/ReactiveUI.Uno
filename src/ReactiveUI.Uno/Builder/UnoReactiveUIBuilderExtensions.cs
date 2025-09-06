@@ -13,9 +13,53 @@ namespace ReactiveUI.Builder;
 /// </summary>
 public static class UnoReactiveUIBuilderExtensions
 {
+#if WINDOWS
     /// <summary>
-    /// Gets the Uno main thread scheduler. Work scheduled on this scheduler is marshaled to the UI thread.
+    /// Gets the Uno WinUI main thread scheduler.
     /// </summary>
+    /// <value>
+    /// The Uno WinUI main thread scheduler.
+    /// </value>
+    public static IScheduler UnoWinUIMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
+
+    /// <summary>
+    /// Configures ReactiveUI for Uno platform with appropriate schedulers.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static IReactiveUIBuilder WithUno(this IReactiveUIBuilder builder)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        return builder
+            .WithUnoScheduler()
+            .WithPlatformModule<Uno.Registrations>();
+    }
+
+    /// <summary>
+    /// Uses WinUI With the Uno scheduler.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static IReactiveUIBuilder WithUnoScheduler(this IReactiveUIBuilder builder)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        return builder.WithMainThreadScheduler(UnoWinUIMainThreadScheduler);
+    }
+#else
+    /// <summary>
+    /// Gets the Uno main thread scheduler.
+    /// </summary>
+    /// <value>
+    /// The Uno main thread scheduler.
+    /// </value>
     public static IScheduler UnoMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
 
     /// <summary>
@@ -51,4 +95,5 @@ public static class UnoReactiveUIBuilderExtensions
 
         return builder.WithMainThreadScheduler(UnoMainThreadScheduler);
     }
+#endif
 }

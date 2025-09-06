@@ -3,16 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-
-#if HAS_WINUI
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-#else
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-#endif
-
 namespace ReactiveUI.Uno;
 
 /// <summary>
@@ -104,38 +94,6 @@ public partial class ReactiveUserControl<TViewModel> :
     {
         // needed so the others are optional.
     }
-
-#if ANDROID
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
-    /// Native constructor, do not use explicitly.
-    /// </summary>
-    /// <remarks>
-    /// Used by the Xamarin Runtime to materialize native
-    /// objects that may have been collected in the managed world.
-    /// </remarks>
-    /// <param name="javaReference">A <see cref="IntPtr"/> containing a Java Native Interface (JNI) object reference.</param>
-    /// <param name="transfer">A <see cref="JniHandleOwnership"/> indicating how to handle handle.</param>
-    protected ReactiveUserControl(IntPtr javaReference, global::Android.Runtime.JniHandleOwnership transfer)
-        : base(javaReference, transfer)
-    {
-    }
-#endif
-#if IOS
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
-    /// Native constructor, do not use explicitly.
-    /// </summary>
-    /// <param name="handle">Handle to the native control.</param>
-    /// <remarks>
-    /// Used by the Xamarin Runtime to materialize native.
-    /// objects that may have been collected in the managed world.
-    /// </remarks>
-    protected ReactiveUserControl(IntPtr handle)
-        : base(handle)
-    {
-    }
-#endif
 
     /// <summary>
     /// Gets the binding root view model.

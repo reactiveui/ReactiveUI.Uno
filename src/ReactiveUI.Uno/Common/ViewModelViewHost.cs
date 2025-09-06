@@ -3,15 +3,8 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Reactive.Linq;
 using Splat;
-
-#if HAS_WINUI
-using Microsoft.UI.Xaml;
-#else
-using Windows.UI.Xaml;
-#endif
 
 namespace ReactiveUI.Uno;
 
