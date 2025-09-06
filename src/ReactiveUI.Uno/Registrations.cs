@@ -5,6 +5,7 @@
 
 using System;
 using System.Reactive.Concurrency;
+using Splat;
 
 namespace ReactiveUI.Uno;
 
@@ -22,6 +23,7 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
         registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
         registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+
         registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
@@ -38,12 +40,19 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+
         registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
         registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 
-        RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-
-        // Use a safe default scheduler to avoid accessing platform dispatchers in headless environments.
-        RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
+        if (!ModeDetector.InUnitTestRunner())
+        {
+#if WINDOWS
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+            RxApp.SuppressViewCommandBindingMessage = true;
+#else
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
+#endif
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+        }
     }
 }

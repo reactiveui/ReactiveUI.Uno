@@ -19,26 +19,26 @@ namespace System.Reactive.Concurrency;
 /// This scheduler type is typically used indirectly through the <see cref="Linq.DispatcherObservable.ObserveOnDispatcher{TSource}(IObservable{TSource})"/> and <see cref="Linq.DispatcherObservable.SubscribeOnDispatcher{TSource}(IObservable{TSource})"/> methods that use the current Dispatcher.
 /// </remarks>
 [CLSCompliant(false)]
-public sealed class CoreDispatcherScheduler : LocalScheduler, ISchedulerPeriodic
+public sealed class UnoDispatcherScheduler : LocalScheduler, ISchedulerPeriodic
 {
     /// <summary>
-    /// Constructs a <see cref="CoreDispatcherScheduler"/> that schedules units of work on the given <see cref="CoreDispatcher"/>.
+    /// Constructs a <see cref="UnoDispatcherScheduler"/> that schedules units of work on the given <see cref="CoreDispatcher"/>.
     /// </summary>
     /// <param name="dispatcher">Dispatcher to schedule work on.</param>
     /// <exception cref="ArgumentNullException"><paramref name="dispatcher"/> is <c>null</c>.</exception>
-    public CoreDispatcherScheduler(CoreDispatcher dispatcher)
+    public UnoDispatcherScheduler(CoreDispatcher dispatcher)
     {
         Dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
         Priority = CoreDispatcherPriority.Normal;
     }
 
     /// <summary>
-    /// Constructs a <see cref="CoreDispatcherScheduler"/> that schedules units of work on the given <see cref="CoreDispatcher"/> with the given priority.
+    /// Constructs a <see cref="UnoDispatcherScheduler"/> that schedules units of work on the given <see cref="CoreDispatcher"/> with the given priority.
     /// </summary>
     /// <param name="dispatcher">Dispatcher to schedule work on.</param>
     /// <param name="priority">Priority for scheduled units of work.</param>
     /// <exception cref="ArgumentNullException"><paramref name="dispatcher"/> is <c>null</c>.</exception>
-    public CoreDispatcherScheduler(CoreDispatcher dispatcher, CoreDispatcherPriority priority)
+    public UnoDispatcherScheduler(CoreDispatcher dispatcher, CoreDispatcherPriority priority)
     {
         Dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
         Priority = priority;
@@ -47,7 +47,7 @@ public sealed class CoreDispatcherScheduler : LocalScheduler, ISchedulerPeriodic
     /// <summary>
     /// Gets the scheduler that schedules work on the <see cref="CoreDispatcher"/> associated with the current Window.
     /// </summary>
-    public static CoreDispatcherScheduler Current
+    public static UnoDispatcherScheduler Current
     {
         get
         {
@@ -57,12 +57,12 @@ public sealed class CoreDispatcherScheduler : LocalScheduler, ISchedulerPeriodic
                 throw new InvalidOperationException("There is no current window that has been created.");
             }
 
-            return new CoreDispatcherScheduler(window.Dispatcher);
+            return new UnoDispatcherScheduler(window.Dispatcher);
         }
     }
 
     /// <summary>
-    /// Gets the <see cref="CoreDispatcher"/> associated with the <see cref="CoreDispatcherScheduler"/>.
+    /// Gets the <see cref="CoreDispatcher"/> associated with the <see cref="UnoDispatcherScheduler"/>.
     /// </summary>
     public CoreDispatcher Dispatcher { get; }
 

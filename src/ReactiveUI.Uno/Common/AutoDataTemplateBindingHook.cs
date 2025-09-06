@@ -22,8 +22,11 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     {
         const string template =
 """
-<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:xaml='using:ReactiveUI'>
-    <xaml:ViewModelViewHost ViewModel="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+<DataTemplate
+    xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+    xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+    xmlns:rxui='using:ReactiveUI.Uno'>
+    <rxui:ViewModelViewHost ViewModel="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
 </DataTemplate>
 """;
         return (DataTemplate)XamlReader.Load(template);

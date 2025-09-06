@@ -13,6 +13,7 @@ namespace ReactiveUI.Uno;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
+[Preserve(AllMembers = true)]
 public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
     /// <summary>
