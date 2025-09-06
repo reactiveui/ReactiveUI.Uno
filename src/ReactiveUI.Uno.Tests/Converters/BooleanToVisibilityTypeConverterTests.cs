@@ -4,56 +4,75 @@
 // See the LICENSE file in the project root for full license information.
 
 using FluentAssertions;
-using Xunit;
-#if HAS_WINUI
 using Microsoft.UI.Xaml;
-#else
-using Windows.UI.Xaml;
-#endif
+using NUnit.Framework;
 
 namespace ReactiveUI.Uno.Tests.Converters;
 
+/// <summary>
+/// BooleanToVisibilityTypeConverterTests.
+/// </summary>
+[TestFixture]
 public class BooleanToVisibilityTypeConverterTests
 {
     private readonly BooleanToVisibilityTypeConverter _sut = new();
 
-    [Fact]
+    /// <summary>
+    /// Affinities the is high for bool to visibility.
+    /// </summary>
+    [Test]
     public void Affinity_is_high_for_bool_to_visibility()
     {
         _sut.GetAffinityForObjects(typeof(bool), typeof(Visibility)).Should().Be(10);
         _sut.GetAffinityForObjects(typeof(Visibility), typeof(bool)).Should().Be(10);
     }
 
-    [Theory]
-    [InlineData(true, Visibility.Visible)]
-    [InlineData(false, Visibility.Collapsed)]
+    /// <summary>
+    /// Convertses the bool to visibility.
+    /// </summary>
+    /// <param name="input">if set to <c>true</c> [input].</param>
+    /// <param name="expected">The expected.</param>
+    [TestCase(true, Visibility.Visible)]
+    [TestCase(false, Visibility.Collapsed)]
     public void Converts_bool_to_visibility(bool input, Visibility expected)
     {
         _sut.TryConvert(input, typeof(Visibility), BooleanToVisibilityHint.None, out var result).Should().BeTrue();
         result.Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData(true, Visibility.Collapsed)]
-    [InlineData(false, Visibility.Visible)]
+    /// <summary>
+    /// Convertses the bool to visibility inverse.
+    /// </summary>
+    /// <param name="input">if set to <c>true</c> [input].</param>
+    /// <param name="expected">The expected.</param>
+    [TestCase(true, Visibility.Collapsed)]
+    [TestCase(false, Visibility.Visible)]
     public void Converts_bool_to_visibility_inverse(bool input, Visibility expected)
     {
         _sut.TryConvert(input, typeof(Visibility), BooleanToVisibilityHint.Inverse, out var result).Should().BeTrue();
         result.Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData(Visibility.Visible, true)]
-    [InlineData(Visibility.Collapsed, false)]
+    /// <summary>
+    /// Convertses the visibility to bool.
+    /// </summary>
+    /// <param name="input">The input.</param>
+    /// <param name="expected">if set to <c>true</c> [expected].</param>
+    [TestCase(Visibility.Visible, true)]
+    [TestCase(Visibility.Collapsed, false)]
     public void Converts_visibility_to_bool(Visibility input, bool expected)
     {
         _sut.TryConvert(input, typeof(bool), BooleanToVisibilityHint.None, out var result).Should().BeTrue();
         result.Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData(Visibility.Visible, false)]
-    [InlineData(Visibility.Collapsed, true)]
+    /// <summary>
+    /// Convertses the visibility to bool inverse.
+    /// </summary>
+    /// <param name="input">The input.</param>
+    /// <param name="expected">if set to <c>true</c> [expected].</param>
+    [TestCase(Visibility.Visible, false)]
+    [TestCase(Visibility.Collapsed, true)]
     public void Converts_visibility_to_bool_inverse(Visibility input, bool expected)
     {
         _sut.TryConvert(input, typeof(bool), BooleanToVisibilityHint.Inverse, out var result).Should().BeTrue();

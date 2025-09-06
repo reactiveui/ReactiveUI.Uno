@@ -4,13 +4,20 @@
 // See the LICENSE file in the project root for full license information.
 
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 
 namespace ReactiveUI.Uno.Tests.Platform;
 
+/// <summary>
+/// Tests for PlatformOperations.
+/// </summary>
+[TestFixture]
 public class PlatformOperationsTests
 {
-    [Fact]
+    /// <summary>
+    /// Ensures GetOrientation returns either null or a string value without throwing.
+    /// </summary>
+    [Test]
     public void GetOrientation_has_valid_string_or_null()
     {
         var ops = new ReactiveUI.Uno.PlatformOperations();

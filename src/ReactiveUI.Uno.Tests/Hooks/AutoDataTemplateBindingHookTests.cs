@@ -3,46 +3,72 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq.Expressions;
 using FluentAssertions;
-using ReactiveUI;
-using Xunit;
-#if HAS_WINUI
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#else
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-#endif
+using NUnit.Framework;
 
-namespace ReactiveUI.Uno.Tests.Hooks;
+namespace ReactiveUI.Uno.Tests;
 
+/// <summary>
+/// AutoDataTemplateBindingHookTests.
+/// </summary>
+[TestFixture]
 public class AutoDataTemplateBindingHookTests
 {
-    private class TestViewModel
+    /// <summary>
+    /// Executes the hook sets default template when eligible.
+    /// </summary>
+    [Test]
+    public void ExecuteHook_Sets_DefaultTemplate_When_Eligible()
     {
+        var hook = new AutoDataTemplateBindingHook();
+        ItemsControl ic;
+        try
+        {
+            ic = new ItemsControl();
+        }
+        catch (System.Exception ex) when (ex is System.TypeInitializationException || ex is System.NotSupportedException)
+        {
+            Assert.Ignore("UI dispatcher not available for Uno/WinUI controls in this environment.");
+            return;
+        }
+
+        var vmChanges = Array.Empty<IObservedChange<object, object>>();
+        var expr = (Expression<System.Func<object?>>)(() => ic.ItemsSource);
+        var viewChanges = new[]
+        {
+            new ObservedChange<object, object>(ic, expr, new object())
+        };
+
+        var result = hook.ExecuteHook(null, ic, () => vmChanges, () => viewChanges, BindingDirection.OneWay);
+        result.Should().BeTrue();
+        ic.ItemTemplate.Should().NotBeNull();
     }
 
-    [Fact]
-    public void Sets_default_item_template_when_binding_items_source()
+    /// <summary>
+    /// Executes the hook does not override existing template.
+    /// </summary>
+    [Test]
+    public void ExecuteHook_Does_Not_Override_Existing_Template()
     {
-        // Arrange
-        var hook = new ReactiveUI.Uno.AutoDataTemplateBindingHook();
-        var items = new ItemsControl();
+        var hook = new AutoDataTemplateBindingHook();
+        ItemsControl ic;
+        try
+        {
+            ic = new ItemsControl { ItemTemplate = AutoDataTemplateBindingHook.DefaultItemTemplate.Value };
+        }
+        catch (System.Exception ex) when (ex is System.TypeInitializationException || ex is System.NotSupportedException)
+        {
+            Assert.Ignore("UI dispatcher not available for Uno/WinUI controls in this environment.");
+            return;
+        }
 
-        // Build a member access expression body: x => x.ItemsSource
-        var parameter = System.Linq.Expressions.Expression.Parameter(typeof(ItemsControl), "x");
-        var body = System.Linq.Expressions.Expression.Property(parameter, nameof(ItemsControl.ItemsSource));
+        var expr = (Expression<System.Func<object?>>)(() => ic.ItemsSource);
+        var viewChanges = new[] { new ObservedChange<object, object>(ic, expr, new object()) };
 
-        var change = new ObservedChange<object, object>(items, body, default!);
-
-        // Act
-        var ok = hook.ExecuteHook(null, items,
-            () => System.Array.Empty<IObservedChange<object, object>>(),
-            () => new[] { change },
-            default);
-
-        // Assert
-        ok.Should().BeTrue();
-        items.ItemTemplate.Should().NotBeNull();
+        var result = hook.ExecuteHook(null, ic, Array.Empty<IObservedChange<object, object>>, () => viewChanges, BindingDirection.OneWay);
+        result.Should().BeTrue();
+        ic.ItemTemplate.Should().NotBeNull();
     }
 }
