@@ -1,0 +1,48 @@
+<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-windows10.0.26100;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
+
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
+
+        <!-- Display name -->
+        <ApplicationTitle>ReactiveUI.Uno.SQLiteStudio</ApplicationTitle>
+        <!-- App Identifier -->
+        <ApplicationId>com.companyname.ReactiveUI.Uno.SQLiteStudio</ApplicationId>
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <!-- Package Publisher -->
+        <ApplicationPublisher>chris pulman</ApplicationPublisher>
+        <!-- Package Description -->
+        <Description>ReactiveUI.Uno.SQLiteStudio powered by Uno Platform.</Description>
+
+        <UnoFeatures>
+            Material;
+            Dsp;
+            Hosting;
+            Toolkit;
+            Logging;
+            Mvvm;
+            Configuration;
+            HttpKiota;
+            Serialization;
+            Localization;
+            Navigation;
+            ThemeService;
+            SkiaRenderer;
+        </UnoFeatures>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\src\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="SQLite-net-pcl" />
+        <PackageReference Include="CsvHelper" />
+    </ItemGroup>
+    <ItemGroup>
+        <Page Update="Views\MainView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+    </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "ReactiveUI.Uno.SQLiteStudio",
+  "display": "standalone",
+  "name": "ReactiveUI.Uno.SQLiteStudio",
+  "short_name": "ReactiveUI.Uno.SQLiteStudio",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}
