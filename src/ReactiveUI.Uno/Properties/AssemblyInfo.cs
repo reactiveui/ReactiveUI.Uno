@@ -3,9 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Uno;
+using System.Windows.Markup;
 
-/// <summary>
-/// A control with a single transition.
-/// </summary>
-public partial class TransitioningContentControl : ContentControl;
+[assembly: XmlnsDefinition("http://reactiveui.net", "ReactiveUI.Uno")]

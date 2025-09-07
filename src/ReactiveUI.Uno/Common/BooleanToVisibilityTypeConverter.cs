@@ -3,19 +3,11 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-
-#if HAS_WINUI
-using Microsoft.UI.Xaml;
-#else
-using Windows.UI.Xaml;
-#endif
-
 namespace ReactiveUI.Uno;
 
 /// <summary>
-/// This type convert converts between Boolean and XAML Visibility - the
-/// conversionHint is a BooleanToVisibilityHint.
+/// Converts between a <see cref="bool"/> and XAML <see cref="Visibility"/>.
+/// to invert the result.
 /// </summary>
 public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
 {
@@ -51,13 +43,15 @@ public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
 
         if (from is Visibility fromAsVis)
         {
-            result = fromAsVis == Visibility.Visible ^ (hint & BooleanToVisibilityHint.Inverse) == 0;
-        }
-        else
-        {
-            result = Visibility.Visible;
+            // Convert Visibility back to bool, honoring the Inverse flag.
+            var visible = fromAsVis == Visibility.Visible;
+            var inverted = (hint & BooleanToVisibilityHint.Inverse) != 0;
+            result = inverted ? !visible : visible;
+            return true;
         }
 
+        // Fallback – provide a sensible default for requested type.
+        result = toType == typeof(Visibility) ? Visibility.Visible : false;
         return true;
     }
 }

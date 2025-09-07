@@ -5,17 +5,14 @@
 
 using System;
 using System.Reactive.Concurrency;
+using Splat;
 
-#if HAS_WINUI
-namespace ReactiveUI.Uno.WinUI;
-#else
 namespace ReactiveUI.Uno;
-#endif
 
 /// <summary>
-/// UWP platform registrations.
+/// Uno platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
@@ -26,6 +23,7 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
         registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
         registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+
         registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
@@ -42,14 +40,19 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
         registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+
         registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
         registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 
-        RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-#if WINDOWS10_0_19041_0
-        RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
+        if (!ModeDetector.InUnitTestRunner())
+        {
+#if WINDOWS
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+            RxApp.SuppressViewCommandBindingMessage = true;
 #else
-        RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => CoreDispatcherScheduler.Current);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
 #endif
+            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+        }
     }
 }
