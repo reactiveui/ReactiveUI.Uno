@@ -19,5 +19,6 @@ jobs:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
       solutionFile: "reactiveui.uno.sln"
+      installWorkloads: true
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
