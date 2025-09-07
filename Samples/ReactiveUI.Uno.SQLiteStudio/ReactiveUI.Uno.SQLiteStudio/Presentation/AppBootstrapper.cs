@@ -1,12 +1,11 @@
-using System;
-using ReactiveUI;
-using Splat;
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Uno.SQLiteStudio.Services;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Presentation;
 
 public class AppBootstrapper : ReactiveObject, IScreen
 {
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public AppBootstrapper()
     {
         Router = new RoutingState();

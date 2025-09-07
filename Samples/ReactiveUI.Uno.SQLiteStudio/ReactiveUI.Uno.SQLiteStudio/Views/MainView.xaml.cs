@@ -1,18 +1,15 @@
-using System;
-using System.Collections;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Microsoft.UI.Xaml.Controls;
-using ReactiveUI;
-using ReactiveUI.Uno;
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Uno.SQLiteStudio.Presentation;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Views;
 
-public class MainViewBase : ReactiveUserControl<MainViewModel> { }
+[RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
+public partial class MainViewBase : ReactiveUserControl<MainViewModel> { }
 
+[RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public sealed partial class MainView : MainViewBase
 {
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public MainView()
     {
         this.InitializeComponent();

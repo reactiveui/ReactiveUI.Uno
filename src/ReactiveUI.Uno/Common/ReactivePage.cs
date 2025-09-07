@@ -3,7 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI.Uno;
@@ -74,6 +73,7 @@ namespace ReactiveUI.Uno;
 #if IOS
 [global::Foundation.Register]
 #endif
+[RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public partial class ReactivePage<TViewModel> :
         Page, IViewFor<TViewModel>
         where TViewModel : class

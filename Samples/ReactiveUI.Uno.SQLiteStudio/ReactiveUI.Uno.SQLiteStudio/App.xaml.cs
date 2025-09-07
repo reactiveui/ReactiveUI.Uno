@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Uno.SQLiteStudio;
 
 public partial class App : Application
@@ -10,6 +12,7 @@ public partial class App : Application
     /// </summary>
     public App() => InitializeComponent();
 
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         _window = _window ?? new Window();

@@ -3,6 +3,7 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using Splat;
 
@@ -14,6 +15,7 @@ namespace ReactiveUI.Uno;
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
 [Preserve(AllMembers = true)]
+[RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
     /// <summary>
@@ -41,6 +43,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
     /// </summary>
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public ViewModelViewHost()
     {
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
@@ -140,6 +143,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// </summary>
     public IViewLocator? ViewLocator { get; set; }
 
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)

@@ -1,9 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Uno.SQLiteStudio.Services;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Presentation;
 
-public class MainViewModel : ReactiveObject, IRoutableViewModel
+public partial class MainViewModel : ReactiveObject, IRoutableViewModel
 {
     private readonly ISqliteService _db;
     private readonly ICsvExportService _csv;
@@ -13,6 +14,7 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     private ObservableCollection<object> _resultsBacking = new();
     private string? _status;
 
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public MainViewModel(IScreen hostScreen, ISqliteService? sqlite = null, ICsvExportService? csv = null)
     {
         HostScreen = hostScreen;

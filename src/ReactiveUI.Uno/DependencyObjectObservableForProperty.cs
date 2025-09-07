@@ -3,6 +3,7 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
@@ -18,6 +19,7 @@ namespace ReactiveUI.Uno;
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
@@ -34,6 +36,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
     /// <inheritdoc/>
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         ArgumentNullException.ThrowIfNull(sender);
@@ -81,6 +84,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         });
     }
 
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
     {
         var current = typeInfo;
@@ -98,6 +102,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
     {
         var current = typeInfo;
@@ -115,6 +120,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private static Func<DependencyProperty>? GetDependencyPropertyFetcher(Type type, string propertyName)
     {
         var typeInfo = type.GetTypeInfo();

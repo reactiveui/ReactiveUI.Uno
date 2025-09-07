@@ -3,6 +3,7 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using ReactiveUI;
 using Splat;
@@ -14,6 +15,7 @@ namespace ReactiveUI.Uno;
 /// the View and wire up the ViewModel whenever a new ViewModel is
 /// navigated to. Put this control as the only control in your Window.
 /// </summary>
+[RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
 {
     /// <summary>
