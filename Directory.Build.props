@@ -5,6 +5,9 @@
     
     <!-- Disable attribute-based TFM properties to avoid MSB3992 on Linux -->
     <UseAttributeForTargetFrameworkInfoPropertyNames>false</UseAttributeForTargetFrameworkInfoPropertyNames>
+    
+    <!-- Enable centralized package version management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
   <!-- Ensure UnoTargetFrameworks is available from root for Linux compatibility -->
