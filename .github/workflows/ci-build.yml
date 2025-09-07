@@ -19,5 +19,6 @@ jobs:
       productNamespacePrefix: "ReactiveUI.Uno"
       solutionFile: "src/ReactiveUI.Uno.sln"
       installWorkloads: true
+      additionalMSBuildArguments: "-p:RootElementName=Project"
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
