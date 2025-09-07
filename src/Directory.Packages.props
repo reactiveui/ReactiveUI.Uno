@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageVersion Include="ReactiveUI.Testing" Version="21.0.1" />
     <PackageVersion Include="Splat" Version="16.1.1" />
-    <PackageVersion Include="Moq" Version="4.20.70" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ReactiveUI" Version="21.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
