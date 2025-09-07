@@ -19,7 +19,7 @@
     <RepositoryType>git</RepositoryType>
 
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl> 
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <!-- Include PDB in the built .nupkg -->
@@ -34,7 +34,6 @@
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;net;unoplatform</PackageTags>
-    <UnoTargetFrameworks>net9.0;net9.0-ios;net9.0-android;net9.0-browserwasm;net9.0-desktop;net9.0-windows10.0.19041.0</UnoTargetFrameworks>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -52,16 +51,44 @@
     -->
     <NoWarn>$(NoWarn);NU1507;NETSDK1201;PRI257</NoWarn>
   </PropertyGroup>
+  <PropertyGroup>
+
+    <!--<UnoTargetFrameworks>net9.0;net9.0-android;net9.0-browserwasm;net9.0-desktop;net9.0-ios;net9.0-windows10.0.19041.0</UnoTargetFrameworks>-->
+
+    <!-- Cross-platform .NET 9 target (non-Windows only) -->
+    <UnoCrossPlatformNet9>net9.0;net9.0-desktop;net9.0-browserwasm</UnoCrossPlatformNet9>
+
+    <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 9) -->
+    <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
+
+    <!-- Mobile TFMs separated by platform -->
+    <UnoMobileAndroidTargets>net9.0-android</UnoMobileAndroidTargets>
+    <UnoMobileAppleTargets>net9.0-ios</UnoMobileAppleTargets>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Start with base TFMs that are always included -->
+    <UnoTargetFrameworks>$(UnoCrossPlatformNet9)</UnoTargetFrameworks>
+
+    <!-- Add Android targets (Linux, macOS, Windows can all compile Android) -->
+    <UnoTargetFrameworks>$(UnoTargetFrameworks);$(UnoMobileAndroidTargets)</UnoTargetFrameworks>
+
+    <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows) -->
+    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoWindowsDesktopTargets)</UnoTargetFrameworks>
+
+    <!-- Add Apple Mobile TFMs when building on macOS or Windows (both can compile Apple frameworks) -->
+    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoMobileAppleTargets)</UnoTargetFrameworks>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
-  
+
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" /> 
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
   </ItemGroup>
-  
-   <PropertyGroup>
+
+  <PropertyGroup>
     <SolutionDir Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)</SolutionDir>
   </PropertyGroup>
 
@@ -71,8 +98,8 @@
     <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
-  <ItemGroup>	
-    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />	
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />
     <PackageReference Include="stylecop.analyzers" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="All" />
   </ItemGroup>
