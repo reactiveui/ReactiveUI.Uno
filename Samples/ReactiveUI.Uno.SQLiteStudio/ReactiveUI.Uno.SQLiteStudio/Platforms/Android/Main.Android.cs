@@ -9,12 +9,7 @@ namespace ReactiveUI.Uno.SQLiteStudio.Droid;
     HardwareAccelerated = true,
     Theme = "@style/Theme.App.Starting"
 )]
-public class Application : NativeApplication
+public class Application(IntPtr javaReference, JniHandleOwnership transfer) : NativeApplication(() => new App(), javaReference, transfer)
 {
-    public Application(IntPtr javaReference, JniHandleOwnership transfer)
-        : base(() => new App(), javaReference, transfer)
-    {
-    }
-
 }
 

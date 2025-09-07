@@ -11,7 +11,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
 
     private string? _queryText = "SELECT * FROM Users;";
     private ReadOnlyObservableCollection<object>? _results;
-    private ObservableCollection<object> _resultsBacking = new();
+    private ObservableCollection<object> _resultsBacking = [];
     private string? _status;
 
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -20,8 +20,8 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
         HostScreen = hostScreen;
         UrlPathSegment = "Main";
 
-        _db = sqlite ?? Locator.Current.GetService<ISqliteService>()!;
-        _csv = csv ?? Locator.Current.GetService<ICsvExportService>()!;
+        _db = sqlite ?? AppLocator.Current.GetService<ISqliteService>()!;
+        _csv = csv ?? AppLocator.Current.GetService<ICsvExportService>()!;
 
         ExecuteQuery = ReactiveCommand.CreateFromTask(async () =>
         {

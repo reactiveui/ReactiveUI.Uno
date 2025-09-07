@@ -87,7 +87,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         }
 
         this.WhenActivated(d =>
-            d(vmAndContract.DistinctUntilChanged<(IRoutableViewModel? viewModel, string? contract)>().Subscribe(
+            d(vmAndContract.DistinctUntilChanged().Subscribe(
                 ResolveViewForViewModel,
                 ex => RxApp.DefaultExceptionHandler.OnNext(ex))));
     }

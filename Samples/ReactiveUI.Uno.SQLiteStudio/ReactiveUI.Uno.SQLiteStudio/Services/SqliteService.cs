@@ -53,7 +53,7 @@ public sealed class SqliteService : ISqliteService
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
         var tables = await conn.QueryAsync<MasterRow>("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY 1").ConfigureAwait(false);
-        return tables.Select(x => x.name).Where(x => !string.IsNullOrWhiteSpace(x)).ToList()!;
+        return tables.Select(static x => x.name).Where(x => !string.IsNullOrWhiteSpace(x)).ToList()!;
     }
 
     public async Task ExecuteAsync(string sql)
@@ -66,7 +66,7 @@ public sealed class SqliteService : ISqliteService
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
         var rows = await conn.QueryAsync<dynamic>(sql).ConfigureAwait(false);
-        return rows.Cast<object>().ToList();
+        return [.. rows.Cast<object>()];
     }
 
     private sealed class MasterRow

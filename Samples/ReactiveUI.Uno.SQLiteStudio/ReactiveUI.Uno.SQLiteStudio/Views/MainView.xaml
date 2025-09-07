@@ -7,34 +7,69 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Command bar -->
-        <CommandBar Grid.Row="0" Background="{StaticResource PrimaryBrush}" Foreground="White">
-            <AppBarButton x:Name="ExecuteButton" Icon="Play" Label="Run"/>
-            <AppBarButton x:Name="ExportButton" Icon="Save" Label="Export CSV"/>
+        <!--  Command bar  -->
+        <CommandBar
+            Grid.Row="0"
+            Background="{StaticResource PrimaryBrush}"
+            Foreground="White">
+            <AppBarButton
+                x:Name="ExecuteButton"
+                Icon="Play"
+                Label="Run" />
+            <AppBarButton
+                x:Name="ExportButton"
+                Icon="Save"
+                Label="Export CSV" />
             <AppBarSeparator />
-            <AppBarButton x:Name="ListTablesButton" Icon="List" Label="List Tables"/>
-            <AppBarButton x:Name="CreateUsersButton" Icon="Add" Label="Create Users"/>
-            <AppBarButton x:Name="DropUsersButton" Icon="Delete" Label="Drop Users"/>
+            <AppBarButton
+                x:Name="ListTablesButton"
+                Icon="List"
+                Label="List Tables" />
+            <AppBarButton
+                x:Name="CreateUsersButton"
+                Icon="Add"
+                Label="Create Users" />
+            <AppBarButton
+                x:Name="DropUsersButton"
+                Icon="Delete"
+                Label="Drop Users" />
             <AppBarSeparator />
-            <AppBarButton x:Name="SampleSelectButton" Icon="Find" Label="Sample SELECT"/>
-            <AppBarButton x:Name="SampleInsertButton" Icon="AddFriend" Label="Sample INSERT"/>
-            <AppBarButton x:Name="SampleDeleteButton" Icon="Delete" Label="Sample DELETE"/>
+            <AppBarButton
+                x:Name="SampleSelectButton"
+                Icon="Find"
+                Label="Sample SELECT" />
+            <AppBarButton
+                x:Name="SampleInsertButton"
+                Icon="AddFriend"
+                Label="Sample INSERT" />
+            <AppBarButton
+                x:Name="SampleDeleteButton"
+                Icon="Delete"
+                Label="Sample DELETE" />
         </CommandBar>
 
-        <!-- Content area: Query editor and results list -->
-        <Grid Grid.Row="1" Padding="12" ColumnSpacing="12" RowSpacing="12">
+        <!--  Content area: Query editor and results list  -->
+        <Grid
+            Grid.Row="1"
+            Padding="12"
+            ColumnSpacing="12"
+            RowSpacing="12">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBox x:Name="QueryEditor" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="100"/>
-            <ListView Grid.Row="1" x:Name="ResultsList">
+            <TextBox
+                x:Name="QueryEditor"
+                MinHeight="100"
+                AcceptsReturn="True"
+                TextWrapping="Wrap" />
+            <ListView x:Name="ResultsList" Grid.Row="1">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" />
@@ -43,9 +78,12 @@
             </ListView>
         </Grid>
 
-        <!-- Status bar -->
+        <!--  Status bar  -->
         <Border Grid.Row="2" Background="{StaticResource PrimaryBrush}">
-            <TextBlock x:Name="StatusText" Padding="12" Foreground="White"/>
+            <TextBlock
+                x:Name="StatusText"
+                Padding="12"
+                Foreground="White" />
         </Border>
     </Grid>
 </views:MainViewBase>

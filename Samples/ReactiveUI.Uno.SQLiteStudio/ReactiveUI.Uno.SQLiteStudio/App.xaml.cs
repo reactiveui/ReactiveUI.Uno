@@ -1,4 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Builder;
+using ReactiveUI.Uno.SQLiteStudio.Presentation;
+using ReactiveUI.Uno.SQLiteStudio.Services;
+using ReactiveUI.Uno.SQLiteStudio.Views;
 
 namespace ReactiveUI.Uno.SQLiteStudio;
 
@@ -16,9 +20,28 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         _window = _window ?? new Window();
-        var bootstrapper = new Presentation.AppBootstrapper();
-        var host = new RoutedViewHost { Router = bootstrapper.Router };
-        _window.Content = host;
-        _window.Activate();
+        var appInstance = RxAppBuilder
+            .CreateReactiveUIBuilder()
+            .WithUno()
+            .WithDefaultIScreen()
+            .WithRegistration(mutable =>
+            {
+                // Services
+                mutable.RegisterLazySingleton(static () => SqliteService.Instance);
+                mutable.RegisterLazySingleton(static () => CsvExportService.Instance);
+
+                // Seed sample data
+                SqliteService.Instance.InitializeAsync().GetAwaiter().GetResult();
+                SqliteService.Instance.EnsureSampleDataAsync().GetAwaiter().GetResult();
+            })
+            .RegisterView<MainView, MainViewModel>()
+            .BuildApp()
+            .WithInstance<IScreen>(screen => { 
+                // Navigate to Main
+                screen!.Router.Navigate.Execute(new MainViewModel(screen)).Subscribe();
+                var host = new RoutedViewHost { Router = screen.Router };
+                _window.Content = host;
+                _window.Activate();
+            });
     }
 }

@@ -5,6 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Splat;
+using Splat.Builder;
 
 namespace ReactiveUI.Uno;
 
@@ -19,6 +20,11 @@ internal static class ActivationHelper
         }
 
         UnoActivated = true;
+        if (AppBuilder.UsingBuilder)
+        {
+            return;
+        }
+
         AppLocator.RegisterResolverCallbackChanged(() =>
         {
             if (AppLocator.CurrentMutable is null)

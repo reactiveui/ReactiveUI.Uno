@@ -6,15 +6,10 @@
     See https://aka.platform.uno/using-uno-sdk#implicit-packages for more information regarding the Implicit Packages.
   -->
   <ItemGroup>
+    <PackageVersion Include="ReactiveUI" Version="21.0.1" />
     <PackageVersion Include="ReactiveUI.Testing" Version="21.0.1" />
     <PackageVersion Include="Splat" Version="16.1.1" />
-    <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="ReactiveUI" Version="21.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.console" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
-    <PackageVersion Include="Xunit.StaFact" Version="1.1.11" />
     <PackageVersion Include="FluentAssertions" Version="8.6.0" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.2" />
     <PackageVersion Include="PublicApiGenerator" Version="11.4.6" />
@@ -24,8 +19,8 @@
     <PackageVersion Include="Roslynator.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
-    <PackageVersion Include="Newtonsoft.Json" VersionOverride="13.0.3" Version="13.0.3" />
-    <PackageVersion Include="NUnit" VersionOverride="4.1.0" Version="4.4.0" />
-    <PackageVersion Include="NUnit3TestAdapter" VersionOverride="4.5.0" Version="5.1.0" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="NUnit" Version="4.4.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="5.1.0" />
   </ItemGroup>
 </Project>

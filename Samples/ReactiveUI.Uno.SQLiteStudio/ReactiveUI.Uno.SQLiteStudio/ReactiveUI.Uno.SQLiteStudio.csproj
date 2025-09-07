@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-windows10.0.26100;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
         <IsPackable>false</IsPackable>
-
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <OutputType>Exe</OutputType>
         <UnoSingleProject>true</UnoSingleProject>
 
@@ -34,10 +34,20 @@
             SkiaRenderer;
         </UnoFeatures>
     </PropertyGroup>
+
+    <!-- Android-specific settings to avoid MAX_PATH issues -->
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+        <AndroidUseShortFileNames>true</AndroidUseShortFileNames>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="ReactiveUI.SourceGenerators">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="SQLite-net-pcl" />
         <PackageReference Include="CsvHelper" />
     </ItemGroup>
