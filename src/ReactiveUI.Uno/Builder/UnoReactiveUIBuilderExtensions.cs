@@ -263,7 +263,13 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>());
         }
 
         return reactiveUIInstance;
@@ -293,7 +299,14 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>());
         }
 
         return reactiveUIInstance;
@@ -324,7 +337,15 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>());
         }
 
         return reactiveUIInstance;
@@ -356,7 +377,16 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>(), current.GetService<T9?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>(),
+                   current.GetService<T9?>());
         }
 
         return reactiveUIInstance;
@@ -389,7 +419,17 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>(), current.GetService<T9?>(), current.GetService<T10?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>(),
+                   current.GetService<T9?>(),
+                   current.GetService<T10?>());
         }
 
         return reactiveUIInstance;
@@ -423,7 +463,18 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>(), current.GetService<T9?>(), current.GetService<T10?>(), current.GetService<T11?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>(),
+                   current.GetService<T9?>(),
+                   current.GetService<T10?>(),
+                   current.GetService<T11?>());
         }
 
         return reactiveUIInstance;
@@ -458,7 +509,19 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>(), current.GetService<T9?>(), current.GetService<T10?>(), current.GetService<T11?>(), current.GetService<T12?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>(),
+                   current.GetService<T9?>(),
+                   current.GetService<T10?>(),
+                   current.GetService<T11?>(),
+                   current.GetService<T12?>());
         }
 
         return reactiveUIInstance;
@@ -494,7 +557,20 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>(), current.GetService<T9?>(), current.GetService<T10?>(), current.GetService<T11?>(), current.GetService<T12?>(), current.GetService<T13?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>(),
+                   current.GetService<T9?>(),
+                   current.GetService<T10?>(),
+                   current.GetService<T11?>(),
+                   current.GetService<T12?>(),
+                   current.GetService<T13?>());
         }
 
         return reactiveUIInstance;
@@ -531,7 +607,21 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>(), current.GetService<T9?>(), current.GetService<T10?>(), current.GetService<T11?>(), current.GetService<T12?>(), current.GetService<T13?>(), current.GetService<T14?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>(),
+                   current.GetService<T9?>(),
+                   current.GetService<T10?>(),
+                   current.GetService<T11?>(),
+                   current.GetService<T12?>(),
+                   current.GetService<T13?>(),
+                   current.GetService<T14?>());
         }
 
         return reactiveUIInstance;
@@ -569,7 +659,22 @@ public static class UnoReactiveUIBuilderExtensions
         if (action is not null)
         {
             var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2?>(), current.GetService<T3?>(), current.GetService<T4?>(), current.GetService<T5?>(), current.GetService<T6?>(), current.GetService<T7?>(), current.GetService<T8?>(), current.GetService<T9?>(), current.GetService<T10?>(), current.GetService<T11?>(), current.GetService<T12?>(), current.GetService<T13?>(), current.GetService<T14?>(), current.GetService<T15?>());
+            action(
+                   current.GetService<T1>(),
+                   current.GetService<T2?>(),
+                   current.GetService<T3?>(),
+                   current.GetService<T4?>(),
+                   current.GetService<T5?>(),
+                   current.GetService<T6?>(),
+                   current.GetService<T7?>(),
+                   current.GetService<T8?>(),
+                   current.GetService<T9?>(),
+                   current.GetService<T10?>(),
+                   current.GetService<T11?>(),
+                   current.GetService<T12?>(),
+                   current.GetService<T13?>(),
+                   current.GetService<T14?>(),
+                   current.GetService<T15?>());
         }
 
         return reactiveUIInstance;
