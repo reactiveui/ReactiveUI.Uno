@@ -17,14 +17,14 @@ internal static class ActivationHelper
         }
 
         UnoActivated = true;
-        Locator.RegisterResolverCallbackChanged(() =>
+        AppLocator.RegisterResolverCallbackChanged(() =>
         {
-            if (Locator.CurrentMutable is null)
+            if (AppLocator.CurrentMutable is null)
             {
                 return;
             }
 
-            new Registrations().Register((f, t) => Locator.CurrentMutable.RegisterConstant(f(), t));
+            new Registrations().Register((f, t) => AppLocator.CurrentMutable.RegisterConstant(f(), t));
         });
     }
 

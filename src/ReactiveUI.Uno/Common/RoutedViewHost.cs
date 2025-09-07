@@ -3,16 +3,9 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Reactive.Linq;
 using ReactiveUI;
 using Splat;
-
-#if HAS_WINUI
-using Microsoft.UI.Xaml;
-#else
-using Windows.UI.Xaml;
-#endif
 
 namespace ReactiveUI.Uno;
 
@@ -27,19 +20,19 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     /// The router dependency property.
     /// </summary>
     public static readonly DependencyProperty RouterProperty =
-        DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(Router), typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
 
     /// <summary>
     /// The default content property.
     /// </summary>
     public static readonly DependencyProperty DefaultContentProperty =
-        DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
 
     /// <summary>
     /// The view contract observable property.
     /// </summary>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable<string>.Default));
+        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string?>), typeof(RoutedViewHost), new PropertyMetadata(Observable.Never<string?>()));
 
     private string? _viewContract;
 
@@ -58,8 +51,6 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
 
         if (platform is null)
         {
-            // NB: This used to be an error but WPF design mode can't read
-            // good or do other stuff good.
             this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
@@ -68,7 +59,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Observable<string>.Never
+            ? Observable.Never<string?>()
             : Observable.FromEvent<SizeChangedEventHandler, string?>(
                 eventHandler =>
                 {
@@ -85,11 +76,15 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
             this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract),
             (viewModel, contract) => (viewModel, contract));
 
-        this.WhenActivated(d =>
+        if (ModeDetector.InUnitTestRunner())
+        {
+            vmAndContract
+                .DistinctUntilChanged()
+                .Subscribe(ResolveViewForViewModel, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
+            return;
+        }
 
-            // NB: The DistinctUntilChanged is useful because most views in
-            // WinRT will end up getting here twice - once for configuring
-            // the RoutedViewHost's ViewModel, and once on load via SizeChanged
+        this.WhenActivated(d =>
             d(vmAndContract.DistinctUntilChanged<(IRoutableViewModel? viewModel, string? contract)>().Subscribe(
                 ResolveViewForViewModel,
                 ex => RxApp.DefaultExceptionHandler.OnNext(ex))));
