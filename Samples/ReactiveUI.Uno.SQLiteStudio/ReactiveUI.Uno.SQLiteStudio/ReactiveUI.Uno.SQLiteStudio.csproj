@@ -33,7 +33,7 @@
             ThemeService;
             SkiaRenderer;
         </UnoFeatures>
-        <RuntimeIdentifierGraphPath>$(MSBuildProjectDirectory)\rids.json</RuntimeIdentifierGraphPath>
+        <!--<RuntimeIdentifierGraphPath>$(MSBuildProjectDirectory)\rids.json</RuntimeIdentifierGraphPath>-->
         
         <!-- Resolve trim/AOT analyzer warnings: trimming/AOT disabled for this reflective app -->
         <PublishTrimmed>false</PublishTrimmed>
