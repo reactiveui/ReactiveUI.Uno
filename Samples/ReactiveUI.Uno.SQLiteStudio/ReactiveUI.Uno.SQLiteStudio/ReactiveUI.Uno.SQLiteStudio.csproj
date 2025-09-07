@@ -33,11 +33,19 @@
             ThemeService;
             SkiaRenderer;
         </UnoFeatures>
+
+        <!-- Resolve trim/AOT analyzer warnings: trimming/AOT disabled for this reflective app -->
+        <PublishTrimmed>false</PublishTrimmed>
+        <PublishAot>false</PublishAot>
+        <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+        <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072</NoWarn>
     </PropertyGroup>
 
-    <!-- Android-specific settings to avoid MAX_PATH issues -->
+    <!-- Android-specific settings to avoid MAX_PATH issues and skip linking in Debug -->
     <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
         <AndroidUseShortFileNames>true</AndroidUseShortFileNames>
+        <AndroidLinkMode>None</AndroidLinkMode>
+        <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
     </PropertyGroup>
 
     <ItemGroup>

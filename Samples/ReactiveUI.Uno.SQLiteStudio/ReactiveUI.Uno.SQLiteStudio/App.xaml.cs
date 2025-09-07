@@ -29,16 +29,17 @@ public partial class App : Application
                 // Services
                 mutable.RegisterLazySingleton(static () => SqliteService.Instance);
                 mutable.RegisterLazySingleton(static () => CsvExportService.Instance);
-
-                // Seed sample data
-                SqliteService.Instance.InitializeAsync().GetAwaiter().GetResult();
-                SqliteService.Instance.EnsureSampleDataAsync().GetAwaiter().GetResult();
             })
             .RegisterView<MainView, MainViewModel>()
             .BuildApp()
             .WithInstance<IScreen>(screen => { 
                 // Navigate to Main
                 screen!.Router.Navigate.Execute(new MainViewModel(screen)).Subscribe();
+
+                // Seed sample data in background without blocking UI thread
+                var db = SqliteService.Instance;
+                _ = db.InitializeAsync().ContinueWith(async _ => await db.EnsureSampleDataAsync().ConfigureAwait(false));
+
                 var host = new RoutedViewHost { Router = screen.Router };
                 _window.Content = host;
                 _window.Activate();
