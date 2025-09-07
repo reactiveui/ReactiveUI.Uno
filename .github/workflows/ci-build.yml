@@ -17,7 +17,7 @@ jobs:
     with:
       useUNO: true
       productNamespacePrefix: "ReactiveUI.Uno"
-      solutionFile: "ReactiveUI.Uno.sln"
+      solutionFile: "src/ReactiveUI.Uno.sln"
       installWorkloads: true
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
