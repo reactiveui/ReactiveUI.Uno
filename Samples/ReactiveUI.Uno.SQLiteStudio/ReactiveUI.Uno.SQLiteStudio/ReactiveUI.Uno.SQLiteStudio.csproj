@@ -1,4 +1,4 @@
-<Project Sdk="Uno.Sdk">
+﻿<Project Sdk="Uno.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-windows10.0.26100;net9.0-browserwasm;net9.0-desktop</TargetFrameworks>
         <IsPackable>false</IsPackable>
@@ -38,7 +38,7 @@
         <PublishTrimmed>false</PublishTrimmed>
         <PublishAot>false</PublishAot>
         <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
-        <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072</NoWarn>
+        <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072;WMC0001</NoWarn>
     </PropertyGroup>
 
     <!-- Android-specific settings to avoid MAX_PATH issues and skip linking in Debug -->
@@ -52,10 +52,6 @@
         <ProjectReference Include="..\..\..\src\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="ReactiveUI.SourceGenerators">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="SQLite-net-pcl" />
         <PackageReference Include="CsvHelper" />
     </ItemGroup>

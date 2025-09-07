@@ -29,6 +29,9 @@ public partial class App : Application
                 // Services
                 mutable.RegisterLazySingleton(static () => SqliteService.Instance);
                 mutable.RegisterLazySingleton(static () => CsvExportService.Instance);
+
+                // ViewLocator - avoid reflection by using generated mapping
+                mutable.RegisterLazySingleton<IViewLocator>(() => new AppLocatorViewLocator());
             })
             .RegisterView<MainView, MainViewModel>()
             .BuildApp()

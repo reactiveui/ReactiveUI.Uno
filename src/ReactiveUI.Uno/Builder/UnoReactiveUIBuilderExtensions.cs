@@ -80,8 +80,8 @@ public static class UnoReactiveUIBuilderExtensions
         return builder
             .WithUnoScheduler()
             .WithTaskPoolScheduler(TaskPoolScheduler.Default)
-            .WithUnoDictionary()
-            .WithPlatformModule<Uno.Registrations>();
+            .WithPlatformModule<Uno.Registrations>()
+            .WithUnoDictionary();
     }
 
     /// <summary>
