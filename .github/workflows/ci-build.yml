@@ -15,9 +15,8 @@ jobs:
   build:
     uses: reactiveui/actions-common/.github/workflows/workflow-common-setup-and-build.yml@main
     with:
-      useUNO: true
-      configuration: Release
-      productNamespacePrefix: "ReactiveUI"
+      # useUNO: true
+      productNamespacePrefix: "ReactiveUI.Uno"
       solutionFile: "reactiveui.uno.sln"
       installWorkloads: true
     secrets:
