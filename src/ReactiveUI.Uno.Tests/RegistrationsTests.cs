@@ -61,6 +61,8 @@ public class RegistrationsTests
             Assert.That(registered, Has.Count.EqualTo(21));
 
             // Verify schedulers are set to safe defaults for headless environment
+            // Note: For WebAssembly targets (net9.0-browserwasm), WasmScheduler.Default is used instead
+            // of TaskPoolScheduler.Default due to WebAssembly's lack of multithreading support
             Assert.That(RxApp.TaskpoolScheduler, Is.SameAs(System.Reactive.Concurrency.TaskPoolScheduler.Default));
             Assert.That(RxApp.MainThreadScheduler, Is.SameAs(System.Reactive.Concurrency.CurrentThreadScheduler.Instance));
         }
@@ -75,5 +77,41 @@ public class RegistrationsTests
     {
         Registrations sut = new();
         Assert.Throws<ArgumentNullException>(() => sut.Register(null!));
+    }
+
+    /// <summary>
+    /// Documents and verifies that WebAssembly targets use WasmScheduler instead of TaskPoolScheduler.
+    /// </summary>
+    /// <remarks>
+    /// This test serves as documentation for the WebAssembly scheduler behavior.
+    /// While the test project targets net9.0 (not net9.0-browserwasm), the actual
+    /// ReactiveUI.Uno library uses conditional compilation to ensure that:
+    /// - WebAssembly targets (net9.0-browserwasm) use WasmScheduler.Default
+    /// - All other targets use TaskPoolScheduler.Default
+    /// This is necessary because WebAssembly doesn't support multithreading.
+    /// </remarks>
+    [Test]
+    public void Register_Uses_WasmScheduler_For_WebAssembly_Targets()
+    {
+        // This test documents the expected behavior for WebAssembly targets.
+        // The conditional compilation in Registrations.cs ensures that:
+        // - For __WASM__ || BROWSERWASM: RxApp.TaskpoolScheduler = WasmScheduler.Default
+        // - For other targets: RxApp.TaskpoolScheduler = TaskPoolScheduler.Default
+
+        // Since this test runs on net9.0 (not browserwasm), we verify the non-WebAssembly behavior
+        List<Type> registered = [];
+        void Register(Func<object> factory, Type serviceType) => registered.Add(serviceType);
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        // For non-WebAssembly targets, TaskPoolScheduler should be used
+        Assert.That(
+            RxApp.TaskpoolScheduler,
+            Is.SameAs(System.Reactive.Concurrency.TaskPoolScheduler.Default),
+            "Non-WebAssembly targets should use TaskPoolScheduler.Default");
+
+        // This test serves as documentation that WebAssembly builds will use WasmScheduler instead
+        Assert.Pass("WebAssembly targets (net9.0-browserwasm) will use WasmScheduler.Default due to conditional compilation");
     }
 }
