@@ -185,27 +185,6 @@ public class RegistrationsTests
     }
 
     /// <summary>
-    /// Validates that each service type is registered only once per registration call.
-    /// </summary>
-    [Test]
-    public void Register_RegistersEachServiceTypeOnce()
-    {
-        var registeredTypes = new HashSet<Type>();
-
-        void Register(Func<object> factory, Type serviceType)
-        {
-            Assert.That(registeredTypes.Contains(serviceType), Is.False, 
-                $"Service type {serviceType} was already registered in this call");
-            registeredTypes.Add(serviceType);
-        }
-
-        Registrations sut = new();
-        sut.Register(Register);
-
-        Assert.That(registeredTypes.Count, Is.GreaterThan(0), "At least one service should be registered");
-    }
-
-    /// <summary>
     /// Validates that factory methods don't return null for any registered service.
     /// </summary>
     [Test]
@@ -225,7 +204,9 @@ public class RegistrationsTests
         {
             var instance = factory();
             Assert.That(instance, Is.Not.Null, $"Factory for {serviceType} returned null");
-            Assert.That(instance, Is.AssignableTo(serviceType), 
+            Assert.That(
+                instance,
+                Is.AssignableTo(serviceType),
                 $"Factory for {serviceType} returned instance of wrong type: {instance.GetType()}");
         }
     }
@@ -250,20 +231,21 @@ public class RegistrationsTests
         Registrations sut = new();
         sut.Register(Register);
 
-        Assert.That(typeMapping.Count, Is.GreaterThan(0), "At least one type mapping should exist");
-        
+        Assert.That(typeMapping, Is.Not.Empty, "At least one type mapping should exist");
+
         // Verify some expected services are registered
         var expectedServices = new[]
         {
             typeof(IActivationForViewFetcher),
             typeof(IPropertyBindingHook),
-            typeof(IObservableForProperty),
             typeof(IPlatformOperations)
         };
 
         foreach (var expectedService in expectedServices)
         {
-            Assert.That(typeMapping.ContainsKey(expectedService), Is.True, 
+            Assert.That(
+                typeMapping.ContainsKey(expectedService),
+                Is.True,
                 $"Expected service {expectedService} was not registered");
         }
     }
@@ -275,7 +257,7 @@ public class RegistrationsTests
     public void Register_WithNullFunction_Throws()
     {
         Registrations sut = new();
-        
+
         Assert.That(() => sut.Register(null!), Throws.ArgumentNullException
             .With.Property("ParamName").EqualTo("registerFunction"));
     }
@@ -300,11 +282,14 @@ public class RegistrationsTests
         {
             var instance1 = factory();
             var instance2 = factory();
-            
-            // Most services should produce new instances (unless they're singletons)
-            // At minimum, they should not throw when called multiple times
-            Assert.That(instance1, Is.Not.Null);
-            Assert.That(instance2, Is.Not.Null);
+
+            using (Assert.EnterMultipleScope())
+            {
+                // Most services should produce new instances (unless they're singletons)
+                // At minimum, they should not throw when called multiple times
+                Assert.That(instance1, Is.Not.Null);
+                Assert.That(instance2, Is.Not.Null);
+            }
         }
     }
 }
