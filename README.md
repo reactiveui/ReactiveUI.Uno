@@ -282,6 +282,42 @@ Please do not open GitHub issues for support requests.
 
 -----
 
+## Development Requirements
+
+**⚠️ IMPORTANT: Before contributing or building this project, ensure you meet these requirements:**
+
+### Prerequisites
+
+1. **🚨 .NET 9 SDK Required**: This project requires .NET 9 SDK (version 9.0.304 or later). It will NOT build with .NET 8 or earlier versions.
+   
+   ```bash
+   # Check your .NET version
+   dotnet --version
+   
+   # Install .NET 9 if needed: https://dotnet.microsoft.com/download/dotnet/9.0
+   ```
+
+2. **🚨 Full Repository Clone Required**: You must work with a complete repository clone, not a shallow one.
+   
+   ```bash
+   # If you have a shallow clone, convert it:
+   git fetch --unshallow
+   ```
+
+### Why These Requirements Matter
+
+The project has undergone significant improvements for cross-platform build compatibility. These prerequisites ensure:
+- Proper build system functionality
+- Version generation works correctly  
+- Cross-platform targets compile successfully
+- No redundant troubleshooting of preventable issues
+
+**Failure to meet these requirements will result in build failures and wasted development time.**
+
+For detailed development instructions, see [GitHub Copilot Instructions](.github/copilot-instructions.md).
+
+-----
+
 ## Contribute
 
 ReactiveUI.Uno is developed under an OSI-approved open source license, making it freely usable and distributable, even for commercial use.
