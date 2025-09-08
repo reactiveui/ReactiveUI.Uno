@@ -72,7 +72,12 @@ public static class UnoReactiveUIBuilderExtensions
 
         return builder
             .WithUnoScheduler()
+#if __WASM__ || BROWSERWASM
+            // WebAssembly doesn't support multithreading, use WasmScheduler instead of TaskPoolScheduler
+            .WithTaskPoolScheduler(WasmScheduler.Default)
+#else
             .WithTaskPoolScheduler(TaskPoolScheduler.Default)
+#endif
             .WithPlatformModule<Uno.Registrations>()
             .WithUnoDictionary();
     }
