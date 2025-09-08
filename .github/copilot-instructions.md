@@ -55,12 +55,12 @@ git log --oneline | wc -l  # Should show more than just recent commits
 ### Build and Test
 
 ```bash
-# Restore packages and build
-dotnet restore
-dotnet build
+# Build the main solution (from repository root)
+dotnet restore src/ReactiveUI.Uno.sln
+dotnet build src/ReactiveUI.Uno.sln
 
 # Run tests
-dotnet test
+dotnet test src/ReactiveUI.Uno.sln
 ```
 
 ### Platform-Specific Notes
