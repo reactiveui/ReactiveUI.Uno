@@ -3,24 +3,19 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
 using NUnit.Framework;
-using ReactiveUI;
-using ReactiveUI.Uno;
 
 namespace ReactiveUI.Uno.Tests;
 
 /// <summary>
-/// RegistrationsTests.
+/// Contains tests for the <see cref="ReactiveUI.Uno.Registrations"/> class, specifically validating
+/// its functionality for registering services and configuring schedulers.
 /// </summary>
 [TestFixture]
 public class RegistrationsTests
 {
     /// <summary>
-    /// Resets the schedulers.
+    /// Resets the schedulers to default values to ensure clean state before each test.
     /// </summary>
     [SetUp]
     public void ResetSchedulers()
@@ -31,12 +26,17 @@ public class RegistrationsTests
     }
 
     /// <summary>
-    /// Registers the registers expected services and configures schedulers.
+    /// Validates that the expected services are correctly registered and schedulers are configured appropriately.
     /// </summary>
+    /// <remarks>
+    /// This test ensures that all required service interfaces are registered without throwing errors,
+    /// verifies the total count of registrations, and confirms safe default scheduler configurations
+    /// for a headless test environment.
+    /// </remarks>
     [Test]
     public void Register_RegistersExpectedServices_And_ConfiguresSchedulers()
     {
-        var registered = new List<Type>();
+        List<Type> registered = [];
 
         void Register(Func<object> factory, Type serviceType)
         {
@@ -44,33 +44,36 @@ public class RegistrationsTests
             registered.Add(serviceType);
         }
 
-        var sut = new Registrations();
-        sut.Invoking(x => x.Register(Register)).Should().NotThrow();
+        Registrations sut = new();
+        Assert.DoesNotThrow(() => sut.Register(Register));
 
         // Verify the set of required service interfaces are registered
-        registered.Should().Contain(typeof(IPlatformOperations));
-        registered.Should().Contain(typeof(IActivationForViewFetcher));
-        registered.Should().Contain(typeof(ICreatesObservableForProperty));
-        registered.Should().Contain(typeof(IPropertyBindingHook));
-        registered.Should().Contain(typeof(ISuspensionDriver));
+        Assert.That(registered, Does.Contain(typeof(IPlatformOperations)));
+        Assert.That(registered, Does.Contain(typeof(IActivationForViewFetcher)));
+        Assert.That(registered, Does.Contain(typeof(ICreatesObservableForProperty)));
+        Assert.That(registered, Does.Contain(typeof(IPropertyBindingHook)));
+        Assert.That(registered, Does.Contain(typeof(ISuspensionDriver)));
 
-        // The implementation registers 16 binding converters + 2 hooks/services + 3 core services = 21 total
-        // (String/byte(short/int/long/float/double/decimal) + nullable versions + BooleanToVisibility)
-        registered.Count.Should().Be(21);
+        using (Assert.EnterMultipleScope())
+        {
+            // The implementation registers 16 binding converters + 2 hooks/services + 3 core services = 21 total
+            // (String/byte(short/int/long/float/double/decimal) + nullable versions + BooleanToVisibility)
+            Assert.That(registered, Has.Count.EqualTo(21));
 
-        // Verify schedulers are set to safe defaults for headless environment
-        RxApp.TaskpoolScheduler.Should().BeSameAs(System.Reactive.Concurrency.TaskPoolScheduler.Default);
-        RxApp.MainThreadScheduler.Should().BeSameAs(System.Reactive.Concurrency.CurrentThreadScheduler.Instance);
+            // Verify schedulers are set to safe defaults for headless environment
+            Assert.That(RxApp.TaskpoolScheduler, Is.SameAs(System.Reactive.Concurrency.TaskPoolScheduler.Default));
+            Assert.That(RxApp.MainThreadScheduler, Is.SameAs(System.Reactive.Concurrency.CurrentThreadScheduler.Instance));
+        }
     }
 
     /// <summary>
-    /// Registers the throws on null register function.
+    /// Verifies that the <see cref="Registrations.Register"/> method throws an <see cref="ArgumentNullException"/>
+    /// when the provided register function is null.
     /// </summary>
     [Test]
     public void Register_Throws_On_Null_RegisterFunction()
     {
-        var sut = new Registrations();
-        Action act = () => sut.Register(null!);
-        act.Should().Throw<ArgumentNullException>();
+        Registrations sut = new();
+        Assert.Throws<ArgumentNullException>(() => sut.Register(null!));
     }
 }
