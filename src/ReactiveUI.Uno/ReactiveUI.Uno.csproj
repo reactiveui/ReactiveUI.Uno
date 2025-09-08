@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include="ReactiveUI" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-browserwasm'">
+  <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
     <PackageReference Include="Reactive.Wasm" />
   </ItemGroup>
   <ItemGroup>
