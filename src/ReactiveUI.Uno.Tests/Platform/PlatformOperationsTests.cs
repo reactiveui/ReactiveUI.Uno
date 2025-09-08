@@ -32,4 +32,74 @@ public class PlatformOperationsTests
         Assert.That(orientation, Is.InstanceOf<string>());
         Assert.That(orientation, Is.Not.Null);
     }
+
+    /// <summary>
+    /// Validates that PlatformOperations can be instantiated multiple times.
+    /// </summary>
+    [Test]
+    public void Constructor_AllowsMultipleInstances()
+    {
+        // Act & Assert
+        Assert.That(() => new PlatformOperations(), Throws.Nothing);
+        Assert.That(() => new PlatformOperations(), Throws.Nothing);
+        
+        var ops1 = new PlatformOperations();
+        var ops2 = new PlatformOperations();
+        
+        Assert.That(ops1, Is.Not.Null);
+        Assert.That(ops2, Is.Not.Null);
+        Assert.That(ops1, Is.Not.SameAs(ops2));
+    }
+
+    /// <summary>
+    /// Validates that GetOrientation is consistent when called multiple times.
+    /// </summary>
+    [Test]
+    public void GetOrientation_IsConsistent()
+    {
+        var ops = new PlatformOperations();
+        
+        var orientation1 = ops.GetOrientation();
+        var orientation2 = ops.GetOrientation();
+        
+        // Orientation should be consistent for the same instance
+        Assert.That(orientation1, Is.EqualTo(orientation2));
+    }
+
+    /// <summary>
+    /// Validates that PlatformOperations implements IPlatformOperations.
+    /// </summary>
+    [Test]
+    public void PlatformOperations_ImplementsIPlatformOperations()
+    {
+        var ops = new PlatformOperations();
+        
+        Assert.That(ops, Is.InstanceOf<IPlatformOperations>());
+    }
+
+    /// <summary>
+    /// Validates that GetOrientation doesn't throw under normal conditions.
+    /// </summary>
+    [Test]
+    public void GetOrientation_DoesNotThrow()
+    {
+        var ops = new PlatformOperations();
+        
+        Assert.That(() => ops.GetOrientation(), Throws.Nothing);
+    }
+
+    /// <summary>
+    /// Validates that orientation string (if not null) is non-empty.
+    /// </summary>
+    [Test]
+    public void GetOrientation_IfNotNull_IsNotEmpty()
+    {
+        var ops = new PlatformOperations();
+        var orientation = ops.GetOrientation();
+
+        if (orientation is not null)
+        {
+            Assert.That(orientation, Is.Not.Empty);
+        }
+    }
 }
