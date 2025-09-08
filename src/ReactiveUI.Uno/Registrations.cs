@@ -51,7 +51,13 @@ public class Registrations : IWantsToRegisterStuff
 #else
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
 #endif
+
+#if __WASM__ || BROWSERWASM
+            // WebAssembly doesn't support multithreading, use WasmScheduler instead of TaskPoolScheduler
+            RxApp.TaskpoolScheduler = WasmScheduler.Default;
+#else
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+#endif
         }
 
         // Disables ViewCommand binding messages on Uno platform

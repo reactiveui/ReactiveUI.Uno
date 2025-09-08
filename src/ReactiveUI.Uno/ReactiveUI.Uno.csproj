@@ -29,6 +29,9 @@
   <ItemGroup>
     <PackageReference Include="ReactiveUI" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-browserwasm'">
+    <PackageReference Include="Reactive.Wasm" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ReactiveUI.Uno.xaml" />
   </ItemGroup>
