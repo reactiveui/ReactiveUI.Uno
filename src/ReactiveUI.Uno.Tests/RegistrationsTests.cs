@@ -76,4 +76,111 @@ public class RegistrationsTests
         Registrations sut = new();
         Assert.Throws<ArgumentNullException>(() => sut.Register(null!));
     }
+
+    /// <summary>
+    /// Validates that specific type converters are registered correctly.
+    /// </summary>
+    [Test]
+    public void Register_RegistersSpecificTypeConverters()
+    {
+        List<(Type serviceType, object instance)> registered = [];
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            var instance = factory();
+            registered.Add((serviceType, instance));
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        // Verify specific type converters are registered
+        var converters = registered.Where(x => x.serviceType == typeof(IBindingTypeConverter)).ToList();
+        Assert.That(converters, Has.Count.EqualTo(16), "Expected 16 type converters");
+
+        // Verify some specific converter types exist
+        var converterInstances = converters.Select(x => x.instance.GetType().Name).ToArray();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converterInstances, Does.Contain("StringConverter"));
+            Assert.That(converterInstances, Does.Contain("ByteToStringTypeConverter"));
+            Assert.That(converterInstances, Does.Contain("IntegerToStringTypeConverter"));
+            Assert.That(converterInstances, Does.Contain("BooleanToVisibilityTypeConverter"));
+        }
+    }
+
+    /// <summary>
+    /// Validates that core service types are registered.
+    /// </summary>
+    [Test]
+    public void Register_RegistersCoreServiceTypes()
+    {
+        List<(Type serviceType, Type instanceType)> registered = [];
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            var instance = factory();
+            registered.Add((serviceType, instance.GetType()));
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        using (Assert.EnterMultipleScope())
+        {
+            // Check core services
+            Assert.That(registered, Does.Contain((typeof(IPlatformOperations), typeof(PlatformOperations))));
+            Assert.That(registered, Does.Contain((typeof(IActivationForViewFetcher), typeof(ActivationForViewFetcher))));
+            Assert.That(registered, Does.Contain((typeof(ICreatesObservableForProperty), typeof(DependencyObjectObservableForProperty))));
+            Assert.That(registered, Does.Contain((typeof(IPropertyBindingHook), typeof(AutoDataTemplateBindingHook))));
+            Assert.That(registered, Does.Contain((typeof(ISuspensionDriver), typeof(WinRTAppDataDriver))));
+        }
+    }
+
+    /// <summary>
+    /// Validates that all registered factories produce non-null instances.
+    /// </summary>
+    [Test]
+    public void Register_AllFactoriesProduceNonNullInstances()
+    {
+        List<Func<object>> factories = [];
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            factories.Add(factory);
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        foreach (var factory in factories)
+        {
+            var instance = factory();
+            Assert.That(instance, Is.Not.Null, $"Factory for {instance?.GetType()} produced null instance");
+        }
+    }
+
+    /// <summary>
+    /// Validates that registrations can be called multiple times without error.
+    /// </summary>
+    [Test]
+    public void Register_CanBeCalledMultipleTimes()
+    {
+        var callCount = 0;
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            callCount++;
+        }
+
+        Registrations sut = new();
+
+        Assert.DoesNotThrow(() => sut.Register(Register));
+        var firstCallCount = callCount;
+
+        Assert.DoesNotThrow(() => sut.Register(Register));
+        var secondCallCount = callCount;
+
+        Assert.That(secondCallCount, Is.EqualTo(firstCallCount * 2), "Second registration should register same number of services");
+    }
 }

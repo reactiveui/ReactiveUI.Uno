@@ -101,4 +101,75 @@ public class BooleanToVisibilityTypeConverterTests
             Assert.That(result, Is.EqualTo(expected));
         }
     }
+
+    /// <summary>
+    /// Validates that GetAffinityForObjects returns zero for unsupported type combinations.
+    /// </summary>
+    [Test]
+    public void GetAffinityForObjects_ReturnsZero_ForUnsupportedTypes()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_sut.GetAffinityForObjects(typeof(string), typeof(bool)), Is.Zero);
+            Assert.That(_sut.GetAffinityForObjects(typeof(bool), typeof(string)), Is.Zero);
+            Assert.That(_sut.GetAffinityForObjects(typeof(int), typeof(Visibility)), Is.Zero);
+            Assert.That(_sut.GetAffinityForObjects(typeof(object), typeof(object)), Is.Zero);
+        }
+    }
+
+    /// <summary>
+    /// Validates conversion with null conversionHint defaults to None.
+    /// </summary>
+    [Test]
+    public void TryConvert_WithNullHint_DefaultsToNone()
+    {
+        var success = _sut.TryConvert(true, typeof(Visibility), null, out var result);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(success, Is.True);
+            Assert.That(result, Is.EqualTo(Visibility.Visible));
+        }
+    }
+
+    /// <summary>
+    /// Validates fallback behavior for unsupported input types.
+    /// </summary>
+    [Test]
+    public void TryConvert_WithUnsupportedInput_ProvidesFallback()
+    {
+        var success = _sut.TryConvert("invalid", typeof(Visibility), BooleanToVisibilityHint.None, out var result);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(success, Is.True);
+            Assert.That(result, Is.EqualTo(Visibility.Visible));
+        }
+    }
+
+    /// <summary>
+    /// Validates fallback behavior when converting to bool with unsupported input.
+    /// </summary>
+    [Test]
+    public void TryConvert_WithUnsupportedInputToBool_ProvidesFallback()
+    {
+        var success = _sut.TryConvert("invalid", typeof(bool), BooleanToVisibilityHint.None, out var result);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(success, Is.True);
+            Assert.That(result, Is.False);
+        }
+    }
+
+    /// <summary>
+    /// Validates conversion with non-BooleanToVisibilityHint conversionHint defaults to None.
+    /// </summary>
+    [Test]
+    public void TryConvert_WithNonBooleanToVisibilityHint_DefaultsToNone()
+    {
+        var success = _sut.TryConvert(true, typeof(Visibility), "string hint", out var result);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(success, Is.True);
+            Assert.That(result, Is.EqualTo(Visibility.Visible));
+        }
+    }
 }
