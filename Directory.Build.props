@@ -1,0 +1,39 @@
+<Project>
+  <PropertyGroup>
+    <!-- Satisfy MSBuild's requirement on Linux and ensure consistent behavior across platforms -->
+    <RootElementName>Project</RootElementName>
+    
+    <!-- Disable attribute-based TFM properties to avoid MSB3992 on Linux -->
+    <UseAttributeForTargetFrameworkInfoPropertyNames>false</UseAttributeForTargetFrameworkInfoPropertyNames>
+    
+    <!-- Enable centralized package version management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <!-- Ensure UnoTargetFrameworks is available from root for Linux compatibility -->
+  <PropertyGroup>
+    <!-- Cross-platform .NET 9 target (non-Windows only) -->
+    <UnoCrossPlatformNet9>net9.0;net9.0-desktop;net9.0-browserwasm</UnoCrossPlatformNet9>
+
+    <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 9) -->
+    <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
+
+    <!-- Mobile TFMs separated by platform -->
+    <UnoMobileAndroidTargets>net9.0-android</UnoMobileAndroidTargets>
+    <UnoMobileAppleTargets>net9.0-ios</UnoMobileAppleTargets>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Start with base TFMs that are always included -->
+    <UnoTargetFrameworks>$(UnoCrossPlatformNet9)</UnoTargetFrameworks>
+
+    <!-- Add Android targets (Linux, macOS, Windows can all compile Android) -->
+    <UnoTargetFrameworks>$(UnoTargetFrameworks);$(UnoMobileAndroidTargets)</UnoTargetFrameworks>
+
+    <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows) -->
+    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoWindowsDesktopTargets)</UnoTargetFrameworks>
+
+    <!-- Add Apple Mobile TFMs when building on macOS or Windows (both can compile Apple frameworks) -->
+    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoMobileAppleTargets)</UnoTargetFrameworks>
+  </PropertyGroup>
+</Project>

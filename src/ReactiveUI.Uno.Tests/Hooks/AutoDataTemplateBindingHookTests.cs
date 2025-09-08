@@ -4,71 +4,77 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
-using FluentAssertions;
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 
 namespace ReactiveUI.Uno.Tests;
 
 /// <summary>
-/// AutoDataTemplateBindingHookTests.
+/// Contains test cases for the AutoDataTemplateBindingHook class,
+/// ensuring its behavior adheres to expected functionality.
 /// </summary>
 [TestFixture]
 public class AutoDataTemplateBindingHookTests
 {
     /// <summary>
-    /// Executes the hook sets default template when eligible.
+    /// Executes the hook to set the default template when eligible.
     /// </summary>
     [Test]
     public void ExecuteHook_Sets_DefaultTemplate_When_Eligible()
     {
-        var hook = new AutoDataTemplateBindingHook();
+        AutoDataTemplateBindingHook hook = new();
         ItemsControl ic;
         try
         {
-            ic = new ItemsControl();
+            ic = new();
         }
-        catch (System.Exception ex) when (ex is System.TypeInitializationException || ex is System.NotSupportedException)
+        catch (Exception ex) when (ex is TypeInitializationException or NotSupportedException)
         {
             Assert.Ignore("UI dispatcher not available for Uno/WinUI controls in this environment.");
             return;
         }
 
-        var vmChanges = Array.Empty<IObservedChange<object, object>>();
-        var expr = (Expression<System.Func<object?>>)(() => ic.ItemsSource);
-        var viewChanges = new[]
-        {
-            new ObservedChange<object, object>(ic, expr, new object())
-        };
+        IObservedChange<object, object>[] vmChanges = [];
+        var expr = (Expression<Func<object?>>)(() => ic.ItemsSource);
+        ObservedChange<object, object>[] viewChanges =
+        [
+            new(ic, expr, new())
+        ];
 
         var result = hook.ExecuteHook(null, ic, () => vmChanges, () => viewChanges, BindingDirection.OneWay);
-        result.Should().BeTrue();
-        ic.ItemTemplate.Should().NotBeNull();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.True);
+            Assert.That(ic.ItemTemplate, Is.Not.Null);
+        }
     }
 
     /// <summary>
-    /// Executes the hook does not override existing template.
+    /// Executes the hook to ensure that an existing template is not overridden.
     /// </summary>
     [Test]
     public void ExecuteHook_Does_Not_Override_Existing_Template()
     {
-        var hook = new AutoDataTemplateBindingHook();
+        AutoDataTemplateBindingHook hook = new();
         ItemsControl ic;
         try
         {
-            ic = new ItemsControl { ItemTemplate = AutoDataTemplateBindingHook.DefaultItemTemplate.Value };
+            ic = new() { ItemTemplate = AutoDataTemplateBindingHook.DefaultItemTemplate.Value };
         }
-        catch (System.Exception ex) when (ex is System.TypeInitializationException || ex is System.NotSupportedException)
+        catch (Exception ex) when (ex is TypeInitializationException or NotSupportedException)
         {
             Assert.Ignore("UI dispatcher not available for Uno/WinUI controls in this environment.");
             return;
         }
 
-        var expr = (Expression<System.Func<object?>>)(() => ic.ItemsSource);
-        var viewChanges = new[] { new ObservedChange<object, object>(ic, expr, new object()) };
+        var expr = (Expression<Func<object?>>)(() => ic.ItemsSource);
+        ObservedChange<object, object>[] viewChanges = [new(ic, expr, new object())];
 
         var result = hook.ExecuteHook(null, ic, Array.Empty<IObservedChange<object, object>>, () => viewChanges, BindingDirection.OneWay);
-        result.Should().BeTrue();
-        ic.ItemTemplate.Should().NotBeNull();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.True);
+            Assert.That(ic.ItemTemplate, Is.Not.Null);
+        }
     }
 }

@@ -3,6 +3,8 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Uno;
 
 /// <summary>
@@ -71,6 +73,7 @@ namespace ReactiveUI.Uno;
 #if IOS
 [global::Foundation.Register]
 #endif
+[RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public partial class ReactiveUserControl<TViewModel> :
         UserControl, IViewFor<TViewModel>
         where TViewModel : class

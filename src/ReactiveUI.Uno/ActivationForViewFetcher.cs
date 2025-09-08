@@ -3,17 +3,10 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using System.Reflection;
 using Windows.Foundation;
-
-#if HAS_UNO_WINUI
-using Microsoft.UI.Xaml;
-#else
-using Windows.UI.Xaml;
-#endif
 
 namespace ReactiveUI.Uno;
 
@@ -28,6 +21,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     public int GetAffinityForView(Type view) => typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
 
     /// <inheritdoc/>
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
     public IObservable<bool> GetActivationForView(IActivatableView view)
     {
         if (view is not FrameworkElement fe)

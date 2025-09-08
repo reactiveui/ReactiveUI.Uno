@@ -3,9 +3,9 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Reactive.Concurrency;
 using Splat;
+using Splat.Builder;
 
 namespace ReactiveUI.Uno;
 
@@ -44,15 +44,17 @@ public class Registrations : IWantsToRegisterStuff
         registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
         registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
 
-        if (!ModeDetector.InUnitTestRunner())
+        if (!ModeDetector.InUnitTestRunner() && !AppBuilder.UsingBuilder)
         {
 #if WINDOWS
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
-            RxApp.SuppressViewCommandBindingMessage = true;
 #else
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
 #endif
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
         }
+
+        // Disables ViewCommand binding messages on Uno platform
+        RxApp.SuppressViewCommandBindingMessage = true;
     }
 }

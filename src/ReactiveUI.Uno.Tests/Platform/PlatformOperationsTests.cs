@@ -3,27 +3,33 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace ReactiveUI.Uno.Tests.Platform;
 
 /// <summary>
-/// Tests for PlatformOperations.
+/// Contains test cases to ensure the functionality and correctness of the <see cref="PlatformOperations"/> class.
 /// </summary>
 [TestFixture]
 public class PlatformOperationsTests
 {
     /// <summary>
-    /// Ensures GetOrientation returns either null or a string value without throwing.
+    /// Validates that the GetOrientation method either returns a valid string representing the device orientation
+    /// or null, and does not throw an exception during execution.
     /// </summary>
     [Test]
     public void GetOrientation_has_valid_string_or_null()
     {
-        var ops = new ReactiveUI.Uno.PlatformOperations();
+        PlatformOperations ops = new();
         var orientation = ops.GetOrientation();
 
         // Accept null or any string value
-        (orientation == null || orientation.GetType() == typeof(string)).Should().BeTrue();
+        if (orientation is null)
+        {
+            return;
+        }
+
+        Assert.That(orientation, Is.InstanceOf<string>());
+        Assert.That(orientation, Is.Not.Null);
     }
 }
