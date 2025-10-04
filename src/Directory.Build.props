@@ -60,26 +60,36 @@
     <!-- Cross-platform .NET 9 target (non-Windows only) -->
     <UnoCrossPlatformNet9>net9.0;net9.0-desktop;net9.0-browserwasm</UnoCrossPlatformNet9>
 
+    <!-- Cross-platform .NET 10 target (non-Windows only) -->
+    <UnoCrossPlatformNet10>net10.0;net10.0-desktop;net10.0-browserwasm</UnoCrossPlatformNet10>
+
     <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 9) -->
     <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
+
+    <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 10) -->
+    <UnoWindowsDesktopTargetsNet10>net10.0-windows10.0.19041.0</UnoWindowsDesktopTargetsNet10>
 
     <!-- Mobile TFMs separated by platform -->
     <UnoMobileAndroidTargets>net9.0-android</UnoMobileAndroidTargets>
     <UnoMobileAppleTargets>net9.0-ios</UnoMobileAppleTargets>
+
+    <!-- Mobile TFMs for .NET 10 separated by platform -->
+    <UnoMobileAndroidTargetsNet10>net10.0-android</UnoMobileAndroidTargetsNet10>
+    <UnoMobileAppleTargetsNet10>net10.0-ios</UnoMobileAppleTargetsNet10>
   </PropertyGroup>
 
   <PropertyGroup>
     <!-- Start with base TFMs that are always included -->
-    <UnoTargetFrameworks>$(UnoCrossPlatformNet9)</UnoTargetFrameworks>
+    <UnoTargetFrameworks>$(UnoCrossPlatformNet9);$(UnoCrossPlatformNet10)</UnoTargetFrameworks>
 
     <!-- Add Android targets (Linux, macOS, Windows can all compile Android) -->
-    <UnoTargetFrameworks>$(UnoTargetFrameworks);$(UnoMobileAndroidTargets)</UnoTargetFrameworks>
+    <UnoTargetFrameworks>$(UnoTargetFrameworks);$(UnoMobileAndroidTargets);$(UnoMobileAndroidTargetsNet10)</UnoTargetFrameworks>
 
-    <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows) -->
-    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoWindowsDesktopTargets)</UnoTargetFrameworks>
+    <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows and net10.0-windows) -->
+    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoWindowsDesktopTargets);$(UnoWindowsDesktopTargetsNet10)</UnoTargetFrameworks>
 
     <!-- Add Apple Mobile TFMs when building on macOS or Windows (both can compile Apple frameworks) -->
-    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoMobileAppleTargets)</UnoTargetFrameworks>
+    <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoMobileAppleTargets);$(UnoMobileAppleTargetsNet10)</UnoTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
