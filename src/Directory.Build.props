@@ -57,25 +57,28 @@
 
     <!--<UnoTargetFrameworks>net9.0;net9.0-android;net9.0-browserwasm;net9.0-desktop;net9.0-ios;net9.0-windows10.0.19041.0</UnoTargetFrameworks>-->
 
-    <!-- Cross-platform .NET 9 target (non-Windows only) -->
-    <UnoCrossPlatformNet9>net9.0;net9.0-desktop;net9.0-browserwasm</UnoCrossPlatformNet9>
+    <!-- Cross-platform targets (non-Windows only) -->
+    <UnoCrossPlatformTargets>net9.0;net9.0-desktop;net9.0-browserwasm;net10.0;net10.0-desktop;net10.0-browserwasm</UnoCrossPlatformTargets>
 
-    <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 9) -->
-    <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
+    <!-- Windows-specific desktop TFMs -->
+    <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
 
     <!-- Mobile TFMs separated by platform -->
-    <UnoMobileAndroidTargets>net9.0-android</UnoMobileAndroidTargets>
-    <UnoMobileAppleTargets>net9.0-ios</UnoMobileAppleTargets>
+    <UnoMobileAndroidTargets>net9.0-android;net10.0-android</UnoMobileAndroidTargets>
+    <UnoMobileAppleTargets>net9.0-ios;net10.0-ios</UnoMobileAppleTargets>
+
+    <!-- Test project target frameworks -->
+    <TestProjectTargetFrameworks>net9.0;net10.0</TestProjectTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <!-- Start with base TFMs that are always included -->
-    <UnoTargetFrameworks>$(UnoCrossPlatformNet9)</UnoTargetFrameworks>
+    <UnoTargetFrameworks>$(UnoCrossPlatformTargets)</UnoTargetFrameworks>
 
     <!-- Add Android targets (Linux, macOS, Windows can all compile Android) -->
     <UnoTargetFrameworks>$(UnoTargetFrameworks);$(UnoMobileAndroidTargets)</UnoTargetFrameworks>
 
-    <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows) -->
+    <!-- Add Windows Desktop TFMs only when building on Windows -->
     <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoWindowsDesktopTargets)</UnoTargetFrameworks>
 
     <!-- Add Apple Mobile TFMs when building on macOS or Windows (both can compile Apple frameworks) -->
