@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="System.Private.Uri" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
     <PackageReference Include="Reactive.Wasm" />
