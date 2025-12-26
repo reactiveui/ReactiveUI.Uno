@@ -3,11 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-// Copyright (c) 2025 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for full license information.
-
 using Microsoft.UI.Xaml;
 using NUnit.Framework;
 
@@ -29,12 +24,12 @@ public class ReactiveUIUnoDictionaryTests
         var dictionary = new ReactiveUIUnoDictionary();
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(dictionary.Source, Is.Not.Null);
             Assert.That(dictionary.Source!.ToString(), Is.EqualTo("ms-appx:///ReactiveUI.Uno/Resources/ReactiveUI.Uno.xaml"));
             Assert.That(dictionary.Source.IsAbsoluteUri, Is.True);
-        });
+        }
     }
 
     /// <summary>
@@ -48,11 +43,11 @@ public class ReactiveUIUnoDictionaryTests
         var dictionary2 = new ReactiveUIUnoDictionary();
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(dictionary1, Is.Not.SameAs(dictionary2));
             Assert.That(dictionary1.Source, Is.EqualTo(dictionary2.Source));
-        });
+        }
     }
 
     /// <summary>
@@ -126,11 +121,11 @@ public class ReactiveUIUnoDictionaryTests
         ResourceDictionary resourceDict = dictionary;
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(resourceDict, Is.Not.Null);
             Assert.That(resourceDict.Source, Is.EqualTo(dictionary.Source));
-        });
+        }
     }
 
     /// <summary>

@@ -3,11 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-// Copyright (c) 2025 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for full license information.
-
 using Microsoft.UI.Xaml.Controls;
 using NUnit.Framework;
 
@@ -29,11 +24,11 @@ public class TransitioningContentControlTests
         var control = new TransitioningContentControl();
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(control, Is.Not.Null);
             Assert.That(control, Is.InstanceOf<ContentControl>());
-        });
+        }
     }
 
     /// <summary>
@@ -85,11 +80,11 @@ public class TransitioningContentControlTests
         ContentControl contentControl = control;
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(contentControl, Is.Not.Null);
             Assert.That(contentControl, Is.SameAs(control));
-        });
+        }
     }
 
     /// <summary>
@@ -149,11 +144,11 @@ public class TransitioningContentControlTests
         control.Content = button;
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(control.Content, Is.EqualTo(button));
             Assert.That(control.Content, Is.InstanceOf<Button>());
-        });
+        }
     }
 
     /// <summary>
@@ -166,13 +161,13 @@ public class TransitioningContentControlTests
         var control = new TransitioningContentControl();
 
         // Act & Assert - Test that we have access to ContentControl properties
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(() => control.Content, Throws.Nothing);
             Assert.That(() => control.ContentTemplate, Throws.Nothing);
             Assert.That(() => control.HorizontalContentAlignment, Throws.Nothing);
             Assert.That(() => control.VerticalContentAlignment, Throws.Nothing);
-        });
+        }
     }
 
     /// <summary>

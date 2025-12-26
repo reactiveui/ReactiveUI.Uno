@@ -3,11 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-// Copyright (c) 2025 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for full license information.
-
 #if !WINDOWS
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
@@ -47,11 +42,11 @@ public class UnoDispatcherSchedulerTests
         var scheduler = new UnoDispatcherScheduler(_mockDispatcher);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(scheduler.Dispatcher, Is.EqualTo(_mockDispatcher));
             Assert.That(scheduler.Priority, Is.EqualTo(CoreDispatcherPriority.Normal));
-        });
+        }
     }
 
     /// <summary>
@@ -67,11 +62,11 @@ public class UnoDispatcherSchedulerTests
         var scheduler = new UnoDispatcherScheduler(_mockDispatcher, priority);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(scheduler.Dispatcher, Is.EqualTo(_mockDispatcher));
             Assert.That(scheduler.Priority, Is.EqualTo(priority));
-        });
+        }
     }
 
     /// <summary>
@@ -153,11 +148,11 @@ public class UnoDispatcherSchedulerTests
         var disposable = _scheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(disposable, Is.Not.Null);
             Assert.That(disposable, Is.InstanceOf<IDisposable>());
-        });
+        }
     }
 
     /// <summary>
@@ -192,11 +187,11 @@ public class UnoDispatcherSchedulerTests
         var disposable = _scheduler.Schedule("test", dueTime, (scheduler, state) => Disposable.Empty);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(disposable, Is.Not.Null);
             Assert.That(disposable, Is.InstanceOf<IDisposable>());
-        });
+        }
     }
 
     /// <summary>
@@ -209,11 +204,11 @@ public class UnoDispatcherSchedulerTests
         var disposable = _scheduler.SchedulePeriodic("test", TimeSpan.Zero, state => state + "1");
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(disposable, Is.Not.Null);
             Assert.That(disposable, Is.InstanceOf<IDisposable>());
-        });
+        }
 
         // Cleanup
         disposable.Dispose();
@@ -232,11 +227,11 @@ public class UnoDispatcherSchedulerTests
         var disposable = _scheduler.SchedulePeriodic(0, period, state => state + 1);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(disposable, Is.Not.Null);
             Assert.That(disposable, Is.InstanceOf<IDisposable>());
-        });
+        }
 
         // Cleanup
         disposable.Dispose();
@@ -304,13 +299,13 @@ public class UnoDispatcherSchedulerTests
         var scheduler2 = new UnoDispatcherScheduler(_mockDispatcher, CoreDispatcherPriority.High);
 
         // Assert
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(scheduler1, Is.Not.Null);
             Assert.That(scheduler2, Is.Not.Null);
             Assert.That(scheduler1.Priority, Is.EqualTo(CoreDispatcherPriority.Normal));
             Assert.That(scheduler2.Priority, Is.EqualTo(CoreDispatcherPriority.High));
-        });
+        }
     }
 
     /// <summary>
