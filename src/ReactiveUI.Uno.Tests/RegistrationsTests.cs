@@ -61,6 +61,8 @@ public class RegistrationsTests
             Assert.That(registered, Has.Count.EqualTo(21));
 
             // Verify schedulers are set to safe defaults for headless environment
+            // Note: For WebAssembly targets (net9.0-browserwasm), WasmScheduler.Default is used instead
+            // of TaskPoolScheduler.Default due to WebAssembly's lack of multithreading support
             Assert.That(RxApp.TaskpoolScheduler, Is.SameAs(System.Reactive.Concurrency.TaskPoolScheduler.Default));
             Assert.That(RxApp.MainThreadScheduler, Is.SameAs(System.Reactive.Concurrency.CurrentThreadScheduler.Instance));
         }
