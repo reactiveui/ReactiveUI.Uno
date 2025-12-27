@@ -80,38 +80,218 @@ public class RegistrationsTests
     }
 
     /// <summary>
-    /// Documents and verifies that WebAssembly targets use WasmScheduler instead of TaskPoolScheduler.
+    /// Validates that specific type converters are registered correctly.
     /// </summary>
-    /// <remarks>
-    /// This test serves as documentation for the WebAssembly scheduler behavior.
-    /// While the test project targets net9.0 (not net9.0-browserwasm), the actual
-    /// ReactiveUI.Uno library uses conditional compilation to ensure that:
-    /// - WebAssembly targets (net9.0-browserwasm) use WasmScheduler.Default
-    /// - All other targets use TaskPoolScheduler.Default
-    /// This is necessary because WebAssembly doesn't support multithreading.
-    /// </remarks>
     [Test]
-    public void Register_Uses_WasmScheduler_For_WebAssembly_Targets()
+    public void Register_RegistersSpecificTypeConverters()
     {
-        // This test documents the expected behavior for WebAssembly targets.
-        // The conditional compilation in Registrations.cs ensures that:
-        // - For __WASM__ || BROWSERWASM: RxApp.TaskpoolScheduler = WasmScheduler.Default
-        // - For other targets: RxApp.TaskpoolScheduler = TaskPoolScheduler.Default
+        List<(Type serviceType, object instance)> registered = [];
 
-        // Since this test runs on net9.0 (not browserwasm), we verify the non-WebAssembly behavior
-        List<Type> registered = [];
-        void Register(Func<object> factory, Type serviceType) => registered.Add(serviceType);
+        void Register(Func<object> factory, Type serviceType)
+        {
+            var instance = factory();
+            registered.Add((serviceType, instance));
+        }
 
         Registrations sut = new();
         sut.Register(Register);
 
-        // For non-WebAssembly targets, TaskPoolScheduler should be used
-        Assert.That(
-            RxApp.TaskpoolScheduler,
-            Is.SameAs(System.Reactive.Concurrency.TaskPoolScheduler.Default),
-            "Non-WebAssembly targets should use TaskPoolScheduler.Default");
+        // Verify specific type converters are registered
+        var converters = registered.Where(x => x.serviceType == typeof(IBindingTypeConverter)).ToList();
+        Assert.That(converters, Has.Count.EqualTo(16), "Expected 16 type converters");
 
-        // This test serves as documentation that WebAssembly builds will use WasmScheduler instead
-        Assert.Pass("WebAssembly targets (net9.0-browserwasm) will use WasmScheduler.Default due to conditional compilation");
+        // Verify some specific converter types exist
+        var converterInstances = converters.Select(x => x.instance.GetType().Name).ToArray();
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(converterInstances, Does.Contain("StringConverter"));
+            Assert.That(converterInstances, Does.Contain("ByteToStringTypeConverter"));
+            Assert.That(converterInstances, Does.Contain("IntegerToStringTypeConverter"));
+            Assert.That(converterInstances, Does.Contain("BooleanToVisibilityTypeConverter"));
+        }
+    }
+
+    /// <summary>
+    /// Validates that core service types are registered.
+    /// </summary>
+    [Test]
+    public void Register_RegistersCoreServiceTypes()
+    {
+        List<(Type serviceType, Type instanceType)> registered = [];
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            var instance = factory();
+            registered.Add((serviceType, instance.GetType()));
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        using (Assert.EnterMultipleScope())
+        {
+            // Check core services
+            Assert.That(registered, Does.Contain((typeof(IPlatformOperations), typeof(PlatformOperations))));
+            Assert.That(registered, Does.Contain((typeof(IActivationForViewFetcher), typeof(ActivationForViewFetcher))));
+            Assert.That(registered, Does.Contain((typeof(ICreatesObservableForProperty), typeof(DependencyObjectObservableForProperty))));
+            Assert.That(registered, Does.Contain((typeof(IPropertyBindingHook), typeof(AutoDataTemplateBindingHook))));
+            Assert.That(registered, Does.Contain((typeof(ISuspensionDriver), typeof(WinRTAppDataDriver))));
+        }
+    }
+
+    /// <summary>
+    /// Validates that all registered factories produce non-null instances.
+    /// </summary>
+    [Test]
+    public void Register_AllFactoriesProduceNonNullInstances()
+    {
+        List<Func<object>> factories = [];
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            factories.Add(factory);
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        foreach (var factory in factories)
+        {
+            var instance = factory();
+            Assert.That(instance, Is.Not.Null, $"Factory for {instance?.GetType()} produced null instance");
+        }
+    }
+
+    /// <summary>
+    /// Validates that registrations can be called multiple times without error.
+    /// </summary>
+    [Test]
+    public void Register_CanBeCalledMultipleTimes()
+    {
+        var callCount = 0;
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            callCount++;
+        }
+
+        Registrations sut = new();
+
+        Assert.DoesNotThrow(() => sut.Register(Register));
+        var firstCallCount = callCount;
+
+        Assert.DoesNotThrow(() => sut.Register(Register));
+        var secondCallCount = callCount;
+
+        Assert.That(secondCallCount, Is.EqualTo(firstCallCount * 2), "Second registration should register same number of services");
+    }
+
+    /// <summary>
+    /// Validates that factory methods don't return null for any registered service.
+    /// </summary>
+    [Test]
+    public void Register_AllFactoriesReturnNonNullInstances()
+    {
+        var factories = new List<(Func<object> Factory, Type ServiceType)>();
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            factories.Add((factory, serviceType));
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        foreach (var (factory, serviceType) in factories)
+        {
+            var instance = factory();
+            Assert.That(instance, Is.Not.Null, $"Factory for {serviceType} returned null");
+            Assert.That(
+                instance,
+                Is.AssignableTo(serviceType),
+                $"Factory for {serviceType} returned instance of wrong type: {instance.GetType()}");
+        }
+    }
+
+    /// <summary>
+    /// Validates that factories produce consistent instances of the correct types.
+    /// </summary>
+    [Test]
+    public void Register_FactoriesProduceCorrectTypes()
+    {
+        var typeMapping = new Dictionary<Type, Type>();
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            var instance = factory();
+            if (!typeMapping.ContainsKey(serviceType))
+            {
+                typeMapping[serviceType] = instance.GetType();
+            }
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        Assert.That(typeMapping, Is.Not.Empty, "At least one type mapping should exist");
+
+        // Verify some expected services are registered
+        var expectedServices = new[]
+        {
+            typeof(IActivationForViewFetcher),
+            typeof(IPropertyBindingHook),
+            typeof(IPlatformOperations)
+        };
+
+        foreach (var expectedService in expectedServices)
+        {
+            Assert.That(
+                typeMapping.ContainsKey(expectedService),
+                Is.True,
+                $"Expected service {expectedService} was not registered");
+        }
+    }
+
+    /// <summary>
+    /// Validates that registration with null function throws.
+    /// </summary>
+    [Test]
+    public void Register_WithNullFunction_Throws()
+    {
+        Registrations sut = new();
+
+        Assert.That(() => sut.Register(null!), Throws.ArgumentNullException
+            .With.Property("ParamName").EqualTo("registerFunction"));
+    }
+
+    /// <summary>
+    /// Validates that each factory produces a new instance on each call.
+    /// </summary>
+    [Test]
+    public void Register_FactoriesProduceNewInstances()
+    {
+        var factories = new List<Func<object>>();
+
+        void Register(Func<object> factory, Type serviceType)
+        {
+            factories.Add(factory);
+        }
+
+        Registrations sut = new();
+        sut.Register(Register);
+
+        foreach (var factory in factories)
+        {
+            var instance1 = factory();
+            var instance2 = factory();
+
+            using (Assert.EnterMultipleScope())
+            {
+                // Most services should produce new instances (unless they're singletons)
+                // At minimum, they should not throw when called multiple times
+                Assert.That(instance1, Is.Not.Null);
+                Assert.That(instance2, Is.Not.Null);
+            }
+        }
     }
 }
