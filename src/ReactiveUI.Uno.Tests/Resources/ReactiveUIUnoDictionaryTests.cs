@@ -3,6 +3,7 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
 using NUnit.Framework;
 
@@ -14,6 +15,31 @@ namespace ReactiveUI.Uno.Tests.Resources;
 [TestFixture]
 public class ReactiveUIUnoDictionaryTests
 {
+    /// <summary>
+    /// Setup for each test.
+    /// </summary>
+    [SetUp]
+    public void SetUp()
+    {
+        // Skip tests if no UI context is available (headless environment)
+        try
+        {
+            var window = Microsoft.UI.Xaml.Window.Current;
+            if (window is null)
+            {
+                Assert.Ignore("Skipping test because no UI context is available (headless environment)");
+            }
+        }
+        catch (TypeInitializationException)
+        {
+            Assert.Ignore("Skipping test because no UI context is available (headless environment)");
+        }
+        catch (NotSupportedException)
+        {
+            Assert.Ignore("Skipping test because no UI context is available (headless environment)");
+        }
+    }
+
     /// <summary>
     /// Test constructor sets Source property correctly.
     /// </summary>
