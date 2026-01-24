@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../.editorconfig" />
+    <File Path="../.gitignore" />
+    <File Path="../LICENSE" />
+    <File Path="../README.md" />
+    <File Path="../version.json" />
+    <File Path="Directory.build.props" />
+    <File Path="Directory.build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="stylecop.json" />
+    <File Path="testconfig.json" />
+  </Folder>
+  <!-- Example project temporarily excluded pending API updates for ReactiveUI 23.1.0-beta.1 -->
+  <!-- <Project Path="examples/ReactiveUI.Uno.SQLiteStudio/ReactiveUI.Uno.SQLiteStudio.csproj" /> -->
+  <Project Path="ReactiveUI.Uno/ReactiveUI.Uno.csproj" />
+  <Project Path="tests/ReactiveUI.Uno.Tests/ReactiveUI.Uno.Tests.csproj" />
+  <Properties Name="TestCaseManagementSettings" Scope="PostLoad">
+    <Property Name="CategoryFile" Value="ReactiveUI.vsmdi" />
+  </Properties>
+</Solution>

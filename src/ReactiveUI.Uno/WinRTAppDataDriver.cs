@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
@@ -22,7 +23,7 @@ public class WinRTAppDataDriver : ISuspensionDriver
     /// <inheritdoc/>
     [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
     [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
-    public IObservable<object?> LoadState() => Observable.StartAsync<object?>(
+    public IObservable<object?> LoadState() => Observable.StartAsync(
     async () =>
     {
         var x = await ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish");
@@ -40,8 +41,17 @@ public class WinRTAppDataDriver : ISuspensionDriver
     /// <inheritdoc/>
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
     {
-        // TODO: Fix this method to actually do something useful
-        return default!;
+        ArgumentNullException.ThrowIfNull(typeInfo);
+
+        return Observable.StartAsync<T?>(
+        async () =>
+        {
+            var file = await ApplicationData.Current.RoamingFolder.GetFileAsync("appData.json");
+            var json = await FileIO.ReadTextAsync(file, UnicodeEncoding.Utf8);
+
+            return JsonSerializer.Deserialize(json, typeInfo);
+        },
+        RxSchedulers.TaskpoolScheduler);
     }
 
     /// <inheritdoc/>
@@ -77,12 +87,48 @@ public class WinRTAppDataDriver : ISuspensionDriver
     /// <inheritdoc/>
     public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
     {
-        // TODO: Fix this method to actually do something useful
-        return default!;
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(typeInfo);
+
+        return Observable.StartAsync(
+        async () =>
+        {
+            var json = JsonSerializer.Serialize(state, typeInfo);
+
+            var file = await ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.json", CreationCollisionOption.ReplaceExisting);
+            await FileIO.WriteTextAsync(file, json, UnicodeEncoding.Utf8);
+        },
+        RxSchedulers.TaskpoolScheduler);
     }
 
     /// <inheritdoc/>
     public IObservable<Unit> InvalidateState() =>
-        ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish").AsTask().ToObservable()
-                       .SelectMany(x => x.DeleteAsync().AsTask().ToObservable());
+        Observable.StartAsync(
+        async () =>
+        {
+            var folder = ApplicationData.Current.RoamingFolder;
+
+            // Delete xmlish file (used by DataContract serialization)
+            try
+            {
+                var xmlFile = await folder.GetFileAsync("appData.xmlish");
+                await xmlFile.DeleteAsync();
+            }
+            catch (FileNotFoundException)
+            {
+                // File doesn't exist, nothing to invalidate
+            }
+
+            // Delete json file (used by JSON serialization)
+            try
+            {
+                var jsonFile = await folder.GetFileAsync("appData.json");
+                await jsonFile.DeleteAsync();
+            }
+            catch (FileNotFoundException)
+            {
+                // File doesn't exist, nothing to invalidate
+            }
+        },
+        RxSchedulers.TaskpoolScheduler);
 }

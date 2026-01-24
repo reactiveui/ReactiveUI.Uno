@@ -94,6 +94,10 @@ public partial class ReactiveUserControl<TViewModel> :
     protected ReactiveUserControl()
     {
         // needed so the others are optional.
+        this.WhenActivated(_ =>
+        {
+            // No-op
+        });
     }
 
     /// <summary>

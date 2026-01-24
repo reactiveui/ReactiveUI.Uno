@@ -94,6 +94,10 @@ public partial class ReactivePage<TViewModel> :
     protected ReactivePage()
     {
         // needed so the others are optional.
+        this.WhenActivated(_ =>
+        {
+            // No-op
+        });
     }
 
     /// <summary>

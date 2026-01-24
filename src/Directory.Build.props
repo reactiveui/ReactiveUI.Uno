@@ -85,8 +85,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Cross-platform .NET 9 target (non-Windows only) -->
-    <UnoExampleCrossPlatformNet9>net9.0-desktop;net9.0-browserwasm</UnoExampleCrossPlatformNet9>
+    <!-- Cross-platform .NET 9 target (non-Windows only) - include net9.0 base for Uno SDK compatibility -->
+    <UnoExampleCrossPlatformNet9>net9.0;net9.0-desktop;net9.0-browserwasm</UnoExampleCrossPlatformNet9>
 
     <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 9) -->
     <UnoExampleWindowsDesktopTargets>net9.0-windows10.0.19041.0</UnoExampleWindowsDesktopTargets>
@@ -130,7 +130,7 @@
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <TUnitImplicitUsings>false</TUnitImplicitUsings>
     <TUnitAssertionsImplicitUsings>false</TUnitAssertionsImplicitUsings>
-    <NoWarn>$(NoWarn);CS4014</NoWarn>
+    <NoWarn>$(NoWarn);CS4014;SA1615</NoWarn>
   </PropertyGroup>
 
   <!-- MTP Native JSON Configuration -->

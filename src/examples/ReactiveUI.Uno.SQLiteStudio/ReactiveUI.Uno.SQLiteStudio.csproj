@@ -5,8 +5,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
-    <BaseIntermediateOutputPath>$(LOCALAPPDATA)\uno\obj\</BaseIntermediateOutputPath>
-    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
 
 
     <!-- Display name -->
@@ -42,7 +40,11 @@
     <PublishTrimmed>false</PublishTrimmed>
     <PublishAot>false</PublishAot>
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
-    <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072;WMC0001</NoWarn>
+    <!-- NU1605: Suppress package downgrade warnings for transitive dependencies from Uno SDK -->
+    <!-- SA/RCS: Suppress style cop warnings for example project as it uses simplified code -->
+    <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072;WMC0001;NU1605;SA1633;SA1600;SA1601;SA1402;SA1502;SA1513;SA1508;SA1009;SA1111;SA1210;SA1300;SA1649;SX1101;RCS1102;CA1822</NoWarn>
+    <!-- Disable TreatWarningsAsErrors for example project -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- Android-specific settings to avoid MAX_PATH issues and skip linking in Debug -->
@@ -53,6 +55,9 @@
     <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
   </PropertyGroup>
   
+  
+  
+  <!-- Windows-specific packages - must match versions from ReactiveUI.Uno to avoid NU1605 -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
     <PackageReference Include="Microsoft.WindowsAppSDK" />
