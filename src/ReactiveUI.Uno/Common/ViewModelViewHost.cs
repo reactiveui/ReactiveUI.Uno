@@ -38,8 +38,6 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
 
     private string? _viewContract;
 
-    static ViewModelViewHost() => _ = ActivationHelper.UnoActivated;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
     /// </summary>
@@ -82,7 +80,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         {
             // In tests, bypass activation wiring so content resolves deterministically.
             contractChanged
-                .ObserveOn(RxApp.MainThreadScheduler)
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
                 .Subscribe(x => _viewContract = x ?? string.Empty);
 
             vmAndContract
@@ -95,7 +93,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         this.WhenActivated(d =>
         {
             d(contractChanged
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(x => _viewContract = x ?? string.Empty));
 
             d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));

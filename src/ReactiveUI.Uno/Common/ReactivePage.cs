@@ -88,8 +88,6 @@ public partial class ReactivePage<TViewModel> :
             typeof(ReactivePage<TViewModel>),
             new PropertyMetadata(null));
 
-    static ReactivePage() => _ = ActivationHelper.UnoActivated;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
     /// </summary>

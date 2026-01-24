@@ -38,8 +38,6 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
 
     private string? _viewContract;
 
-    static RoutedViewHost() => _ = ActivationHelper.UnoActivated;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
@@ -82,14 +80,14 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         {
             vmAndContract
                 .DistinctUntilChanged()
-                .Subscribe(ResolveViewForViewModel, ex => RxApp.DefaultExceptionHandler.OnNext(ex));
+                .Subscribe(ResolveViewForViewModel, ex => RxState.DefaultExceptionHandler.OnNext(ex));
             return;
         }
 
         this.WhenActivated(d =>
             d(vmAndContract.DistinctUntilChanged().Subscribe(
                 ResolveViewForViewModel,
-                ex => RxApp.DefaultExceptionHandler.OnNext(ex))));
+                ex => RxState.DefaultExceptionHandler.OnNext(ex))));
     }
 
     /// <summary>

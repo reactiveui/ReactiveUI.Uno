@@ -2,7 +2,8 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Platform>AnyCPU</Platform>
-    <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <IsTestProject>$(MSBuildProjectName.EndsWith('.Tests'))</IsTestProject>
     <DebugType>embedded</DebugType>
     <Authors>ReactiveUI and Contributors</Authors>
     <Copyright>Copyright (c) ReactiveUI and Contributors</Copyright>
@@ -39,8 +40,6 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">30.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
-
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
     <!--
       Adding NoWarn to remove build warnings 26100
@@ -85,6 +84,30 @@
     <UnoTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoTargetFrameworks);$(UnoMobileAppleTargets)</UnoTargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- Cross-platform .NET 9 target (non-Windows only) -->
+    <UnoExampleCrossPlatformNet9>net9.0-desktop;net9.0-browserwasm</UnoExampleCrossPlatformNet9>
+
+    <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 9) -->
+    <UnoExampleWindowsDesktopTargets>net9.0-windows10.0.19041.0</UnoExampleWindowsDesktopTargets>
+
+    <!-- Mobile TFMs separated by platform -->
+    <UnoExampleMobileAndroidTargets>net9.0-android</UnoExampleMobileAndroidTargets>
+    <UnoExampleMobileAppleTargets>net9.0-ios</UnoExampleMobileAppleTargets>
+
+    <!-- Start with base TFMs that are always included -->
+    <UnoExampleTargetFrameworks>$(UnoExampleCrossPlatformNet9)</UnoExampleTargetFrameworks>
+
+    <!-- Add Android targets (Linux, macOS, Windows can all compile Android) -->
+    <UnoExampleTargetFrameworks>$(UnoExampleTargetFrameworks);$(UnoExampleMobileAndroidTargets)</UnoExampleTargetFrameworks>
+
+    <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows) -->
+    <UnoExampleTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoExampleTargetFrameworks);$(UnoExampleWindowsDesktopTargets)</UnoExampleTargetFrameworks>
+
+    <!-- Add Apple Mobile TFMs when building on macOS or Windows (both can compile Apple frameworks) -->
+    <UnoExampleTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoExampleTargetFrameworks);$(UnoExampleMobileAppleTargets)</UnoExampleTargetFrameworks>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
@@ -103,12 +126,26 @@
     <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
-  <ItemGroup Condition="$(IsTestProject) or $(MSBuildProjectName.Contains('TestRunner'))">
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="NUnit" />
-    <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="NUnit.Analyzers" />
-    <PackageReference Include="coverlet.msbuild" />
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true' or $(MSBuildProjectName.Contains('TestRunner'))">
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <TUnitImplicitUsings>false</TUnitImplicitUsings>
+    <TUnitAssertionsImplicitUsings>false</TUnitAssertionsImplicitUsings>
+    <NoWarn>$(NoWarn);CS4014</NoWarn>
+  </PropertyGroup>
+
+  <!-- MTP Native JSON Configuration -->
+  <ItemGroup Condition="'$(IsTestProject)' == 'true' or $(MSBuildProjectName.Contains('TestRunner'))">
+    <None Include="$(MSBuildThisFileDirectory)testconfig.json">
+      <Link>$(AssemblyName).testconfig.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <PackageReference Include="TUnit"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
+    <PackageReference Include="PublicApiGenerator"/>
+    <PackageReference Include="Verify.TUnit"/>
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="NSubstitute" />
   </ItemGroup>
   
   <ItemGroup>
