@@ -7,7 +7,7 @@
   -->
   <ItemGroup>
     <PackageVersion Include="ReactiveUI" Version="22.3.1" />
-    <PackageVersion Include="Splat" Version="19.1.1" />
+    <PackageVersion Include="Splat" Version="19.2.1" />
     <PackageVersion Include="Reactive.Wasm" Version="3.0.1" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.102" />
