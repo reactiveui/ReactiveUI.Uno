@@ -14,8 +14,7 @@ jobs:
     uses: reactiveui/actions-common/.github/workflows/workflow-common-release.yml@main
     with:
       configuration: Release
-      productNamespacePrefix: "ReactiveUI"
-      solutionFile: "reactiveui.uno.slnx"
+      productNamespacePrefix: "ReactiveUI.Uno"
     secrets:
       SIGN_CLIENT_USER_ID: ${{ secrets.SIGN_CLIENT_USER_ID }}
       SIGN_CLIENT_SECRET: ${{ secrets.SIGN_CLIENT_SECRET }}
