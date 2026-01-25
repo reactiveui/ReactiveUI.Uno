@@ -3,7 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml.Markup;
 
 namespace ReactiveUI.Uno;

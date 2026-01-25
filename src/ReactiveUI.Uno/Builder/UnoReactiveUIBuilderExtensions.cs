@@ -3,7 +3,6 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using ReactiveUI.Uno;
 
@@ -82,7 +81,6 @@ public static class UnoReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public static IReactiveUIBuilder WithDefaultIScreen(this IReactiveUIBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);

@@ -11,9 +11,12 @@ using Splat.Builder;
 namespace ReactiveUI.Uno;
 
 /// <summary>
-/// Uno platform registrations.
+/// Registers platform-specific services, type converters, and binding hooks required for ReactiveUI to operate on the
+/// Uno platform.
 /// </summary>
-/// <seealso cref="IWantsToRegisterStuff" />
+/// <remarks>This class is typically used internally by the ReactiveUI Uno integration to ensure that all
+/// necessary services and type converters are available at application startup. It is not intended to be used directly
+/// by application code.</remarks>
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>

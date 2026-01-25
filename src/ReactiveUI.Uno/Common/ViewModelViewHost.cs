@@ -19,20 +19,29 @@ namespace ReactiveUI.Uno;
 public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
     /// <summary>
-    /// The default content dependency property.
+    /// Identifies the DefaultContent dependency property.
     /// </summary>
+    /// <remarks>This field is used to register and reference the DefaultContent property with the WPF
+    /// property system. It is typically used when interacting with APIs that require a DependencyProperty identifier,
+    /// such as property metadata or data binding operations.</remarks>
     public static readonly DependencyProperty DefaultContentProperty =
         DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
     /// <summary>
-    /// The view model dependency property.
+    /// Identifies the ViewModel dependency property.
     /// </summary>
+    /// <remarks>This field is used to register and reference the ViewModel property with the Windows
+    /// Presentation Foundation (WPF) property system. It enables styling, data binding, animation, and default value
+    /// support for the ViewModel property on ViewModelViewHost instances.</remarks>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
     /// <summary>
-    /// The view contract observable dependency property.
+    /// Identifies the ViewContractObservable dependency property.
     /// </summary>
+    /// <remarks>This field is used to register and reference the ViewContractObservable property with the
+    /// Windows Presentation Foundation (WPF) property system. It is typically used when interacting with APIs that
+    /// require a DependencyProperty identifier, such as property metadata or data binding operations.</remarks>
     public static readonly DependencyProperty ViewContractObservableProperty =
         DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
 
