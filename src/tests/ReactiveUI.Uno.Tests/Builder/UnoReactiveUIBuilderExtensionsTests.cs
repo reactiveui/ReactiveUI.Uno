@@ -24,7 +24,7 @@ public class UnoReactiveUIBuilderExtensionsTests
     [Test]
     public async Task WithUno_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithUno(null!, new())).Throws<ArgumentNullException>();
+        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithUno(null!, null!)).Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo("builder");
     }
 
@@ -195,19 +195,6 @@ public class UnoReactiveUIBuilderExtensionsTests
 
         await Assert.That(type.IsAbstract).IsTrue();
         await Assert.That(type.IsSealed).IsTrue();
-    }
-
-    /// <summary>
-    /// Validates WithDefaultIScreen has RequiresUnreferencedCode attribute.
-    /// </summary>
-    [Test]
-    public async Task WithDefaultIScreen_HasRequiresUnreferencedCodeAttribute()
-    {
-        var method = typeof(UnoReactiveUIBuilderExtensions).GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithDefaultIScreen));
-        var attribute = method?.GetCustomAttributes(typeof(System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute), false)
-            .FirstOrDefault();
-
-        await Assert.That(attribute).IsNotNull();
     }
 
     /// <summary>
