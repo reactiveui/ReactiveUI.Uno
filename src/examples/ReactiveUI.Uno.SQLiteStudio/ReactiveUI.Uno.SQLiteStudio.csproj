@@ -49,14 +49,17 @@
   </PropertyGroup>
 
   <!-- Android-specific settings to avoid MAX_PATH issues and skip linking in Debug -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+  <PropertyGroup Condition="'$(TargetFramework.EndsWith('0-android'))">
     <AndroidUseShortFileNames>true</AndroidUseShortFileNames>
     <BaseOutputPath>$(LOCALAPPDATA)\uno\bin\</BaseOutputPath>
     <AndroidLinkMode>None</AndroidLinkMode>
     <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
-  
-  
+
+  <PropertyGroup Condition="'!$(TargetFramework.EndsWith('0-android'))">
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
   
   <!-- Windows-specific packages - must match versions from ReactiveUI.Uno to avoid NU1605 -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
