@@ -42,7 +42,8 @@
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
     <!-- NU1605: Suppress package downgrade warnings for transitive dependencies from Uno SDK -->
     <!-- SA/RCS: Suppress style cop warnings for example project as it uses simplified code -->
-    <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072;WMC0001;NU1605;SA1633;SA1600;SA1601;SA1402;SA1502;SA1513;SA1508;SA1009;SA1111;SA1210;SA1300;SA1649;SX1101;RCS1102;CA1822</NoWarn>
+    <!-- CA1812: Suppress "class is never instantiated" for DI-registered classes -->
+    <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072;WMC0001;NU1605;SA1633;SA1600;SA1601;SA1402;SA1502;SA1513;SA1508;SA1009;SA1111;SA1210;SA1300;SA1649;SX1101;RCS1102;CA1822;CA1812</NoWarn>
     <!-- Disable TreatWarningsAsErrors for example project -->
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>

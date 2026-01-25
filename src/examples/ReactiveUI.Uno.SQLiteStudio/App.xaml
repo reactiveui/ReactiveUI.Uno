@@ -1,0 +1,21 @@
+﻿<Application
+    x:Class="ReactiveUI.Uno.SQLiteStudio.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:utum="using:Uno.Toolkit.UI.Material">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--  Load WinUI resources  -->
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <utum:MaterialToolkitTheme ColorOverrideSource="ms-appx:///Styles/ColorPaletteOverride.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--  Dark theme brushes  -->
+            <SolidColorBrush x:Key="PrimaryBrush" Color="#FF1E1E1E" />
+            <SolidColorBrush x:Key="AccentBrush" Color="#FF00BCD4" />
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>

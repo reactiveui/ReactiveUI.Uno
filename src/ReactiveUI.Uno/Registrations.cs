@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
+using ReactiveUI.Builder;
 using Splat;
 using Splat.Builder;
 
@@ -47,9 +48,9 @@ public class Registrations : IWantsToRegisterStuff
         if (!ModeDetector.InUnitTestRunner() && !AppBuilder.UsingBuilder)
         {
 #if WINDOWS
-            RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+            RxSchedulers.MainThreadScheduler = UnoReactiveUIBuilderExtensions.UnoWinUIMainThreadScheduler;
 #else
-            RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
+            RxSchedulers.MainThreadScheduler = UnoReactiveUIBuilderExtensions.UnoMainThreadScheduler;
 #endif
 
 #if __WASM__ || BROWSERWASM

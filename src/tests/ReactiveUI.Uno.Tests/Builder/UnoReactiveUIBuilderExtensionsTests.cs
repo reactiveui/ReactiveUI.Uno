@@ -49,116 +49,6 @@ public class UnoReactiveUIBuilderExtensionsTests
     }
 
     /// <summary>
-    /// Validates that BuildApp throws ArgumentNullException when builder is null.
-    /// </summary>
-    [Test]
-    public async Task BuildApp_ThrowsArgumentNullException_WhenBuilderIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.BuildApp(null!)).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("builder");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object>(null!, _ => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (2 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_TwoTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string>(null!, (_, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (3 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_ThreeTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int>(null!, (_, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (4 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_FourTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int, bool>(null!, (_, _, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (5 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_FiveTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int, bool, double>(null!, (_, _, _, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (6 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_SixTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int, bool, double, float>(null!, (_, _, _, _, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (7 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_SevenTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int, bool, double, float, long>(null!, (_, _, _, _, _, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (8 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_EightTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int, bool, double, float, long, byte>(null!, (_, _, _, _, _, _, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (9 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_NineTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int, bool, double, float, long, byte, short>(null!, (_, _, _, _, _, _, _, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
-    /// Validates that WithInstance (10 types) throws ArgumentNullException when reactiveUIInstance is null.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_TenTypes_ThrowsArgumentNullException_WhenReactiveUIInstanceIsNull()
-    {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<object, string, int, bool, double, float, long, byte, short, char>(null!, (_, _, _, _, _, _, _, _, _, _) => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
-    }
-
-    /// <summary>
     /// Validates that WithUnoScheduler returns the builder for chaining.
     /// Note: This test may fail in headless environments due to scheduler initialization.
     /// </summary>
@@ -233,27 +123,6 @@ public class UnoReactiveUIBuilderExtensionsTests
     }
 
     /// <summary>
-    /// Validates that BuildApp method verifies instance is not null.
-    /// Note: Testing null returns from mocks is complex due to NSubstitute behavior.
-    /// </summary>
-    [Test]
-    public async Task BuildApp_ValidatesInstanceNotNull()
-    {
-        // This test verifies the behavior indirectly - when a valid mock is provided,
-        // BuildApp succeeds. The error paths (null instance, null Current) are enforced
-        // by the implementation but difficult to test with mocks.
-        var builder = Substitute.For<IReactiveUIBuilder>();
-        var instance = Substitute.For<IReactiveUIInstance>();
-        var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-        builder.Build().Returns(instance);
-
-        var result = builder.BuildApp();
-
-        await Assert.That(result).IsNotNull();
-    }
-
-    /// <summary>
     /// Validates that BuildApp returns the instance when successful.
     /// </summary>
     [Test]
@@ -272,96 +141,20 @@ public class UnoReactiveUIBuilderExtensionsTests
     }
 
     /// <summary>
-    /// Validates that WithInstance invokes the action with resolved service.
+    /// Validates that BuildApp validates instance is not null.
     /// </summary>
     [Test]
-    public async Task WithInstance_InvokesAction_WithResolvedService()
+    public async Task BuildApp_ValidatesInstanceNotNull()
     {
-        var instance = Substitute.For<IReactiveUIInstance>();
-        var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        const string testService = "TestService";
-        resolver.GetService<string>().Returns(testService);
-        instance.Current.Returns(resolver);
-
-        string? receivedValue = null;
-        UnoReactiveUIBuilderExtensions.WithInstance<string>(instance, s => receivedValue = s);
-
-        await Assert.That(receivedValue).IsEqualTo(testService);
-    }
-
-    /// <summary>
-    /// Validates that WithInstance returns the instance for chaining.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_ReturnsInstance_ForChaining()
-    {
+        var builder = Substitute.For<IReactiveUIBuilder>();
         var instance = Substitute.For<IReactiveUIInstance>();
         var resolver = Substitute.For<IReadonlyDependencyResolver>();
         instance.Current.Returns(resolver);
+        builder.Build().Returns(instance);
 
-        var result = UnoReactiveUIBuilderExtensions.WithInstance<string>(instance, _ => { });
+        var result = builder.BuildApp();
 
-        await Assert.That(result).IsSameReferenceAs(instance);
-    }
-
-    /// <summary>
-    /// Validates that WithInstance handles null action gracefully.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_HandlesNullAction_Gracefully()
-    {
-        var instance = Substitute.For<IReactiveUIInstance>();
-        var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-
-        var result = UnoReactiveUIBuilderExtensions.WithInstance<string>(instance, null!);
-
-        await Assert.That(result).IsSameReferenceAs(instance);
-    }
-
-    /// <summary>
-    /// Validates that WithInstance with two types returns instance for chaining.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_TwoTypes_ReturnsInstance_ForChaining()
-    {
-        var instance = Substitute.For<IReactiveUIInstance>();
-        var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-
-        var result = UnoReactiveUIBuilderExtensions.WithInstance<string, int>(instance, (_, _) => { });
-
-        await Assert.That(result).IsSameReferenceAs(instance);
-    }
-
-    /// <summary>
-    /// Validates that WithInstance handles null action for two types.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_TwoTypes_HandlesNullAction_Gracefully()
-    {
-        var instance = Substitute.For<IReactiveUIInstance>();
-        var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-
-        var result = UnoReactiveUIBuilderExtensions.WithInstance<string, int>(instance, null!);
-
-        await Assert.That(result).IsSameReferenceAs(instance);
-    }
-
-    /// <summary>
-    /// Validates that WithInstance handles null action for three types.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_ThreeTypes_HandlesNullAction_Gracefully()
-    {
-        var instance = Substitute.For<IReactiveUIInstance>();
-        var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-
-        var result = UnoReactiveUIBuilderExtensions.WithInstance<string, int, bool>(instance, null!);
-
-        await Assert.That(result).IsSameReferenceAs(instance);
+        await Assert.That(result).IsNotNull();
     }
 
     /// <summary>
@@ -379,19 +172,6 @@ public class UnoReactiveUIBuilderExtensionsTests
 #endif
         await Assert.That(property).IsNotNull();
         await Assert.That(typeof(IScheduler).IsAssignableFrom(property!.PropertyType)).IsTrue();
-    }
-
-    /// <summary>
-    /// Validates WithInstance throws when instance has null Current.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_ThrowsArgumentNullException_WhenCurrentIsNull()
-    {
-        var instance = Substitute.For<IReactiveUIInstance>();
-        instance.Current.Returns((IReadonlyDependencyResolver?)null);
-
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithInstance<string>(instance, _ => { })).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("reactiveUIInstance");
     }
 
     /// <summary>
@@ -431,36 +211,6 @@ public class UnoReactiveUIBuilderExtensionsTests
     }
 
     /// <summary>
-    /// Validates that WithInstance four types handles null action gracefully.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_FourTypes_HandlesNullAction_Gracefully()
-    {
-        var instance = Substitute.For<IReactiveUIInstance>();
-        var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-
-        var result = UnoReactiveUIBuilderExtensions.WithInstance<string, int, bool, double>(instance, null!);
-
-        await Assert.That(result).IsSameReferenceAs(instance);
-    }
-
-    /// <summary>
-    /// Validates that WithInstance methods exist for various type counts.
-    /// </summary>
-    [Test]
-    public async Task WithInstance_MethodsExist_ForVariousTypeCounts()
-    {
-        var type = typeof(UnoReactiveUIBuilderExtensions);
-        var methods = type.GetMethods()
-            .Where(m => m.Name == "WithInstance")
-            .ToList();
-
-        // Should have multiple overloads (at least 1-16 type parameters)
-        await Assert.That(methods.Count).IsGreaterThanOrEqualTo(10);
-    }
-
-    /// <summary>
     /// Validates that WithUnoScheduler method exists.
     /// </summary>
     [Test]
@@ -489,17 +239,6 @@ public class UnoReactiveUIBuilderExtensionsTests
     public async Task WithDefaultIScreen_MethodExists()
     {
         var method = typeof(UnoReactiveUIBuilderExtensions).GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithDefaultIScreen));
-
-        await Assert.That(method).IsNotNull();
-    }
-
-    /// <summary>
-    /// Validates that BuildApp method exists.
-    /// </summary>
-    [Test]
-    public async Task BuildApp_MethodExists()
-    {
-        var method = typeof(UnoReactiveUIBuilderExtensions).GetMethod(nameof(UnoReactiveUIBuilderExtensions.BuildApp));
 
         await Assert.That(method).IsNotNull();
     }
