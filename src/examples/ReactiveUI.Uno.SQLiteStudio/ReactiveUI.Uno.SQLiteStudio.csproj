@@ -56,9 +56,14 @@
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
-  <PropertyGroup Condition="!$(TargetFramework.EndsWith('0-android'))">
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-ios'))">
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!$(TargetFramework.EndsWith('0-android')) and !$(TargetFramework.EndsWith('0-ios'))">
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
+    
   
   <!-- Windows-specific packages - must match versions from ReactiveUI.Uno to avoid NU1605 -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
