@@ -6,6 +6,10 @@
 namespace ReactiveUI.Uno;
 
 /// <summary>
-/// A control with a single transition.
+/// A ContentControl that displays its content with animated transitions when the content changes.
 /// </summary>
+/// <remarks>Use TransitioningContentControl to provide visual transitions between different pieces of content,
+/// such as when switching views or updating displayed data. The specific transition effect may depend on the control's
+/// configuration or style. This control is typically used to enhance user experience by animating content changes in
+/// user interfaces.</remarks>
 public partial class TransitioningContentControl : ContentControl;

@@ -16,22 +16,25 @@
       SkiaRenderer;
     </UnoFeatures>
   </PropertyGroup>
+  
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <!-- <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" RuntimeFrameworkVersion="10.0.22621.28" />
-    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" TargetingPackVersion="10.0.22621.28" /> -->
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
     <PackageReference Include="Microsoft.WindowsAppSDK" />
   </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="ReactiveUI" />
   </ItemGroup>
+  
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
     <PackageReference Include="Reactive.Wasm" />
   </ItemGroup>
+  
   <ItemGroup>
     <Resource Include="Resources\ReactiveUI.Uno.xaml" />
   </ItemGroup>

@@ -88,14 +88,16 @@ public partial class ReactiveUserControl<TViewModel> :
             typeof(ReactiveUserControl<TViewModel>),
             new PropertyMetadata(null));
 
-    static ReactiveUserControl() => _ = ActivationHelper.UnoActivated;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
     /// </summary>
     protected ReactiveUserControl()
     {
         // needed so the others are optional.
+        this.WhenActivated(_ =>
+        {
+            // No-op
+        });
     }
 
     /// <summary>

@@ -1,0 +1,7 @@
+### YamlMime:ManagedReference
+ignore:
+  - src/tests
+  - src/examples
+  - benchmarks
+  - "**/Tests/"
+  - "**/*.Tests/"

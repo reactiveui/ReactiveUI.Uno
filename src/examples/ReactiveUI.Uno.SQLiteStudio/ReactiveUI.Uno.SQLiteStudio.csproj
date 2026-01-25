@@ -1,0 +1,91 @@
+﻿<Project Sdk="Uno.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(UnoExampleTargetFrameworks)</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+
+
+    <!-- Display name -->
+    <ApplicationTitle>ReactiveUI.Uno.SQLiteStudio</ApplicationTitle>
+    <!-- App Identifier -->
+    <ApplicationId>com.companyname.ReactiveUI.Uno.SQLiteStudio</ApplicationId>
+    <!-- Versions -->
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <!-- Package Publisher -->
+    <ApplicationPublisher>chris pulman</ApplicationPublisher>
+    <!-- Package Description -->
+    <Description>ReactiveUI.Uno.SQLiteStudio powered by Uno Platform.</Description>
+
+    <UnoFeatures>
+      Material;
+      Dsp;
+      Hosting;
+      Toolkit;
+      Logging;
+      Mvvm;
+      Configuration;
+      HttpKiota;
+      Serialization;
+      Localization;
+      Navigation;
+      ThemeService;
+      SkiaRenderer;
+    </UnoFeatures>
+
+    <!-- Resolve trim/AOT analyzer warnings: trimming/AOT disabled for this reflective app -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishAot>false</PublishAot>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <!-- NU1605: Suppress package downgrade warnings for transitive dependencies from Uno SDK -->
+    <!-- SA/RCS: Suppress style cop warnings for example project as it uses simplified code -->
+    <!-- CA1812: Suppress "class is never instantiated" for DI-registered classes -->
+    <NoWarn>$(NoWarn);IL2026;IL3050;IL2067;IL2072;WMC0001;NU1605;SA1633;SA1600;SA1601;SA1402;SA1502;SA1513;SA1508;SA1009;SA1111;SA1210;SA1300;SA1649;SX1101;RCS1102;CA1822;CA1812</NoWarn>
+    <!-- Disable TreatWarningsAsErrors for example project -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Android-specific settings to avoid MAX_PATH issues and skip linking in Debug -->
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-android'))">
+    <AndroidUseShortFileNames>true</AndroidUseShortFileNames>
+    <BaseOutputPath>$(LOCALAPPDATA)\uno\bin\</BaseOutputPath>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-ios'))">
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!$(TargetFramework.EndsWith('0-android')) and !$(TargetFramework.EndsWith('0-ios'))">
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+    
+  
+  <!-- Windows-specific packages - must match versions from ReactiveUI.Uno to avoid NU1605 -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
+    <PackageReference Include="Reactive.Wasm" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="SQLite-net-pcl" />
+    <PackageReference Include="CsvHelper" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\MainView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>

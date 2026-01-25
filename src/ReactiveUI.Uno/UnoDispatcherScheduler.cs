@@ -155,6 +155,17 @@ public sealed class UnoDispatcherScheduler : LocalScheduler, ISchedulerPeriodic
         return ScheduleSlow(state, dt, action);
     }
 
+    /// <summary>
+    /// Schedules the specified action to be executed after the given due time on the scheduler.
+    /// </summary>
+    /// <remarks>The scheduled action will be executed once after the specified due time elapses. Disposing
+    /// the returned IDisposable before the due time prevents the action from running.</remarks>
+    /// <typeparam name="TState">The type of the state object passed to the scheduled action.</typeparam>
+    /// <param name="state">An object representing the state to be passed to the scheduled action.</param>
+    /// <param name="dueTime">The time interval to wait before executing the action.</param>
+    /// <param name="action">A delegate that represents the action to execute. The delegate receives the scheduler and the state object as
+    /// parameters and returns an IDisposable representing the scheduled work.</param>
+    /// <returns>An IDisposable that can be used to cancel the scheduled action before it executes.</returns>
     private IDisposable ScheduleSlow<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
     {
         var d = new MultipleAssignmentDisposable();

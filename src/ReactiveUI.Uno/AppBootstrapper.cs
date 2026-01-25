@@ -3,19 +3,15 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace ReactiveUI.Uno;
 
 /// <summary>
-/// A default App Bootstrapper.
+/// Represents the application's main bootstrapper, providing routing and navigation state for the user interface.
 /// </summary>
-/// <seealso cref="ReactiveObject" />
-/// <seealso cref="IScreen" />
-/// <remarks>
-/// Initializes a new instance of the <see cref="AppBootstrapper"/> class.
-/// </remarks>
-[RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
+/// <remarks>AppBootstrapper serves as the entry point for initializing and managing navigation within the
+/// application. It implements the IScreen interface, which is used by ReactiveUI for view model routing. This class is
+/// typically used to configure the application's initial navigation state and to provide a central location for routing
+/// logic.</remarks>
 public sealed partial class AppBootstrapper() : ReactiveObject, IScreen
 {
     /// <summary>

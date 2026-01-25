@@ -4,63 +4,67 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
+using ReactiveUI.Builder;
 using Splat;
 using Splat.Builder;
 
 namespace ReactiveUI.Uno;
 
 /// <summary>
-/// Uno platform registrations.
+/// Registers platform-specific services, type converters, and binding hooks required for ReactiveUI to operate on the
+/// Uno platform.
 /// </summary>
-/// <seealso cref="IWantsToRegisterStuff" />
+/// <remarks>This class is typically used internally by the ReactiveUI Uno integration to ensure that all
+/// necessary services and type converters are available at application startup. It is not intended to be used directly
+/// by application code.</remarks>
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
-        ArgumentNullException.ThrowIfNull(registerFunction);
+        ArgumentNullException.ThrowIfNull(registrar);
 
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registrar.RegisterConstant<IPlatformOperations>(() => new PlatformOperations());
+        registrar.RegisterConstant<IActivationForViewFetcher>(() => new ActivationForViewFetcher());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(() => new DependencyObjectObservableForProperty());
 
-        registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new StringConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new ByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new ShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new IntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableIntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new LongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableLongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new SingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableSingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new DoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableDoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new DecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableDecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(() => new BooleanToVisibilityTypeConverter());
 
-        registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-        registerFunction(() => new WinRTAppDataDriver(), typeof(ISuspensionDriver));
+        registrar.RegisterConstant<IPropertyBindingHook>(() => new AutoDataTemplateBindingHook());
+        registrar.RegisterConstant<ISuspensionDriver>(() => new WinRTAppDataDriver());
 
         if (!ModeDetector.InUnitTestRunner() && !AppBuilder.UsingBuilder)
         {
 #if WINDOWS
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+            RxSchedulers.MainThreadScheduler = UnoReactiveUIBuilderExtensions.UnoWinUIMainThreadScheduler;
 #else
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
+            RxSchedulers.MainThreadScheduler = UnoReactiveUIBuilderExtensions.UnoMainThreadScheduler;
 #endif
 
 #if __WASM__ || BROWSERWASM
             // WebAssembly doesn't support multithreading, use WasmScheduler instead of TaskPoolScheduler
-            RxApp.TaskpoolScheduler = WasmScheduler.Default;
+            RxSchedulers.TaskpoolScheduler = WasmScheduler.Default;
 #else
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
         }
 
         // Disables ViewCommand binding messages on Uno platform
-        RxApp.SuppressViewCommandBindingMessage = true;
+        RxSchedulers.SuppressViewCommandBindingMessage = true;
     }
 }
