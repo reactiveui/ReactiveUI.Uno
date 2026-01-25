@@ -3,7 +3,9 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Linq;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
 
@@ -83,9 +85,94 @@ public class ActivationForViewFetcherTests
     }
 
     /// <summary>
+    /// Validates that ActivationForViewFetcher implements IActivationForViewFetcher interface.
+    /// </summary>
+    [Test]
+    public async Task ActivationForViewFetcher_ImplementsIActivationForViewFetcher()
+    {
+        await Assert.That(_sut).IsAssignableTo<IActivationForViewFetcher>();
+    }
+
+    /// <summary>
+    /// Validates that GetAffinityForView returns high affinity for UserControl types.
+    /// </summary>
+    [Test]
+    public async Task GetAffinityForView_ReturnsHighAffinity_ForUserControlTypes()
+    {
+        var affinity = _sut.GetAffinityForView(typeof(UserControl));
+        await Assert.That(affinity).IsEqualTo(10);
+    }
+
+    /// <summary>
+    /// Validates that GetAffinityForView returns high affinity for Page types.
+    /// </summary>
+    [Test]
+    public async Task GetAffinityForView_ReturnsHighAffinity_ForPageTypes()
+    {
+        var affinity = _sut.GetAffinityForView(typeof(Page));
+        await Assert.That(affinity).IsEqualTo(10);
+    }
+
+    /// <summary>
+    /// Validates that GetAffinityForView returns high affinity for ContentControl types.
+    /// </summary>
+    [Test]
+    public async Task GetAffinityForView_ReturnsHighAffinity_ForContentControlTypes()
+    {
+        var affinity = _sut.GetAffinityForView(typeof(ContentControl));
+        await Assert.That(affinity).IsEqualTo(10);
+    }
+
+    /// <summary>
+    /// Validates that GetAffinityForView returns zero affinity for interface types.
+    /// </summary>
+    [Test]
+    public async Task GetAffinityForView_ReturnsZeroAffinity_ForInterfaceTypes()
+    {
+        var affinity = _sut.GetAffinityForView(typeof(IActivatableView));
+        await Assert.That(affinity).IsZero();
+    }
+
+    /// <summary>
+    /// Validates that GetAffinityForView returns zero affinity for abstract non-FrameworkElement types.
+    /// </summary>
+    [Test]
+    public async Task GetAffinityForView_ReturnsZeroAffinity_ForAbstractNonFrameworkElementTypes()
+    {
+        var affinity = _sut.GetAffinityForView(typeof(System.IO.Stream));
+        await Assert.That(affinity).IsZero();
+    }
+
+    /// <summary>
+    /// Validates that multiple fetchers can be created independently.
+    /// </summary>
+    [Test]
+    public async Task MultipleFetchers_CanBeCreatedIndependently()
+    {
+        var fetcher1 = new ActivationForViewFetcher();
+        var fetcher2 = new ActivationForViewFetcher();
+
+        await Assert.That(fetcher1).IsNotNull();
+        await Assert.That(fetcher2).IsNotNull();
+        await Assert.That(fetcher1).IsNotSameReferenceAs(fetcher2);
+    }
+
+    /// <summary>
+    /// Validates that GetAffinityForView returns consistent results for the same type.
+    /// </summary>
+    [Test]
+    public async Task GetAffinityForView_ReturnsConsistentResults_ForSameType()
+    {
+        var affinity1 = _sut.GetAffinityForView(typeof(FrameworkElement));
+        var affinity2 = _sut.GetAffinityForView(typeof(FrameworkElement));
+
+        await Assert.That(affinity1).IsEqualTo(affinity2);
+    }
+
+    /// <summary>
     /// Simple mock implementation of IActivatableView for testing.
     /// </summary>
-    private class MockActivatableView : IActivatableView
+    private sealed class MockActivatableView : IActivatableView
     {
         public ViewModelActivator Activator { get; } = new();
     }
