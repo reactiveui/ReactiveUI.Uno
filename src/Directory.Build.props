@@ -99,7 +99,7 @@
     <UnoExampleTargetFrameworks>$(UnoExampleCrossPlatformNet9)</UnoExampleTargetFrameworks>
 
     <!-- Add Android targets (Linux, macOS, Windows can all compile Android) -->
-    <UnoExampleTargetFrameworks>$(UnoExampleTargetFrameworks);$(UnoExampleMobileAndroidTargets)</UnoExampleTargetFrameworks>
+    <!--<UnoExampleTargetFrameworks>$(UnoExampleTargetFrameworks);$(UnoExampleMobileAndroidTargets)</UnoExampleTargetFrameworks>-->
 
     <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows) -->
     <UnoExampleTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoExampleTargetFrameworks);$(UnoExampleWindowsDesktopTargets)</UnoExampleTargetFrameworks>
