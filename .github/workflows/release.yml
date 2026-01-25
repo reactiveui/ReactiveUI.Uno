@@ -15,7 +15,7 @@ jobs:
     with:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
-      solutionFile: "reactiveui.uno.sln"
+      solutionFile: "reactiveui.uno.slnx"
     secrets:
       SIGN_CLIENT_USER_ID: ${{ secrets.SIGN_CLIENT_USER_ID }}
       SIGN_CLIENT_SECRET: ${{ secrets.SIGN_CLIENT_SECRET }}

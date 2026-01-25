@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path="../.editorconfig" />
+    <File Path="../.github/workflows/ci-build.yml" />
+    <File Path="../.github/workflows/release.yml" />
     <File Path="../.gitignore" />
     <File Path="../LICENSE" />
     <File Path="../README.md" />
@@ -12,7 +14,9 @@
     <File Path="stylecop.json" />
     <File Path="testconfig.json" />
   </Folder>
-  <Project Path="examples/ReactiveUI.Uno.SQLiteStudio/ReactiveUI.Uno.SQLiteStudio.csproj" />
+  <Project Path="examples/ReactiveUI.Uno.SQLiteStudio/ReactiveUI.Uno.SQLiteStudio.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
   <!-- Example project temporarily excluded pending API updates for ReactiveUI 23.1.0-beta.1 -->
   <!-- <Project Path="examples/ReactiveUI.Uno.SQLiteStudio/ReactiveUI.Uno.SQLiteStudio.csproj" /> -->
   <Project Path="ReactiveUI.Uno/ReactiveUI.Uno.csproj" />

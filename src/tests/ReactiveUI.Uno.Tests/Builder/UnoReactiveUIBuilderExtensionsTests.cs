@@ -24,7 +24,7 @@ public class UnoReactiveUIBuilderExtensionsTests
     [Test]
     public async Task WithUno_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithUno(null!)).Throws<ArgumentNullException>();
+        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithUno(null!, new())).Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo("builder");
     }
 
