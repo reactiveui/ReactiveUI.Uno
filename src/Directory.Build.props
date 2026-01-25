@@ -105,7 +105,7 @@
     <UnoExampleTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoExampleTargetFrameworks);$(UnoExampleWindowsDesktopTargets)</UnoExampleTargetFrameworks>
 
     <!-- Add Apple Mobile TFMs when building on macOS or Windows (both can compile Apple frameworks) -->
-    <UnoExampleTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoExampleTargetFrameworks);$(UnoExampleMobileAppleTargets)</UnoExampleTargetFrameworks>
+    <!--<UnoExampleTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('OSX')) OR $([MSBuild]::IsOsPlatform('Windows'))">$(UnoExampleTargetFrameworks);$(UnoExampleMobileAppleTargets)</UnoExampleTargetFrameworks>-->
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
