@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ReactiveUI" Version="23.1.0-beta.1" />
-    <PackageVersion Include="Splat" Version="19.1.1" />
+    <PackageVersion Include="Splat" Version="19.2.1" />
     <PackageVersion Include="Reactive.Wasm" Version="3.0.1" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.102" />
@@ -32,7 +32,7 @@
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.3.2" />
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.0.2" />
     <PackageVersion Include="TUnit" Version="1.12.41" />
-    <PackageVersion Include="TUnit.Core" Version="1.11.56" />
+    <PackageVersion Include="TUnit.Core" Version="1.12.15" />
     <PackageVersion Include="Verify.TUnit" Version="31.9.4" />
   </ItemGroup>
 
