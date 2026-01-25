@@ -48,7 +48,7 @@
   </PropertyGroup>
 
   <!-- Android-specific settings to avoid MAX_PATH issues and skip linking in Debug -->
-  <PropertyGroup Condition="'$(TargetFramework.EndsWith('0-android'))">
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-android'))">
     <AndroidUseShortFileNames>true</AndroidUseShortFileNames>
     <BaseOutputPath>$(LOCALAPPDATA)\uno\bin\</BaseOutputPath>
     <AndroidLinkMode>None</AndroidLinkMode>
@@ -56,7 +56,7 @@
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'!$(TargetFramework.EndsWith('0-android'))">
+  <PropertyGroup Condition="!$(TargetFramework.EndsWith('0-android'))">
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
   
