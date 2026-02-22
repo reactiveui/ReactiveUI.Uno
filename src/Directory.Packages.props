@@ -9,11 +9,11 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ReactiveUI" Version="23.1.0-beta.8" />
+    <PackageVersion Include="ReactiveUI" Version="23.1.1" />
     <PackageVersion Include="Splat" Version="19.2.1" />
     <PackageVersion Include="Reactive.Wasm" Version="3.0.1" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.102" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.103" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.9.50" />
     <PackageVersion Include="stylecop.analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
@@ -21,7 +21,6 @@
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.260101001" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
-
   <!-- Test projects only -->
   <ItemGroup>
     <PackageVersion Include="ReactiveUI.Testing" Version="23.1.0-beta.1" />
@@ -29,13 +28,12 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="bunit" Version="2.5.3" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.3.2" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.4.1" />
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.0.2" />
-    <PackageVersion Include="TUnit" Version="1.12.125" />
+    <PackageVersion Include="TUnit" Version="1.16.4" />
     <PackageVersion Include="TUnit.Core" Version="1.12.125" />
-    <PackageVersion Include="Verify.TUnit" Version="31.10.0" />
+    <PackageVersion Include="Verify.TUnit" Version="31.13.2" />
   </ItemGroup>
-
   <!-- Example projects only -->
   <ItemGroup>
     <PackageVersion Include="ReactiveUI.SourceGenerators" Version="2.6.1" />
