@@ -3,11 +3,8 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Activation;
 
@@ -26,10 +23,7 @@ public class ActivationForViewFetcherTests
     /// Sets up the test by creating a new instance of ActivationForViewFetcher.
     /// </summary>
     [Before(Test)]
-    public void SetUp()
-    {
-        _sut = new ActivationForViewFetcher();
-    }
+    public void SetUp() => _sut = new ActivationForViewFetcher();
 
     /// <summary>
     /// Validates that GetAffinityForView returns high affinity for FrameworkElement types.
@@ -88,10 +82,7 @@ public class ActivationForViewFetcherTests
     /// Validates that ActivationForViewFetcher implements IActivationForViewFetcher interface.
     /// </summary>
     [Test]
-    public async Task ActivationForViewFetcher_ImplementsIActivationForViewFetcher()
-    {
-        await Assert.That(_sut).IsAssignableTo<IActivationForViewFetcher>();
-    }
+    public async Task ActivationForViewFetcher_ImplementsIActivationForViewFetcher() => await Assert.That(_sut).IsAssignableTo<IActivationForViewFetcher>();
 
     /// <summary>
     /// Validates that GetAffinityForView returns high affinity for UserControl types.

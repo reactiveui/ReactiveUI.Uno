@@ -5,8 +5,6 @@
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Controls;
 
@@ -172,10 +170,8 @@ public class ReactivePageTests
     /// Validates that ViewModelProperty DependencyProperty exists.
     /// </summary>
     [Test]
-    public async Task ViewModelProperty_DependencyProperty_Exists()
-    {
+    public async Task ViewModelProperty_DependencyProperty_Exists() =>
         await Assert.That(ReactivePage<TestPageViewModel>.ViewModelProperty).IsNotNull();
-    }
 
     /// <summary>
     /// Validates that multiple instances can be created independently.
@@ -212,14 +208,10 @@ public class ReactivePageTests
     /// <summary>
     /// Test view model for testing purposes.
     /// </summary>
-    public sealed class TestPageViewModel
-    {
-    }
+    public sealed class TestPageViewModel;
 
     /// <summary>
     /// Test ReactivePage implementation for testing purposes.
     /// </summary>
-    public sealed class TestReactivePage : ReactivePage<TestPageViewModel>
-    {
-    }
+    public sealed class TestReactivePage : ReactivePage<TestPageViewModel>;
 }

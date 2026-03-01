@@ -5,8 +5,6 @@
 
 using Microsoft.UI.Xaml;
 using Splat;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
 using RxObservable = System.Reactive.Linq.Observable;
 
 namespace ReactiveUI.Uno.Tests.Controls;

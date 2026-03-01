@@ -5,10 +5,7 @@
 
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
-using System.Runtime.InteropServices;
 using NSubstitute;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
 using Windows.Foundation;
 using Windows.UI.Core;
 
@@ -28,29 +25,15 @@ public class UnoDispatcherSchedulerTests
     [Before(Test)]
     public void SetUp()
     {
-        // Skip tests if no UI context is available (headless environment)
         try
         {
-            var window = Microsoft.UI.Xaml.Window.Current;
-            if (window is null)
-            {
-                Skip.Test("Skipping test because no UI context is available (headless environment)");
-                return;
-            }
+            _mockDispatcher = Substitute.For<CoreDispatcher>();
+            _scheduler = new UnoDispatcherScheduler(_mockDispatcher);
         }
-        catch (TypeInitializationException)
+        catch (Exception)
         {
-            Skip.Test("Skipping test because no UI context is available (headless environment)");
-            return;
+            Skip.Test("Skipping scheduler tests because a CoreDispatcher test double cannot be created in this environment.");
         }
-        catch (NotSupportedException)
-        {
-            Skip.Test("Skipping test because no UI context is available (headless environment)");
-            return;
-        }
-
-        _mockDispatcher = Substitute.For<CoreDispatcher>();
-        _scheduler = new UnoDispatcherScheduler(_mockDispatcher);
     }
 
     /// <summary>

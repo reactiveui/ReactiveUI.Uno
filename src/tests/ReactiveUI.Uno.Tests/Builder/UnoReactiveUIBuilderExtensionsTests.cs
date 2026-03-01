@@ -29,6 +29,17 @@ public class UnoReactiveUIBuilderExtensionsTests
     }
 
     /// <summary>
+    /// Validates that WithUno throws ArgumentNullException when startupWindow is null.
+    /// </summary>
+    [Test]
+    public async Task WithUno_ThrowsArgumentNullException_WhenStartupWindowIsNull()
+    {
+        var builder = Substitute.For<IReactiveUIBuilder>();
+        var exception = await Assert.That(() => builder.WithUno(null!)).Throws<ArgumentNullException>();
+        await Assert.That(exception!.ParamName).IsEqualTo("startupWindow");
+    }
+
+    /// <summary>
     /// Validates that WithUnoScheduler throws ArgumentNullException when builder is null.
     /// </summary>
     [Test]
@@ -120,6 +131,26 @@ public class UnoReactiveUIBuilderExtensionsTests
 
         builder.Received(1).WithRegistration(Arg.Any<Action<IMutableDependencyResolver>>());
         await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Validates that the WithDefaultIScreen registration delegate registers an IScreen instance.
+    /// </summary>
+    [Test]
+    public async Task WithDefaultIScreen_RegistrationDelegate_RegistersIScreen()
+    {
+        var builder = Substitute.For<IReactiveUIBuilder>();
+        Action<IMutableDependencyResolver>? capturedRegistration = null;
+        builder.WithRegistration(Arg.Do<Action<IMutableDependencyResolver>>(x => capturedRegistration = x)).Returns(builder);
+
+        builder.WithDefaultIScreen();
+
+        await Assert.That(capturedRegistration).IsNotNull();
+
+        var mutableResolver = Substitute.For<IMutableDependencyResolver>();
+        capturedRegistration!(mutableResolver);
+
+        mutableResolver.Received(1).RegisterConstant(Arg.Any<IScreen>());
     }
 
     /// <summary>

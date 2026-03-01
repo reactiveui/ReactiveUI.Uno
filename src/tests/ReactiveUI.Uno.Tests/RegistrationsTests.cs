@@ -4,10 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using NSubstitute;
-using ReactiveUI.Uno;
-using Splat;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests;
 
@@ -80,5 +76,44 @@ public class RegistrationsTests
         sut.Register(registrar);
 
         await Assert.That(() => sut.Register(registrar)).ThrowsNothing();
+    }
+
+    /// <summary>
+    /// Validates that registration delegates can be invoked to create service instances.
+    /// </summary>
+    [Test]
+    public async Task Register_Delegates_CreateExpectedServiceInstances()
+    {
+        var registrar = Substitute.For<IRegistrar>();
+        Registrations sut = new();
+
+        registrar
+            .When(x => x.RegisterConstant(Arg.Any<Func<IPlatformOperations>>()))
+            .Do(x => _ = x.Arg<Func<IPlatformOperations>>()());
+        registrar
+            .When(x => x.RegisterConstant(Arg.Any<Func<IActivationForViewFetcher>>()))
+            .Do(x => _ = x.Arg<Func<IActivationForViewFetcher>>()());
+        registrar
+            .When(x => x.RegisterConstant(Arg.Any<Func<ICreatesObservableForProperty>>()))
+            .Do(x => _ = x.Arg<Func<ICreatesObservableForProperty>>()());
+        registrar
+            .When(x => x.RegisterConstant(Arg.Any<Func<IPropertyBindingHook>>()))
+            .Do(x => _ = x.Arg<Func<IPropertyBindingHook>>()());
+        registrar
+            .When(x => x.RegisterConstant(Arg.Any<Func<ISuspensionDriver>>()))
+            .Do(x => _ = x.Arg<Func<ISuspensionDriver>>()());
+        registrar
+            .When(x => x.RegisterConstant(Arg.Any<Func<IBindingTypeConverter>>()))
+            .Do(x => _ = x.Arg<Func<IBindingTypeConverter>>()());
+
+        sut.Register(registrar);
+
+        registrar.Received(1).RegisterConstant(Arg.Any<Func<IPlatformOperations>>());
+        registrar.Received(1).RegisterConstant(Arg.Any<Func<IActivationForViewFetcher>>());
+        registrar.Received(1).RegisterConstant(Arg.Any<Func<ICreatesObservableForProperty>>());
+        registrar.Received(1).RegisterConstant(Arg.Any<Func<IPropertyBindingHook>>());
+        registrar.Received(1).RegisterConstant(Arg.Any<Func<ISuspensionDriver>>());
+        registrar.Received(16).RegisterConstant(Arg.Any<Func<IBindingTypeConverter>>());
+        await Assert.That(RxSchedulers.SuppressViewCommandBindingMessage).IsTrue();
     }
 }

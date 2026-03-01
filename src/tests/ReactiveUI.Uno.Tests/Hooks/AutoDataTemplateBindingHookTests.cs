@@ -17,6 +17,34 @@ namespace ReactiveUI.Uno.Tests;
 public class AutoDataTemplateBindingHookTests
 {
     /// <summary>
+    /// Validates that ExecuteHook throws when getCurrentViewProperties is null.
+    /// </summary>
+    [Test]
+    public async Task ExecuteHook_ThrowsArgumentNullException_WhenGetCurrentViewPropertiesIsNull()
+    {
+        AutoDataTemplateBindingHook hook = new();
+
+        var exception = await Assert.That(() => hook.ExecuteHook(null!, new object(), () => [], null!, BindingDirection.OneWay)).Throws<ArgumentNullException>();
+        await Assert.That(exception!.ParamName).IsEqualTo("getCurrentViewProperties");
+    }
+
+    /// <summary>
+    /// Validates that ExecuteHook returns true when sender is not an ItemsControl.
+    /// </summary>
+    [Test]
+    public async Task ExecuteHook_ReturnsTrue_WhenSenderIsNotItemsControl()
+    {
+        AutoDataTemplateBindingHook hook = new();
+        var sender = new object();
+        var expr = (Expression<Func<object?>>)(() => sender);
+        ObservedChange<object, object>[] viewChanges = [new(sender, expr, new())];
+
+        var result = hook.ExecuteHook(null, new object(), () => [], () => viewChanges, BindingDirection.OneWay);
+
+        await Assert.That(result).IsTrue();
+    }
+
+    /// <summary>
     /// Executes the hook to set the default template when eligible.
     /// </summary>
     [Test]
