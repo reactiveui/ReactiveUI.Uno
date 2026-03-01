@@ -5,8 +5,6 @@
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Controls;
 
@@ -172,10 +170,8 @@ public class ReactiveUserControlTests
     /// Validates that ViewModelProperty DependencyProperty exists.
     /// </summary>
     [Test]
-    public async Task ViewModelProperty_DependencyProperty_Exists()
-    {
+    public async Task ViewModelProperty_DependencyProperty_Exists() =>
         await Assert.That(ReactiveUserControl<TestViewModel>.ViewModelProperty).IsNotNull();
-    }
 
     /// <summary>
     /// Validates that multiple instances can be created independently.
@@ -197,14 +193,10 @@ public class ReactiveUserControlTests
     /// <summary>
     /// Test view model for testing purposes.
     /// </summary>
-    public sealed class TestViewModel
-    {
-    }
+    public sealed class TestViewModel;
 
     /// <summary>
     /// Test ReactiveUserControl implementation for testing purposes.
     /// </summary>
-    public sealed class TestReactiveUserControl : ReactiveUserControl<TestViewModel>
-    {
-    }
+    public sealed class TestReactiveUserControl : ReactiveUserControl<TestViewModel>;
 }

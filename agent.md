@@ -170,7 +170,7 @@ ReactiveUI is a cross-platform MVVM framework built on Rx.NET and functional rea
 ### Scheduler Abstraction
 
 * Prefer `RxSchedulers` (AOT-friendly, avoids reflection/AOT attribute propagation)
-* Use `RxApp` only when required (e.g., unit test scheduler detection)
+* Do not use `RxApp` as it has been removed from ReactiveUI
 
 See `docs/RxSchedulers.md`.
 
