@@ -148,8 +148,18 @@
     <PackageReference Include="NSubstitute" />
   </ItemGroup>
   
+  <!-- MinVer (versioning) — replaces Nerdbank.GitVersioning. Floor at 22.2
+       so untagged builds produce 22.2.x-alpha.0.<height> until a v22.2.x
+       (or later) tag is reachable. -->
+  <PropertyGroup>
+    <MinVerAutoIncrement>minor</MinVerAutoIncrement>
+    <MinVerDefaultPreReleaseIdentifiers>alpha.0</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerMinimumMajorMinor>22.2</MinVerMinimumMajorMinor>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />
+    <PackageReference Include="MinVer" PrivateAssets="all" />
     <PackageReference Include="stylecop.analyzers" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="All" />
   </ItemGroup>
