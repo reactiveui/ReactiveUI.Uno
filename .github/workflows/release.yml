@@ -24,7 +24,6 @@ jobs:
       solutionFile: ReactiveUI.Uno.slnx
       installWorkloads: true
       useUNO: true
-      versioningTool: minver
       minverMinimumMajorMinor: '22.2'
       bump: ${{ inputs.bump }}
     secrets:
