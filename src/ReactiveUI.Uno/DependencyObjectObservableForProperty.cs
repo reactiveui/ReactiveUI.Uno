@@ -10,6 +10,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
 using Splat;
+using RxObservable = System.Reactive.Linq.Observable;
 
 namespace ReactiveUI.Uno;
 
@@ -20,8 +21,17 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
 {
     /// <inheritdoc/>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
+    public int GetAffinityForObject(Type? type, string propertyName) => GetAffinityForObject(type, propertyName, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
+    public int GetAffinityForObject(Type? type, string propertyName, bool beforeChanged)
     {
+        if (type is null)
+        {
+            return 0;
+        }
+
         if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
         {
             return 0;
@@ -37,7 +47,17 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName) =>
+        GetNotificationForProperty(sender, expression, propertyName, false, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
+    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged) =>
+        GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
+    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings)
     {
         ArgumentNullException.ThrowIfNull(sender);
 
@@ -57,7 +77,8 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
                 propertyName);
 
             var ret = new POCOObservableForProperty();
-            return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings);
+            return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
+                .Select(x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
         }
 
         var dpFetcher = GetDependencyPropertyFetcher(type, propertyName);
@@ -70,13 +91,14 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
                 propertyName);
 
             var ret = new POCOObservableForProperty();
-            return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings);
+            return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
+                .Select(x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
         }
 
-        return Observable.Create<IObservedChange<object, object?>>(subj =>
+        return RxObservable.Create<IObservedChange<object, object>>(subj =>
         {
             var handler = new DependencyPropertyChangedCallback((_, _) =>
-                subj.OnNext(new ObservedChange<object, object?>(sender, expression, default)));
+                subj.OnNext(new ObservedChange<object, object>(sender, expression, default!)));
 
             var dependencyProperty = dpFetcher();
             var token = depSender.RegisterPropertyChangedCallback(dependencyProperty, handler);

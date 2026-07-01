@@ -5,6 +5,7 @@
 
 using System.Reactive.Concurrency;
 using ReactiveUI.Builder;
+using ReactiveUI.Primitives.Concurrency;
 using Splat;
 using Splat.Builder;
 
@@ -58,9 +59,9 @@ public class Registrations : IWantsToRegisterStuff
 
 #if __WASM__ || BROWSERWASM
             // WebAssembly doesn't support multithreading, use WasmScheduler instead of TaskPoolScheduler
-            RxSchedulers.TaskpoolScheduler = WasmScheduler.Default;
+            RxSchedulers.TaskpoolScheduler = new SchedulerSequencerAdapter(WasmScheduler.Default);
 #else
-            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.TaskpoolScheduler = TaskPoolSequencer.Default;
 #endif
         }
 

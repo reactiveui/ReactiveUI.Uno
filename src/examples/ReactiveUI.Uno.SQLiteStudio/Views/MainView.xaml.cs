@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables.Fluent;
 using ReactiveUI.Uno.SQLiteStudio.Presentation;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Views;
@@ -32,41 +31,30 @@ public sealed partial class MainView : MainViewBase
     {
         InitializeComponent();
 
-        this.WhenActivated(disposables =>
+        this.WhenActivated((Action<IDisposable> disposables) =>
         {
             // Bindings
-            this.Bind(ViewModel, vm => vm.QueryText, v => v.QueryEditor.Text)
-                .DisposeWith(disposables);
+            disposables(this.Bind(ViewModel, vm => vm.QueryText, v => v.QueryEditor.Text));
 
-            this.BindCommand(ViewModel, vm => vm.ExecuteQuery, v => v.ExecuteButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.ExecuteQuery, v => v.ExecuteButton));
 
-            this.BindCommand(ViewModel, vm => vm.ExportCsv, v => v.ExportButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.ExportCsv, v => v.ExportButton));
 
-            this.BindCommand(ViewModel, vm => vm.ListTables, v => v.ListTablesButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.ListTables, v => v.ListTablesButton));
 
-            this.BindCommand(ViewModel, vm => vm.CreateUsersTable, v => v.CreateUsersButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.CreateUsersTable, v => v.CreateUsersButton));
 
-            this.BindCommand(ViewModel, vm => vm.DropUsersTable, v => v.DropUsersButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.DropUsersTable, v => v.DropUsersButton));
 
-            this.BindCommand(ViewModel, vm => vm.SampleSelect, v => v.SampleSelectButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.SampleSelect, v => v.SampleSelectButton));
 
-            this.BindCommand(ViewModel, vm => vm.SampleInsert, v => v.SampleInsertButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.SampleInsert, v => v.SampleInsertButton));
 
-            this.BindCommand(ViewModel, vm => vm.SampleDelete, v => v.SampleDeleteButton)
-                .DisposeWith(disposables);
+            disposables(this.BindCommand(ViewModel, vm => vm.SampleDelete, v => v.SampleDeleteButton));
 
-            this.OneWayBind(ViewModel, vm => vm.Results, v => v.ResultsList.ItemsSource)
-                .DisposeWith(disposables);
+            disposables(this.OneWayBind(ViewModel, vm => vm.Results, v => v.ResultsList.ItemsSource));
 
-            this.OneWayBind(ViewModel, vm => vm.Status, v => v.StatusText.Text)
-                .DisposeWith(disposables);
+            disposables(this.OneWayBind(ViewModel, vm => vm.Status, v => v.StatusText.Text));
         });
     }
 }

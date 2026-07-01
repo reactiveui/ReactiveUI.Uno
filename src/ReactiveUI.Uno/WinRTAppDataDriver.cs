@@ -4,12 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+using ReactiveUI.Primitives;
+using RxObservable = System.Reactive.Linq.Observable;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace ReactiveUI.Uno;
@@ -22,7 +24,7 @@ public class WinRTAppDataDriver : ISuspensionDriver
     /// <inheritdoc/>
     [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
     [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
-    public IObservable<object?> LoadState() => Observable.StartAsync(
+    public IObservable<object?> LoadState() => RxObservable.StartAsync(
     async () =>
     {
         var x = await ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish");
@@ -35,14 +37,14 @@ public class WinRTAppDataDriver : ISuspensionDriver
         // NB: WinRT is terrible
         return serializer?.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(t.Substring(line + 1))));
     },
-    RxSchedulers.TaskpoolScheduler);
+    TaskPoolScheduler.Default);
 
     /// <inheritdoc/>
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
     {
         ArgumentNullException.ThrowIfNull(typeInfo);
 
-        return Observable.StartAsync<T?>(
+        return RxObservable.StartAsync<T?>(
         async () =>
         {
             var file = await ApplicationData.Current.RoamingFolder.GetFileAsync("appData.json");
@@ -50,13 +52,13 @@ public class WinRTAppDataDriver : ISuspensionDriver
 
             return JsonSerializer.Deserialize(json, typeInfo);
         },
-        RxSchedulers.TaskpoolScheduler);
+        TaskPoolScheduler.Default);
     }
 
     /// <inheritdoc/>
     [RequiresDynamicCode("SaveState implementations may use serialization which requires dynamic code generation")]
     [RequiresUnreferencedCode("SaveState implementations may use serialization which may require unreferenced code")]
-    public IObservable<Unit> SaveState<T>(T state) => Observable.StartAsync(
+    public IObservable<RxVoid> SaveState<T>(T state) => RxObservable.StartAsync(
     async () =>
     {
         ArgumentNullException.ThrowIfNull(state);
@@ -80,29 +82,33 @@ public class WinRTAppDataDriver : ISuspensionDriver
         {
             throw;
         }
+
+        return RxVoid.Default;
     },
-    RxSchedulers.TaskpoolScheduler);
+    TaskPoolScheduler.Default);
 
     /// <inheritdoc/>
-    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
+    public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
     {
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(typeInfo);
 
-        return Observable.StartAsync(
+        return RxObservable.StartAsync(
         async () =>
         {
             var json = JsonSerializer.Serialize(state, typeInfo);
 
             var file = await ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.json", CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(file, json, UnicodeEncoding.Utf8);
+
+            return RxVoid.Default;
         },
-        RxSchedulers.TaskpoolScheduler);
+        TaskPoolScheduler.Default);
     }
 
     /// <inheritdoc/>
-    public IObservable<Unit> InvalidateState() =>
-        Observable.StartAsync(
+    public IObservable<RxVoid> InvalidateState() =>
+        RxObservable.StartAsync(
         async () =>
         {
             var folder = ApplicationData.Current.RoamingFolder;
@@ -128,6 +134,8 @@ public class WinRTAppDataDriver : ISuspensionDriver
             {
                 // File doesn't exist, nothing to invalidate
             }
+
+            return RxVoid.Default;
         },
-        RxSchedulers.TaskpoolScheduler);
+        TaskPoolScheduler.Default);
 }

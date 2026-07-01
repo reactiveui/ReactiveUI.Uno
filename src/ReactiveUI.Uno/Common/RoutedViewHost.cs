@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using ReactiveUI;
 using Splat;
+using RxObservable = System.Reactive.Linq.Observable;
 
 namespace ReactiveUI.Uno;
 
@@ -43,7 +44,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     /// property system. It enables data binding, styling, and other WPF property features for the
     /// ViewContractObservable property on RoutedViewHost instances.</remarks>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string?>), typeof(RoutedViewHost), new PropertyMetadata(Observable.Never<string?>()));
+        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string?>), typeof(RoutedViewHost), new PropertyMetadata(RxObservable.Never<string?>()));
 
     private string? _viewContract;
 
@@ -68,8 +69,8 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Observable.Never<string?>()
-            : Observable.FromEvent<SizeChangedEventHandler, string?>(
+            ? RxObservable.Never<string?>()
+            : RxObservable.FromEvent<SizeChangedEventHandler, string?>(
                 eventHandler =>
                 {
                     void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
@@ -93,7 +94,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
             return;
         }
 
-        this.WhenActivated(d =>
+        this.WhenActivated((Action<IDisposable> d) =>
             d(vmAndContract.DistinctUntilChanged().Subscribe(
                 ResolveViewForViewModel,
                 ex => RxState.DefaultExceptionHandler.OnNext(ex))));
@@ -136,7 +137,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = RxObservable.Return(value);
     }
 
     /// <summary>

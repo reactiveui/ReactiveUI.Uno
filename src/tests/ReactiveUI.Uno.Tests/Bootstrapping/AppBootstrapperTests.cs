@@ -93,7 +93,7 @@ public class AppBootstrapperTests
         var bootstrapper = new AppBootstrapper();
         var viewModel = new TestRoutableViewModel(bootstrapper);
 
-        await bootstrapper.Router.Navigate.Execute(viewModel);
+        await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel));
 
         await Assert.That(bootstrapper.Router.NavigationStack.Count).IsEqualTo(1);
     }
@@ -107,7 +107,7 @@ public class AppBootstrapperTests
         var bootstrapper = new AppBootstrapper();
         var viewModel = new TestRoutableViewModel(bootstrapper);
 
-        await bootstrapper.Router.Navigate.Execute(viewModel);
+        await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel));
 
         var currentVm = await bootstrapper.Router.CurrentViewModel.FirstAsync();
         await Assert.That(currentVm).IsEqualTo(viewModel);
@@ -123,11 +123,11 @@ public class AppBootstrapperTests
         var viewModel1 = new TestRoutableViewModel(bootstrapper);
         var viewModel2 = new TestRoutableViewModel(bootstrapper);
 
-        await bootstrapper.Router.Navigate.Execute(viewModel1);
-        await bootstrapper.Router.Navigate.Execute(viewModel2);
+        await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel1));
+        await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel2));
         await Assert.That(bootstrapper.Router.NavigationStack.Count).IsEqualTo(2);
 
-        await bootstrapper.Router.NavigateBack.Execute();
+        await ExecuteNavigationAsync(bootstrapper.Router.NavigateBack.Execute());
 
         await Assert.That(bootstrapper.Router.NavigationStack.Count).IsEqualTo(1);
     }
@@ -165,14 +165,17 @@ public class AppBootstrapperTests
         var viewModel2 = new TestRoutableViewModel(bootstrapper);
         var viewModel3 = new TestRoutableViewModel(bootstrapper);
 
-        await bootstrapper.Router.Navigate.Execute(viewModel1);
-        await bootstrapper.Router.Navigate.Execute(viewModel2);
+        await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel1));
+        await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel2));
         await Assert.That(bootstrapper.Router.NavigationStack.Count).IsEqualTo(2);
 
-        await bootstrapper.Router.NavigateAndReset.Execute(viewModel3);
+        await ExecuteNavigationAsync(bootstrapper.Router.NavigateAndReset.Execute(viewModel3));
 
         await Assert.That(bootstrapper.Router.NavigationStack.Count).IsEqualTo(1);
     }
+
+    private static async Task ExecuteNavigationAsync<T>(IObservable<T> navigation) =>
+        await navigation.DefaultIfEmpty(default!).LastAsync();
 
     /// <summary>
     /// Test routable view model for testing navigation.

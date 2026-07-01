@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Uno.SQLiteStudio.Services;
+using RxVoid = ReactiveUI.Primitives.RxVoid;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Presentation;
 
@@ -182,14 +183,14 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
     /// </summary>
     /// <remarks>This command can be bound to UI elements to trigger the query execution. The command's
     /// execution and availability are managed reactively, allowing for integration with reactive UI patterns.</remarks>
-    public ReactiveCommand<Unit, Unit> ExecuteQuery { get; }
+    public ReactiveCommand<RxVoid, RxVoid> ExecuteQuery { get; }
 
     /// <summary>
     /// Gets the command that exports the current data to a CSV file.
     /// </summary>
     /// <remarks>This command can be bound to a user interface element to trigger CSV export functionality.
     /// The command completes when the export operation finishes.</remarks>
-    public ReactiveCommand<Unit, Unit> ExportCsv { get; }
+    public ReactiveCommand<RxVoid, RxVoid> ExportCsv { get; }
 
     /// <summary>
     /// Gets the command that initiates retrieval of the list of tables from the data source.
@@ -197,7 +198,7 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
     /// <remarks>The command can be executed to trigger the process of listing available tables. The command's
     /// execution and availability may be bound to UI elements in reactive user interfaces. This property is typically
     /// used in MVVM scenarios to encapsulate the logic for listing tables.</remarks>
-    public ReactiveCommand<Unit, Unit> ListTables { get; }
+    public ReactiveCommand<RxVoid, RxVoid> ListTables { get; }
 
     /// <summary>
     /// Gets the command that creates the users table in the database asynchronously.
@@ -205,26 +206,26 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
     /// <remarks>This command can be executed to ensure that the users table exists before performing
     /// operations that depend on it. The command completes when the table creation operation finishes. If the table
     /// already exists, executing the command has no effect.</remarks>
-    public ReactiveCommand<Unit, Unit> CreateUsersTable { get; }
+    public ReactiveCommand<RxVoid, RxVoid> CreateUsersTable { get; }
 
     /// <summary>
     /// Gets a command that drops the users table from the database.
     /// </summary>
     /// <remarks>Executing this command will permanently remove all user data from the database. Use with
     /// caution, as this action cannot be undone.</remarks>
-    public ReactiveCommand<Unit, Unit> DropUsersTable { get; }
+    public ReactiveCommand<RxVoid, RxVoid> DropUsersTable { get; }
 
     /// <summary>
     /// Gets the command that executes the sample selection action.
     /// </summary>
     /// <remarks>Use this command to trigger the selection logic in response to user interaction or other
     /// events. The command completes immediately and does not return a result value.</remarks>
-    public ReactiveCommand<Unit, Unit> SampleSelect { get; }
+    public ReactiveCommand<RxVoid, RxVoid> SampleSelect { get; }
 
     /// <summary>
     /// Gets a command that inserts a sample item when executed.
     /// </summary>
-    public ReactiveCommand<Unit, Unit> SampleInsert { get; }
+    public ReactiveCommand<RxVoid, RxVoid> SampleInsert { get; }
 
     /// <summary>
     /// Gets the command that deletes the currently selected sample.
@@ -232,5 +233,5 @@ public partial class MainViewModel : ReactiveObject, IRoutableViewModel
     /// <remarks>This command can be used to trigger the deletion of a sample in the user interface. The
     /// command's ability to execute may depend on whether a sample is currently selected. Use the command's CanExecute
     /// observable to determine if deletion is currently possible.</remarks>
-    public ReactiveCommand<Unit, Unit> SampleDelete { get; }
+    public ReactiveCommand<RxVoid, RxVoid> SampleDelete { get; }
 }

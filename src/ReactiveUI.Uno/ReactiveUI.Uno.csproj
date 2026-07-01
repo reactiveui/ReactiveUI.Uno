@@ -26,13 +26,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" />
-  </ItemGroup>
-  
   <ItemGroup>
-    <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="ReactiveUI" PrivateAssets="analyzers" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">

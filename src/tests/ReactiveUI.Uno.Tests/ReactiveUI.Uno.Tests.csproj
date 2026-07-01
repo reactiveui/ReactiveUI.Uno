@@ -11,4 +11,10 @@
     <ProjectReference Include="..\..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
   </ItemGroup>
 
+  <Target Name="RemoveReactiveUIPrimitivesR3BridgeAnalyzer" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.Filename)%(Analyzer.Extension)' == 'ReactiveUI.Primitives.R3Bridge.Generator.dll'" />
+    </ItemGroup>
+  </Target>
+
 </Project>

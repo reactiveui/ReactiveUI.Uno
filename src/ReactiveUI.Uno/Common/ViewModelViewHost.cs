@@ -5,7 +5,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
+using ReactiveUI.Builder;
 using Splat;
+using RxObservable = System.Reactive.Linq.Observable;
 
 namespace ReactiveUI.Uno;
 
@@ -43,7 +45,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// Windows Presentation Foundation (WPF) property system. It is typically used when interacting with APIs that
     /// require a DependencyProperty identifier, such as property metadata or data binding operations.</remarks>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
+        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string?>), typeof(ViewModelViewHost), new PropertyMetadata(RxObservable.Never<string?>()));
 
     private string? _viewContract;
 
@@ -68,8 +70,8 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Observable<string?>.Never
-            : Observable.FromEvent<SizeChangedEventHandler, string?>(
+            ? RxObservable.Never<string?>()
+            : RxObservable.FromEvent<SizeChangedEventHandler, string?>(
               eventHandler =>
               {
                   void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
@@ -89,7 +91,6 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         {
             // In tests, bypass activation wiring so content resolves deterministically.
             contractChanged
-                .ObserveOn(RxSchedulers.MainThreadScheduler)
                 .Subscribe(x => _viewContract = x ?? string.Empty);
 
             vmAndContract
@@ -99,10 +100,10 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
             return;
         }
 
-        this.WhenActivated(d =>
+        this.WhenActivated((Action<IDisposable> d) =>
         {
             d(contractChanged
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .ObserveOn(UnoReactiveUIBuilderExtensions.UnoMainThreadRxScheduler)
             .Subscribe(x => _viewContract = x ?? string.Empty));
 
             d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
@@ -114,7 +115,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// </summary>
     public IObservable<string?> ViewContractObservable
     {
-        get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+        get => (IObservable<string?>)GetValue(ViewContractObservableProperty);
         set => SetValue(ViewContractObservableProperty, value);
     }
 
@@ -142,7 +143,7 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = RxObservable.Return(value);
     }
 
     /// <summary>

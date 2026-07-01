@@ -3,9 +3,9 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using NSubstitute;
 using ReactiveUI.Builder;
+using ReactiveUI.Primitives.Concurrency;
 using Splat;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
@@ -69,7 +69,7 @@ public class UnoReactiveUIBuilderExtensionsTests
         try
         {
             var builder = Substitute.For<IReactiveUIBuilder>();
-            builder.WithMainThreadScheduler(Arg.Any<IScheduler>()).Returns(builder);
+            builder.WithMainThreadScheduler(Arg.Any<ISequencer>()).Returns(builder);
 
             var result = builder.WithUnoScheduler();
 
@@ -91,11 +91,11 @@ public class UnoReactiveUIBuilderExtensionsTests
         try
         {
             var builder = Substitute.For<IReactiveUIBuilder>();
-            builder.WithMainThreadScheduler(Arg.Any<IScheduler>()).Returns(builder);
+            builder.WithMainThreadScheduler(Arg.Any<ISequencer>()).Returns(builder);
 
             builder.WithUnoScheduler();
 
-            builder.Received(1).WithMainThreadScheduler(Arg.Any<IScheduler>());
+            builder.Received(1).WithMainThreadScheduler(Arg.Any<ISequencer>());
             await Task.CompletedTask;
         }
         catch (TypeInitializationException)
@@ -202,7 +202,7 @@ public class UnoReactiveUIBuilderExtensionsTests
         var property = type.GetProperty("UnoMainThreadScheduler");
 #endif
         await Assert.That(property).IsNotNull();
-        await Assert.That(typeof(IScheduler).IsAssignableFrom(property!.PropertyType)).IsTrue();
+        await Assert.That(typeof(ISequencer).IsAssignableFrom(property!.PropertyType)).IsTrue();
     }
 
     /// <summary>

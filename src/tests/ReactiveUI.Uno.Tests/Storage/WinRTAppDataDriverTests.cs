@@ -3,11 +3,11 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
+using RxVoid = ReactiveUI.Primitives.RxVoid;
 
 namespace ReactiveUI.Uno.Tests.Storage;
 
@@ -83,15 +83,15 @@ public class WinRTAppDataDriverTests
     }
 
     /// <summary>
-    /// Validates that SaveState returns an observable of Unit type.
+    /// Validates that SaveState returns an observable of RxVoid type.
     /// </summary>
     [Test]
-    public async Task SaveState_ReturnsObservableOfUnit()
+    public async Task SaveState_ReturnsObservableOfRxVoid()
     {
         var state = new TestState { Name = "Test", Value = 42 };
         var observable = _sut.SaveState(state);
 
-        await Assert.That(observable).IsAssignableTo<IObservable<Unit>>();
+        await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
     /// <summary>
@@ -154,15 +154,15 @@ public class WinRTAppDataDriverTests
     }
 
     /// <summary>
-    /// Validates that SaveState with JsonTypeInfo returns an observable of Unit type.
+    /// Validates that SaveState with JsonTypeInfo returns an observable of RxVoid type.
     /// </summary>
     [Test]
-    public async Task SaveStateWithTypeInfo_ReturnsObservableOfUnit()
+    public async Task SaveStateWithTypeInfo_ReturnsObservableOfRxVoid()
     {
         var state = new TestState { Name = "Test", Value = 42 };
         var observable = _sut.SaveState(state, TestStateJsonContext.Default.TestState);
 
-        await Assert.That(observable).IsAssignableTo<IObservable<Unit>>();
+        await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
     /// <summary>
@@ -247,14 +247,14 @@ public class WinRTAppDataDriverTests
     }
 
     /// <summary>
-    /// Validates that InvalidateState returns an observable of Unit type.
+    /// Validates that InvalidateState returns an observable of RxVoid type.
     /// </summary>
     [Test]
-    public async Task InvalidateState_ReturnsObservableOfUnit()
+    public async Task InvalidateState_ReturnsObservableOfRxVoid()
     {
         var observable = _sut.InvalidateState();
 
-        await Assert.That(observable).IsAssignableTo<IObservable<Unit>>();
+        await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
     /// <summary>
@@ -302,7 +302,7 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
 
         // The observable should be lazy - no execution until subscribed
-        await Assert.That(observable).IsAssignableTo<IObservable<Unit>>();
+        await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
     /// <summary>
@@ -332,7 +332,7 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
 
         // The observable should be lazy - no execution until subscribed
-        await Assert.That(observable).IsAssignableTo<IObservable<Unit>>();
+        await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
     /// <summary>

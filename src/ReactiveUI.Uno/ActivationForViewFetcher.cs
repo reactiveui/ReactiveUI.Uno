@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using ReactiveUI.Uno.Internal;
 using Windows.Foundation;
+using RxObservable = System.Reactive.Linq.Observable;
 
 namespace ReactiveUI.Uno;
 
@@ -25,17 +26,17 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     {
         if (view is not FrameworkElement fe)
         {
-            return Observable<bool>.Empty;
+            return RxObservable.Empty<bool>();
         }
 
 #pragma warning disable SA1114 // Parameter list after.
-        var viewLoaded = Observable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
+        var viewLoaded = RxObservable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
 
             eventHandler => (_, _) => eventHandler(true),
             x => fe.Loading += x,
             x => fe.Loading -= x);
 
-        var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
+        var viewUnloaded = RxObservable.FromEvent<RoutedEventHandler, bool>(
             handler =>
             {
                 void EventHandler(object sender, RoutedEventArgs e) => handler(false);
@@ -53,7 +54,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         return viewLoaded
                .Merge(viewUnloaded)
-               .Select(b => b ? isHitTestVisible.SkipWhile(x => !x) : Observables.False)
+               .Select(b => b ? isHitTestVisible.SkipWhile(x => !x) : RxObservable.Return(false))
                .Switch()
                .DistinctUntilChanged();
     }

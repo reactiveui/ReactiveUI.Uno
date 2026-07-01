@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
+using ReactiveUI.Primitives.Concurrency;
 using ReactiveUI.Uno;
 
 namespace ReactiveUI.Builder;
@@ -17,7 +18,9 @@ public static class UnoReactiveUIBuilderExtensions
     /// <summary>
     /// Gets the Uno WinUI main thread scheduler.
     /// </summary>
-    public static IScheduler UnoWinUIMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+    public static ISequencer UnoWinUIMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+
+    internal static IScheduler UnoMainThreadRxScheduler { get; } = new DeferredScheduler(() => UnoWinUIDispatcherScheduler.Current);
 
     /// <summary>
     /// Uses WinUI with the Uno scheduler.
@@ -34,7 +37,9 @@ public static class UnoReactiveUIBuilderExtensions
     /// <summary>
     /// Gets the Uno main thread scheduler.
     /// </summary>
-    public static IScheduler UnoMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
+    public static ISequencer UnoMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
+
+    internal static IScheduler UnoMainThreadRxScheduler { get; } = new DeferredScheduler(() => UnoDispatcherScheduler.Current);
 
     /// <summary>
     /// Registers the Uno main-thread scheduler with the ReactiveUI configuration.
@@ -69,9 +74,9 @@ public static class UnoReactiveUIBuilderExtensions
             .WithUnoScheduler()
 #if __WASM__ || BROWSERWASM
             // WebAssembly doesn't support multithreading, use WasmScheduler instead of TaskPoolScheduler
-            .WithTaskPoolScheduler(WasmScheduler.Default)
+            .WithTaskPoolScheduler(new SchedulerSequencerAdapter(WasmScheduler.Default))
 #else
-            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
+            .WithTaskPoolScheduler(TaskPoolSequencer.Default)
 #endif
             .WithUnoDictionary(startupWindow);
     }

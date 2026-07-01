@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.CompilerServices;
+#if !WINDOWS
 using System.Windows.Markup;
+#endif
 
+#if !WINDOWS
 [assembly: XmlnsDefinition("http://reactiveui.net", "ReactiveUI.Uno")]
+#endif
 [assembly: InternalsVisibleTo("ReactiveUI.Uno.Tests")]

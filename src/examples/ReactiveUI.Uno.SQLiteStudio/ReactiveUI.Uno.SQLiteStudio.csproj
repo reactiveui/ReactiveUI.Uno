@@ -66,11 +66,6 @@
     
   
   <!-- Windows-specific packages - must match versions from ReactiveUI.Uno to avoid NU1605 -->
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" />
-  </ItemGroup>
-  
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
     <PackageReference Include="Reactive.Wasm" />
   </ItemGroup>
