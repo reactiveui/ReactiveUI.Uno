@@ -14,20 +14,15 @@ namespace ReactiveUI.Uno.Tests.Activation;
 /// </summary>
 public class ActivationForViewFetcherTests
 {
-    /// <summary>
-    /// The system under test.
-    /// </summary>
+    /// <summary>The system under test.</summary>
     private ActivationForViewFetcher _sut = null!;
 
-    /// <summary>
-    /// Sets up the test by creating a new instance of ActivationForViewFetcher.
-    /// </summary>
+    /// <summary>Sets up the test by creating a new instance of ActivationForViewFetcher.</summary>
     [Before(Test)]
-    public void SetUp() => _sut = new ActivationForViewFetcher();
+    public void SetUp() => _sut = new();
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns high affinity for FrameworkElement types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns high affinity for FrameworkElement types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsHighAffinity_ForFrameworkElementTypes()
     {
@@ -35,9 +30,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(10);
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns zero affinity for non-FrameworkElement types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns zero affinity for non-FrameworkElement types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsZeroAffinity_ForNonFrameworkElementTypes()
     {
@@ -45,9 +39,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns zero affinity for string type.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns zero affinity for string type.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsZeroAffinity_ForStringType()
     {
@@ -55,9 +48,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns zero affinity for value types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns zero affinity for value types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsZeroAffinity_ForValueTypes()
     {
@@ -65,9 +57,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>
-    /// Validates that GetActivationForView returns empty observable for non-FrameworkElement views.
-    /// </summary>
+    /// <summary>Validates that GetActivationForView returns empty observable for non-FrameworkElement views.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetActivationForView_ReturnsEmptyObservable_ForNonFrameworkElementViews()
     {
@@ -78,15 +69,13 @@ public class ActivationForViewFetcherTests
         await Assert.That(observable).IsAssignableTo<IObservable<bool>>();
     }
 
-    /// <summary>
-    /// Validates that ActivationForViewFetcher implements IActivationForViewFetcher interface.
-    /// </summary>
+    /// <summary>Validates that ActivationForViewFetcher implements IActivationForViewFetcher interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ActivationForViewFetcher_ImplementsIActivationForViewFetcher() => await Assert.That(_sut).IsAssignableTo<IActivationForViewFetcher>();
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns high affinity for UserControl types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns high affinity for UserControl types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsHighAffinity_ForUserControlTypes()
     {
@@ -94,9 +83,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(10);
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns high affinity for Page types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns high affinity for Page types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsHighAffinity_ForPageTypes()
     {
@@ -104,9 +92,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(10);
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns high affinity for ContentControl types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns high affinity for ContentControl types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsHighAffinity_ForContentControlTypes()
     {
@@ -114,9 +101,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(10);
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns zero affinity for interface types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns zero affinity for interface types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsZeroAffinity_ForInterfaceTypes()
     {
@@ -124,19 +110,17 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns zero affinity for abstract non-FrameworkElement types.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns zero affinity for abstract non-FrameworkElement types.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsZeroAffinity_ForAbstractNonFrameworkElementTypes()
     {
-        var affinity = _sut.GetAffinityForView(typeof(System.IO.Stream));
+        var affinity = _sut.GetAffinityForView(typeof(Stream));
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>
-    /// Validates that multiple fetchers can be created independently.
-    /// </summary>
+    /// <summary>Validates that multiple fetchers can be created independently.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task MultipleFetchers_CanBeCreatedIndependently()
     {
@@ -148,9 +132,8 @@ public class ActivationForViewFetcherTests
         await Assert.That(fetcher1).IsNotSameReferenceAs(fetcher2);
     }
 
-    /// <summary>
-    /// Validates that GetAffinityForView returns consistent results for the same type.
-    /// </summary>
+    /// <summary>Validates that GetAffinityForView returns consistent results for the same type.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsConsistentResults_ForSameType()
     {
@@ -160,11 +143,10 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity1).IsEqualTo(affinity2);
     }
 
-    /// <summary>
-    /// Simple mock implementation of IActivatableView for testing.
-    /// </summary>
+    /// <summary>Simple mock implementation of IActivatableView for testing.</summary>
     private sealed class MockActivatableView : IActivatableView
     {
+        /// <summary>Gets the view model activator.</summary>
         public ViewModelActivator Activator { get; } = new();
     }
 }

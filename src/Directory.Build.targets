@@ -1,6 +1,16 @@
 <Project>
   <!-- This props all need to be set in targets as they depend on the values set earlier -->
 
+  <Target Name="DisableUnoRuntimeReplacementForWorkloadDiscovery"
+          BeforeTargets="ReplaceUnoRuntime"
+          Condition="'$(SkipResolvePackageAssets)' == 'true'">
+    <PropertyGroup>
+      <UnoRuntimeIdentifier></UnoRuntimeIdentifier>
+      <UnoUIRuntimeIdentifier></UnoUIRuntimeIdentifier>
+      <UnoWinRTRuntimeIdentifier></UnoWinRTRuntimeIdentifier>
+    </PropertyGroup>
+  </Target>
+
   <PropertyGroup>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <AndroidUseIntermediateDesignerFile>False</AndroidUseIntermediateDesignerFile>

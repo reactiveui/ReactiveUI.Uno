@@ -1,11 +1,17 @@
-﻿// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
+// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
 // Licensed to reactiveui and contributors under one or more agreements.
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml.Markup;
 
+#if REACTIVE_SHIM
+
+namespace ReactiveUI.Uno.Reactive;
+#else
+
 namespace ReactiveUI.Uno;
+#endif
 
 /// <summary>
 /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
@@ -14,17 +20,20 @@ namespace ReactiveUI.Uno;
 /// </summary>
 public class AutoDataTemplateBindingHook : IPropertyBindingHook
 {
-    /// <summary>
-    /// Gets the default item template.
-    /// </summary>
+    /// <summary>Gets the default item template.</summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(() =>
     {
-        const string template =
-"""
+#if REACTIVE_SHIM
+        const string reactiveNamespace = "ReactiveUI.Uno.Reactive";
+#else
+        const string reactiveNamespace = "ReactiveUI.Uno";
+#endif
+        var template =
+$$"""
 <DataTemplate
     xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
     xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-    xmlns:rxui='using:ReactiveUI.Uno'>
+    xmlns:rxui='using:{{reactiveNamespace}}'>
     <rxui:ViewModelViewHost ViewModel="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
 </DataTemplate>
 """;
@@ -37,7 +46,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
         ArgumentNullException.ThrowIfNull(getCurrentViewProperties);
 
         var viewProperties = getCurrentViewProperties();
-        var lastViewProperty = viewProperties.LastOrDefault();
+        var lastViewProperty = viewProperties.Length == 0 ? null : viewProperties[^1];
 
         if (lastViewProperty?.Sender is not ItemsControl itemsControl)
         {

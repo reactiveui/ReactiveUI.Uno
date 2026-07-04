@@ -1,15 +1,19 @@
-﻿// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
+// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
 // Licensed to reactiveui and contributors under one or more agreements.
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+
+#if REACTIVE_SHIM
+
+namespace ReactiveUI.Uno.Reactive.Internal;
+#else
 
 namespace ReactiveUI.Uno.Internal;
+#endif
 
+/// <summary>Provides AOT-friendly reactive helper methods for Uno controls.</summary>
 internal static class ReactiveHelpers
 {
     /// <summary>
@@ -32,11 +36,13 @@ internal static class ReactiveHelpers
         {
             void Handler(object? sender, PropertyChangedEventArgs e)
             {
-                if (string.IsNullOrEmpty(e.PropertyName) ||
-                    string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName) &&
+                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
-                    observer.OnNext(Unit.Default);
+                    return;
                 }
+
+                observer.OnNext(Unit.Default);
             }
 
             source.PropertyChanged += Handler;
@@ -74,11 +80,13 @@ internal static class ReactiveHelpers
 
             void Handler(object? sender, PropertyChangedEventArgs e)
             {
-                if (string.IsNullOrEmpty(e.PropertyName) ||
-                    string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName) &&
+                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
-                    observer.OnNext(getPropertyValue());
+                    return;
                 }
+
+                observer.OnNext(getPropertyValue());
             }
 
             source.PropertyChanged += Handler;
@@ -123,9 +131,7 @@ internal static class ReactiveHelpers
         });
     }
 
-    /// <summary>
-    /// Wires up activation for a view model that supports activation.
-    /// </summary>
+    /// <summary>Wires up activation for a view model that supports activation.</summary>
     /// <param name="viewModel">The view model to activate.</param>
     /// <param name="activatedSignal">Observable that signals when the view is activated.</param>
     /// <param name="deactivatedSignal">Observable that signals when the view is deactivated.</param>

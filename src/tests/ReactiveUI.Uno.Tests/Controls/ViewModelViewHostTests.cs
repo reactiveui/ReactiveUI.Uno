@@ -5,18 +5,18 @@
 
 using Microsoft.UI.Xaml;
 using Splat;
+#if REACTIVE_SHIM
 using RxObservable = System.Reactive.Linq.Observable;
+#else
+using RxObservable = ReactiveUI.Primitives.Signals.Signal;
+#endif
 
 namespace ReactiveUI.Uno.Tests.Controls;
 
-/// <summary>
-/// Contains tests for the <see cref="ViewModelViewHost"/> class.
-/// </summary>
+/// <summary>Contains tests for the <see cref="ViewModelViewHost"/> class.</summary>
 public class ViewModelViewHostTests
 {
-    /// <summary>
-    /// Setup for each test - skip if no UI context is available.
-    /// </summary>
+    /// <summary>Setup for each test - skip if no UI context is available.</summary>
     [Before(Test)]
     public void SetUp()
     {
@@ -34,9 +34,8 @@ public class ViewModelViewHostTests
         }
     }
 
-    /// <summary>
-    /// Validates that ViewModelViewHost can be instantiated.
-    /// </summary>
+    /// <summary>Validates that ViewModelViewHost can be instantiated.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModelViewHost_CanBeInstantiated()
     {
@@ -44,9 +43,8 @@ public class ViewModelViewHostTests
         await Assert.That(host).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that ViewModelViewHost implements IViewFor.
-    /// </summary>
+    /// <summary>Validates that ViewModelViewHost implements IViewFor.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModelViewHost_ImplementsIViewFor()
     {
@@ -54,9 +52,8 @@ public class ViewModelViewHostTests
         await Assert.That(host).IsAssignableTo<IViewFor>();
     }
 
-    /// <summary>
-    /// Validates that ViewModelViewHost implements IEnableLogger.
-    /// </summary>
+    /// <summary>Validates that ViewModelViewHost implements IEnableLogger.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModelViewHost_ImplementsIEnableLogger()
     {
@@ -64,9 +61,8 @@ public class ViewModelViewHostTests
         await Assert.That(host).IsAssignableTo<IEnableLogger>();
     }
 
-    /// <summary>
-    /// Validates that ViewModelViewHost inherits from TransitioningContentControl.
-    /// </summary>
+    /// <summary>Validates that ViewModelViewHost inherits from TransitioningContentControl.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModelViewHost_InheritsFromTransitioningContentControl()
     {
@@ -74,9 +70,8 @@ public class ViewModelViewHostTests
         await Assert.That(host).IsAssignableTo<TransitioningContentControl>();
     }
 
-    /// <summary>
-    /// Validates that ViewModel property is initially null.
-    /// </summary>
+    /// <summary>Validates that ViewModel property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_IsInitiallyNull()
     {
@@ -84,9 +79,8 @@ public class ViewModelViewHostTests
         await Assert.That(host.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewModel property can be set.
-    /// </summary>
+    /// <summary>Validates that ViewModel property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeSet()
     {
@@ -96,9 +90,8 @@ public class ViewModelViewHostTests
         await Assert.That(host.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that DefaultContent property is initially null.
-    /// </summary>
+    /// <summary>Validates that DefaultContent property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task DefaultContent_IsInitiallyNull()
     {
@@ -106,9 +99,8 @@ public class ViewModelViewHostTests
         await Assert.That(host.DefaultContent).IsNull();
     }
 
-    /// <summary>
-    /// Validates that DefaultContent property can be set.
-    /// </summary>
+    /// <summary>Validates that DefaultContent property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task DefaultContent_CanBeSet()
     {
@@ -118,9 +110,8 @@ public class ViewModelViewHostTests
         await Assert.That(host.DefaultContent).IsEqualTo(content);
     }
 
-    /// <summary>
-    /// Validates that ViewContract property is initially null.
-    /// </summary>
+    /// <summary>Validates that ViewContract property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContract_IsInitiallyNull()
     {
@@ -128,20 +119,17 @@ public class ViewModelViewHostTests
         await Assert.That(host.ViewContract).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewContract property can be set.
-    /// </summary>
+    /// <summary>Validates that ViewContract property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContract_CanBeSet()
     {
-        var host = new ViewModelViewHost();
-        host.ViewContract = "TestContract";
+        var host = new ViewModelViewHost() { ViewContract = "TestContract" };
         await Assert.That(host.ViewContract).IsEqualTo("TestContract");
     }
 
-    /// <summary>
-    /// Validates that ViewLocator property is initially null.
-    /// </summary>
+    /// <summary>Validates that ViewLocator property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewLocator_IsInitiallyNull()
     {
@@ -149,9 +137,8 @@ public class ViewModelViewHostTests
         await Assert.That(host.ViewLocator).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewContractObservable property is not null.
-    /// </summary>
+    /// <summary>Validates that ViewContractObservable property is not null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContractObservable_IsNotNull()
     {
@@ -159,9 +146,8 @@ public class ViewModelViewHostTests
         await Assert.That(host.ViewContractObservable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that ViewContractObservable can be set.
-    /// </summary>
+    /// <summary>Validates that ViewContractObservable can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContractObservable_CanBeSet()
     {
@@ -171,9 +157,8 @@ public class ViewModelViewHostTests
         await Assert.That(host.ViewContractObservable).IsEqualTo(observable);
     }
 
-    /// <summary>
-    /// Validates that setting ViewContract updates ViewContractObservable.
-    /// </summary>
+    /// <summary>Validates that setting ViewContract updates ViewContractObservable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContract_Setter_UpdatesViewContractObservable()
     {
@@ -183,49 +168,44 @@ public class ViewModelViewHostTests
         await Assert.That(host.ViewContractObservable).IsNotSameReferenceAs(originalObservable);
     }
 
-    /// <summary>
-    /// Validates that ViewModelProperty DependencyProperty exists.
-    /// </summary>
+    /// <summary>Validates that ViewModelProperty DependencyProperty exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModelProperty_DependencyProperty_Exists()
     {
         await Assert.That(ViewModelViewHost.ViewModelProperty).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that DefaultContentProperty DependencyProperty exists.
-    /// </summary>
+    /// <summary>Validates that DefaultContentProperty DependencyProperty exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task DefaultContentProperty_DependencyProperty_Exists()
     {
         await Assert.That(ViewModelViewHost.DefaultContentProperty).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that ViewContractObservableProperty DependencyProperty exists.
-    /// </summary>
+    /// <summary>Validates that ViewContractObservableProperty DependencyProperty exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContractObservableProperty_DependencyProperty_Exists()
     {
         await Assert.That(ViewModelViewHost.ViewContractObservableProperty).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that ViewModel can be set to null.
-    /// </summary>
+    /// <summary>Validates that ViewModel can be set to null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeSetToNull()
     {
-        var host = new ViewModelViewHost();
-        host.ViewModel = new TestViewModel();
+        var host = new ViewModelViewHost() { ViewModel = new TestViewModel() };
         host.ViewModel = null;
         await Assert.That(host.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Test view model for testing purposes.
-    /// </summary>
+    /// <summary>Test view model for testing purposes.</summary>
     private sealed class TestViewModel
     {
+        /// <summary>Gets a value indicating whether the test view model was initialized.</summary>
+        public static bool IsInitialized => true;
     }
 }

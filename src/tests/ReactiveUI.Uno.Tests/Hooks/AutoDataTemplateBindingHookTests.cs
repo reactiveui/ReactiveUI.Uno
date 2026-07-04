@@ -10,15 +10,11 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests;
 
-/// <summary>
-/// Contains test cases for the AutoDataTemplateBindingHook class,
-/// ensuring its behavior adheres to expected functionality.
-/// </summary>
+/// <summary>Contains test cases for the AutoDataTemplateBindingHook class, ensuring its behavior adheres to expected functionality.</summary>
 public class AutoDataTemplateBindingHookTests
 {
-    /// <summary>
-    /// Validates that ExecuteHook throws when getCurrentViewProperties is null.
-    /// </summary>
+    /// <summary>Validates that ExecuteHook throws when getCurrentViewProperties is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ExecuteHook_ThrowsArgumentNullException_WhenGetCurrentViewPropertiesIsNull()
     {
@@ -28,9 +24,8 @@ public class AutoDataTemplateBindingHookTests
         await Assert.That(exception!.ParamName).IsEqualTo("getCurrentViewProperties");
     }
 
-    /// <summary>
-    /// Validates that ExecuteHook returns true when sender is not an ItemsControl.
-    /// </summary>
+    /// <summary>Validates that ExecuteHook returns true when sender is not an ItemsControl.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ExecuteHook_ReturnsTrue_WhenSenderIsNotItemsControl()
     {
@@ -44,9 +39,8 @@ public class AutoDataTemplateBindingHookTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Executes the hook to set the default template when eligible.
-    /// </summary>
+    /// <summary>Executes the hook to set the default template when eligible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ExecuteHook_Sets_DefaultTemplate_When_Eligible()
     {
@@ -62,21 +56,20 @@ public class AutoDataTemplateBindingHookTests
             return;
         }
 
-        IObservedChange<object, object>[] vmChanges = [];
+        IObservedChange<object, object>[] viewModelChanges = [];
         var expr = (Expression<Func<object?>>)(() => ic.ItemsSource);
         ObservedChange<object, object>[] viewChanges =
         [
             new(ic, expr, new())
         ];
 
-        var result = hook.ExecuteHook(null, ic, () => vmChanges, () => viewChanges, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, ic, () => viewModelChanges, () => viewChanges, BindingDirection.OneWay);
         await Assert.That(result).IsTrue();
         await Assert.That(ic.ItemTemplate).IsNotNull();
     }
 
-    /// <summary>
-    /// Executes the hook to ensure that an existing template is not overridden.
-    /// </summary>
+    /// <summary>Executes the hook to ensure that an existing template is not overridden.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ExecuteHook_Does_Not_Override_Existing_Template()
     {

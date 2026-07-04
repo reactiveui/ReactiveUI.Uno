@@ -3,21 +3,30 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Resources;
 
-/// <summary>
-/// Tests for ReactiveUIUnoDictionary functionality.
-/// </summary>
+/// <summary>Tests for ReactiveUIUnoDictionary functionality.</summary>
 public class ReactiveUIUnoDictionaryTests
 {
-    /// <summary>
-    /// Setup for each test.
-    /// </summary>
+#if REACTIVE_SHIM
+    /// <summary>Expected dictionary source URI for the reactive package.</summary>
+    private const string ExpectedUri = "ms-appx:///ReactiveUI.Uno.Reactive/Resources/ReactiveUI.Uno.Reactive.xaml";
+
+    /// <summary>Expected dictionary source path for the reactive package.</summary>
+    private const string ExpectedPath = "/ReactiveUI.Uno.Reactive/Resources/ReactiveUI.Uno.Reactive.xaml";
+#else
+    /// <summary>Expected dictionary source URI for the lean package.</summary>
+    private const string ExpectedUri = "ms-appx:///ReactiveUI.Uno/Resources/ReactiveUI.Uno.xaml";
+
+    /// <summary>Expected dictionary source path for the lean package.</summary>
+    private const string ExpectedPath = "/ReactiveUI.Uno/Resources/ReactiveUI.Uno.xaml";
+#endif
+
+    /// <summary>Setup for each test.</summary>
     [Before(Test)]
     public void SetUp()
     {
@@ -40,9 +49,8 @@ public class ReactiveUIUnoDictionaryTests
         }
     }
 
-    /// <summary>
-    /// Test constructor sets Source property correctly.
-    /// </summary>
+    /// <summary>Test constructor sets Source property correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_SetsSourceCorrectly()
     {
@@ -51,13 +59,12 @@ public class ReactiveUIUnoDictionaryTests
 
         // Assert
         await Assert.That(dictionary.Source).IsNotNull();
-        await Assert.That(dictionary.Source!.ToString()).IsEqualTo("ms-appx:///ReactiveUI.Uno/Resources/ReactiveUI.Uno.xaml");
+        await Assert.That(dictionary.Source!.ToString()).IsEqualTo(ExpectedUri);
         await Assert.That(dictionary.Source.IsAbsoluteUri).IsTrue();
     }
 
-    /// <summary>
-    /// Test multiple instantiation creates separate objects.
-    /// </summary>
+    /// <summary>Test multiple instantiation creates separate objects.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task MultipleInstantiation_CreatesSeparateObjects()
     {
@@ -70,9 +77,8 @@ public class ReactiveUIUnoDictionaryTests
         await Assert.That(dictionary1.Source).IsEqualTo(dictionary2.Source);
     }
 
-    /// <summary>
-    /// Test dictionary inherits from ResourceDictionary.
-    /// </summary>
+    /// <summary>Test dictionary inherits from ResourceDictionary.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Dictionary_InheritsFromResourceDictionary()
     {
@@ -83,9 +89,8 @@ public class ReactiveUIUnoDictionaryTests
         await Assert.That(dictionary).IsAssignableTo<ResourceDictionary>();
     }
 
-    /// <summary>
-    /// Test dictionary is partial class (compile-time verification).
-    /// </summary>
+    /// <summary>Test dictionary is partial class (compile-time verification).</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Dictionary_IsPartialClass()
     {
@@ -94,9 +99,8 @@ public class ReactiveUIUnoDictionaryTests
         await Assert.That(dictionary).IsNotNull();
     }
 
-    /// <summary>
-    /// Test that Source URI scheme is correct.
-    /// </summary>
+    /// <summary>Test that Source URI scheme is correct.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Source_HasCorrectScheme()
     {
@@ -107,9 +111,8 @@ public class ReactiveUIUnoDictionaryTests
         await Assert.That(dictionary.Source!.Scheme).IsEqualTo("ms-appx");
     }
 
-    /// <summary>
-    /// Test that Source URI path is correct.
-    /// </summary>
+    /// <summary>Test that Source URI path is correct.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Source_HasCorrectPath()
     {
@@ -117,12 +120,11 @@ public class ReactiveUIUnoDictionaryTests
         var dictionary = new ReactiveUIUnoDictionary();
 
         // Assert
-        await Assert.That(dictionary.Source!.AbsolutePath).IsEqualTo("/ReactiveUI.Uno/Resources/ReactiveUI.Uno.xaml");
+        await Assert.That(dictionary.Source!.AbsolutePath).IsEqualTo(ExpectedPath);
     }
 
-    /// <summary>
-    /// Test constructor is public and accessible.
-    /// </summary>
+    /// <summary>Test constructor is public and accessible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_IsPublicAndAccessible()
     {
@@ -130,9 +132,8 @@ public class ReactiveUIUnoDictionaryTests
         await Assert.That(() => new ReactiveUIUnoDictionary()).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Test that the dictionary can be used as ResourceDictionary.
-    /// </summary>
+    /// <summary>Test that the dictionary can be used as ResourceDictionary.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Dictionary_CanBeUsedAsResourceDictionary()
     {
@@ -145,9 +146,8 @@ public class ReactiveUIUnoDictionaryTests
         await Assert.That(resourceDict.Source).IsEqualTo(dictionary.Source);
     }
 
-    /// <summary>
-    /// Test that Source is set during construction and not null.
-    /// </summary>
+    /// <summary>Test that Source is set during construction and not null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Source_IsNotNullAfterConstruction()
     {
@@ -158,16 +158,14 @@ public class ReactiveUIUnoDictionaryTests
         await Assert.That(dictionary.Source).IsNotNull();
     }
 
-    /// <summary>
-    /// Test the constant dictionary URI value.
-    /// </summary>
+    /// <summary>Test the constant dictionary URI value.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task DictionaryUri_HasExpectedValue()
     {
         // This test verifies the URI constant through behavior
         var dictionary = new ReactiveUIUnoDictionary();
-        var expectedUri = "ms-appx:///ReactiveUI.Uno/Resources/ReactiveUI.Uno.xaml";
 
-        await Assert.That(dictionary.Source?.ToString()).IsEqualTo(expectedUri);
+        await Assert.That(dictionary.Source?.ToString()).IsEqualTo(ExpectedUri);
     }
 }

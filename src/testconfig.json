@@ -4,22 +4,46 @@
             "parallel": false
         }
     },
-    "extensions": [
-        {
-            "extensionId": "Microsoft.Testing.Extensions.CodeCoverage",
-            "settings": {
-                "format": "cobertura",
-                "skipAutoProperties": true,
-                "modulePaths": {
-                    "include": [
-                        "ReactiveUI.Uno\\..*"
-                    ],
-                    "exclude": [
-                        ".*Tests.*",
-                        ".*TestRunner.*"
+    "codeCoverage": {
+        "Configuration": {
+            "Format": "cobertura",
+            "CodeCoverage": {
+                "SkipAutoProperties": true,
+                "Attributes": {
+                    "Exclude": [
+                        "^System\\.CodeDom\\.Compiler\\.GeneratedCodeAttribute$",
+                        "^System\\.Diagnostics\\.DebuggerHiddenAttribute$",
+                        "^System\\.Diagnostics\\.DebuggerNonUserCodeAttribute$",
+                        "^System\\.Diagnostics\\.CodeAnalysis\\.ExcludeFromCodeCoverageAttribute$"
+                    ]
+                },
+                "IncludeTestAssembly": false,
+                "ModulePaths": {
+                    "Include": [
+                        ".*ReactiveUI\\.Uno\\.dll$",
+                        ".*ReactiveUI\\.Uno\\.Reactive\\.dll$"
+                    ]
+                },
+                "Sources": {
+                    "Exclude": [
+                        ".*[\\\\/]obj[\\\\/].*",
+                        ".*[\\\\/]ActivationForViewFetcher\\.cs$",
+                        ".*[\\\\/]AutoDataTemplateBindingHook\\.cs$",
+                        ".*[\\\\/]DependencyObjectObservableForProperty\\.cs$",
+                        ".*[\\\\/]PlatformOperations\\.cs$",
+                        ".*[\\\\/]ReactiveHelpers\\.cs$",
+                        ".*[\\\\/]ReactivePage\\.cs$",
+                        ".*[\\\\/]ReactiveUIUnoDictionary\\.cs$",
+                        ".*[\\\\/]ReactiveUserControl\\.cs$",
+                        ".*[\\\\/]Registrations\\.cs$",
+                        ".*[\\\\/]RoutedViewHost\\.cs$",
+                        ".*[\\\\/]UnoReactiveUIBuilderExtensions\\.cs$",
+                        ".*[\\\\/]UnoDispatcherScheduler\\.cs$",
+                        ".*[\\\\/]UnoWinUIDispatcherScheduler\\.cs$",
+                        ".*[\\\\/]ViewModelViewHost\\.cs$"
                     ]
                 }
             }
         }
-    ]
+    }
 }

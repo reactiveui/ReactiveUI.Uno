@@ -7,10 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Uno.Tests.Storage;
 
-/// <summary>
-/// JSON serialization context for AOT-safe serialization.
-/// </summary>
+/// <summary>JSON serialization context for AOT-safe serialization.</summary>
 [JsonSourceGenerationOptions(WriteIndented = false)]
 [JsonSerializable(typeof(TestState))]
 [JsonSerializable(typeof(NestedTestState))]
-internal partial class TestStateJsonContext : JsonSerializerContext;
+internal sealed partial class TestStateJsonContext : JsonSerializerContext;

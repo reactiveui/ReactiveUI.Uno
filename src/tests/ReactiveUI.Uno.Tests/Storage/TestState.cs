@@ -7,21 +7,15 @@ using System.Runtime.Serialization;
 
 namespace ReactiveUI.Uno.Tests.Storage;
 
-/// <summary>
-/// Test state class for serialization tests.
-/// </summary>
+/// <summary>Test state class for serialization tests.</summary>
 [DataContract]
 public class TestState
 {
-    /// <summary>
-    /// Gets or sets the name.
-    /// </summary>
+    /// <summary>Gets or sets the name.</summary>
     [DataMember]
     public string Name { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the value.
-    /// </summary>
+    /// <summary>Gets or sets the value.</summary>
     [DataMember]
     public int Value { get; set; }
 }

@@ -8,15 +8,14 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Platform;
 
-/// <summary>
-/// Contains test cases to ensure the functionality and correctness of the <see cref="PlatformOperations"/> class.
-/// </summary>
+/// <summary>Contains test cases to ensure the functionality and correctness of the <see cref="PlatformOperations"/> class.</summary>
 public class PlatformOperationsTests
 {
     /// <summary>
     /// Validates that the GetOrientation method either returns a valid string representing the device orientation
     /// or null, and does not throw an exception during execution.
     /// </summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetOrientation_has_valid_string_or_null()
     {
@@ -33,9 +32,8 @@ public class PlatformOperationsTests
         await Assert.That(orientation).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that PlatformOperations can be instantiated multiple times.
-    /// </summary>
+    /// <summary>Validates that PlatformOperations can be instantiated multiple times.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_AllowsMultipleInstances()
     {
@@ -48,9 +46,8 @@ public class PlatformOperationsTests
         await Assert.That(ops1).IsNotSameReferenceAs(ops2);
     }
 
-    /// <summary>
-    /// Validates that GetOrientation is consistent when called multiple times.
-    /// </summary>
+    /// <summary>Validates that GetOrientation is consistent when called multiple times.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetOrientation_IsConsistent()
     {
@@ -63,9 +60,8 @@ public class PlatformOperationsTests
         await Assert.That(orientation1).IsEqualTo(orientation2);
     }
 
-    /// <summary>
-    /// Validates that PlatformOperations implements IPlatformOperations.
-    /// </summary>
+    /// <summary>Validates that PlatformOperations implements IPlatformOperations.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task PlatformOperations_ImplementsIPlatformOperations()
     {
@@ -74,9 +70,8 @@ public class PlatformOperationsTests
         await Assert.That(ops).IsAssignableTo<IPlatformOperations>();
     }
 
-    /// <summary>
-    /// Validates that GetOrientation doesn't throw under normal conditions.
-    /// </summary>
+    /// <summary>Validates that GetOrientation doesn't throw under normal conditions.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetOrientation_DoesNotThrow()
     {
@@ -85,18 +80,19 @@ public class PlatformOperationsTests
         await Assert.That(() => ops.GetOrientation()).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Validates that orientation string (if not null) is non-empty.
-    /// </summary>
+    /// <summary>Validates that orientation string (if not null) is non-empty.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetOrientation_IfNotNull_IsNotEmpty()
     {
         var ops = new PlatformOperations();
         var orientation = ops.GetOrientation();
 
-        if (orientation is not null)
+        if (orientation is null)
         {
-            await Assert.That(orientation).IsNotEmpty();
+            return;
         }
+
+        await Assert.That(orientation).IsNotEmpty();
     }
 }

@@ -1,13 +1,19 @@
-﻿// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
+// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
 // Licensed to reactiveui and contributors under one or more agreements.
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
+using ReactiveUI.Builder;
 using Splat;
 
+#if REACTIVE_SHIM
+
+namespace ReactiveUI.Uno.Reactive;
+#else
+
 namespace ReactiveUI.Uno;
+#endif
 
 /// <summary>
 /// This content control will automatically load the View associated with
@@ -16,40 +22,33 @@ namespace ReactiveUI.Uno;
 /// </summary>
 [Preserve(AllMembers = true)]
 [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
-    /// <summary>
-    /// Identifies the DefaultContent dependency property.
-    /// </summary>
+    /// <summary>Identifies the DefaultContent dependency property.</summary>
     /// <remarks>This field is used to register and reference the DefaultContent property with the WPF
     /// property system. It is typically used when interacting with APIs that require a DependencyProperty identifier,
     /// such as property metadata or data binding operations.</remarks>
     public static readonly DependencyProperty DefaultContentProperty =
         DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
-    /// <summary>
-    /// Identifies the ViewModel dependency property.
-    /// </summary>
+    /// <summary>Identifies the ViewModel dependency property.</summary>
     /// <remarks>This field is used to register and reference the ViewModel property with the Windows
     /// Presentation Foundation (WPF) property system. It enables styling, data binding, animation, and default value
     /// support for the ViewModel property on ViewModelViewHost instances.</remarks>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
 
-    /// <summary>
-    /// Identifies the ViewContractObservable dependency property.
-    /// </summary>
+    /// <summary>Identifies the ViewContractObservable dependency property.</summary>
     /// <remarks>This field is used to register and reference the ViewContractObservable property with the
     /// Windows Presentation Foundation (WPF) property system. It is typically used when interacting with APIs that
     /// require a DependencyProperty identifier, such as property metadata or data binding operations.</remarks>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
+        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string?>), typeof(ViewModelViewHost), new PropertyMetadata(Observable.Never<string?>()));
 
+    /// <summary>Stores the latest resolved view contract.</summary>
     private string? _viewContract;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public ViewModelViewHost()
     {
@@ -68,88 +67,79 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Observable<string?>.Never
-            : Observable.FromEvent<SizeChangedEventHandler, string?>(
-              eventHandler =>
+            ? Observable.Never<string?>()
+            : Observable.Create<string?>(observer =>
               {
-                  void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
-                  return Handler;
-              },
-              x => SizeChanged += x,
-              x => SizeChanged -= x)
+                  void Handler(object sender, SizeChangedEventArgs args) => observer.OnNext(platformGetter());
+
+                  SizeChanged += Handler;
+                  return Disposable.Create(() => SizeChanged -= Handler);
+              })
               .StartWith(platformGetter())
               .DistinctUntilChanged();
 
         var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
         var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
-        var vmAndContract = contractChanged
+        var viewModelAndContract = contractChanged
             .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
 
         if (ModeDetector.InUnitTestRunner())
         {
             // In tests, bypass activation wiring so content resolves deterministically.
-            contractChanged
-                .ObserveOn(RxSchedulers.MainThreadScheduler)
+            _ = contractChanged
                 .Subscribe(x => _viewContract = x ?? string.Empty);
 
-            vmAndContract
+            _ = viewModelAndContract
                 .DistinctUntilChanged()
                 .Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract));
 
             return;
         }
 
-        this.WhenActivated(d =>
+        _ = this.WhenActivated((d) =>
         {
             d(contractChanged
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .ObserveOn(UnoReactiveUIBuilderExtensions.GetUnoMainThreadRxScheduler())
             .Subscribe(x => _viewContract = x ?? string.Empty));
 
-            d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
+            d(viewModelAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
         });
     }
 
-    /// <summary>
-    /// Gets or sets the view contract observable.
-    /// </summary>
+    /// <summary>Gets or sets the view contract observable.</summary>
     public IObservable<string?> ViewContractObservable
     {
-        get => (IObservable<string>)GetValue(ViewContractObservableProperty);
+        get => (IObservable<string?>)GetValue(ViewContractObservableProperty);
         set => SetValue(ViewContractObservableProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the content displayed by default when no content is set.
-    /// </summary>
+    /// <summary>Gets or sets the content displayed by default when no content is set.</summary>
     public object DefaultContent
     {
         get => GetValue(DefaultContentProperty);
         set => SetValue(DefaultContentProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the ViewModel to display.
-    /// </summary>
+    /// <summary>Gets or sets the ViewModel to display.</summary>
     public object? ViewModel
     {
         get => GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view contract.
-    /// </summary>
+    /// <summary>Gets or sets the view contract.</summary>
     public string? ViewContract
     {
         get => _viewContract;
         set => ViewContractObservable = Observable.Return(value);
     }
 
-    /// <summary>
-    /// Gets or sets the view locator.
-    /// </summary>
+    /// <summary>Gets or sets the view locator.</summary>
     public IViewLocator? ViewLocator { get; set; }
 
+    /// <summary>Resolves and displays the view for the supplied view model and contract.</summary>
+    /// <param name="viewModel">The view model to display.</param>
+    /// <param name="contract">The optional view contract to use while resolving the view.</param>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private void ResolveViewForViewModel(object? viewModel, string? contract)
     {

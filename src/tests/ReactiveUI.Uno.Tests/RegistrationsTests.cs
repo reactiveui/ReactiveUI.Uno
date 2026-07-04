@@ -4,53 +4,51 @@
 // See the LICENSE file in the project root for full license information.
 
 using NSubstitute;
+#if REACTIVE_SHIM
+using UnoRegistrations = ReactiveUI.Uno.Reactive.Registrations;
+#else
+using UnoRegistrations = ReactiveUI.Uno.Registrations;
+#endif
 
 namespace ReactiveUI.Uno.Tests;
 
-/// <summary>
-/// Contains tests for the <see cref="ReactiveUI.Uno.Registrations"/> class, specifically validating
-/// its functionality for registering services.
-/// </summary>
+/// <summary>Contains tests for the Uno registrations class, specifically validating its functionality for registering services.</summary>
 public class RegistrationsTests
 {
-    /// <summary>
-    /// Validates that Register throws ArgumentNullException when registrar is null.
-    /// </summary>
+    /// <summary>Validates that Register throws ArgumentNullException when registrar is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Register_ThrowsArgumentNullException_WhenRegistrarIsNull()
     {
-        Registrations sut = new();
+        UnoRegistrations sut = new();
         await Assert.That(() => sut.Register(null!)).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that Registrations implements IWantsToRegisterStuff.
-    /// </summary>
+    /// <summary>Validates that Registrations implements IWantsToRegisterStuff.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Registrations_ImplementsIWantsToRegisterStuff()
     {
-        Registrations sut = new();
+        UnoRegistrations sut = new();
         await Assert.That(sut).IsAssignableTo<IWantsToRegisterStuff>();
     }
 
-    /// <summary>
-    /// Validates that Registrations can be instantiated.
-    /// </summary>
+    /// <summary>Validates that Registrations can be instantiated.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Registrations_CanBeInstantiated()
     {
-        Registrations sut = new();
+        UnoRegistrations sut = new();
         await Assert.That(sut).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that Register calls registrar methods.
-    /// </summary>
+    /// <summary>Validates that Register calls registrar methods.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Register_CallsRegistrarMethods()
     {
         var registrar = Substitute.For<IRegistrar>();
-        Registrations sut = new();
+        UnoRegistrations sut = new();
 
         sut.Register(registrar);
 
@@ -63,14 +61,13 @@ public class RegistrationsTests
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Validates that Register can be called multiple times without error.
-    /// </summary>
+    /// <summary>Validates that Register can be called multiple times without error.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Register_CanBeCalledMultipleTimes()
     {
         var registrar = Substitute.For<IRegistrar>();
-        Registrations sut = new();
+        UnoRegistrations sut = new();
 
         sut.Register(registrar);
         sut.Register(registrar);
@@ -78,14 +75,13 @@ public class RegistrationsTests
         await Assert.That(() => sut.Register(registrar)).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Validates that registration delegates can be invoked to create service instances.
-    /// </summary>
+    /// <summary>Validates that registration delegates can be invoked to create service instances.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Register_Delegates_CreateExpectedServiceInstances()
     {
         var registrar = Substitute.For<IRegistrar>();
-        Registrations sut = new();
+        UnoRegistrations sut = new();
 
         registrar
             .When(x => x.RegisterConstant(Arg.Any<Func<IPlatformOperations>>()))
