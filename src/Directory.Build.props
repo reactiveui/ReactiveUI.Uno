@@ -55,17 +55,17 @@
   <PropertyGroup>
 
     <!-- Cross-platform targets (non-Windows only) -->
-    <UnoCrossPlatformTargets>net9.0;net9.0-desktop;net10.0;net10.0-desktop;net10.0-browserwasm</UnoCrossPlatformTargets>
+    <UnoCrossPlatformTargets>net9.0;net9.0-desktop;net10.0;net10.0-desktop;net10.0-browserwasm;net11.0;net11.0-desktop;net11.0-browserwasm</UnoCrossPlatformTargets>
 
     <!-- Windows-specific desktop TFMs -->
-    <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
+    <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
 
     <!-- Mobile TFMs separated by platform -->
-    <UnoMobileAndroidTargets>net10.0-android</UnoMobileAndroidTargets>
-    <UnoMobileAppleTargets>net10.0-ios</UnoMobileAppleTargets>
+    <UnoMobileAndroidTargets>net10.0-android;net11.0-android</UnoMobileAndroidTargets>
+    <UnoMobileAppleTargets>net10.0-ios;net11.0-ios</UnoMobileAppleTargets>
 
     <!-- Test project target frameworks -->
-    <TestProjectTargetFrameworks>net9.0;net10.0</TestProjectTargetFrameworks>
+    <TestProjectTargetFrameworks>net9.0;net10.0;net11.0</TestProjectTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -154,7 +154,7 @@
 
   <ItemGroup>
     <PackageReference Include="MinVer" PrivateAssets="all" />
-    <PackageReference Include="stylecop.analyzers" PrivateAssets="all" />
+    <PackageReference Include="StyleSharp.Analyzers" PrivateAssets="all"/>
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>

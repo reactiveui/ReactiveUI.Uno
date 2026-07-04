@@ -8,14 +8,10 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace ReactiveUI.Uno.Tests.Controls;
 
-/// <summary>
-/// Contains tests for the <see cref="ReactiveUserControl{TViewModel}"/> class.
-/// </summary>
+/// <summary>Contains tests for the <see cref="ReactiveUserControl{TViewModel}"/> class.</summary>
 public class ReactiveUserControlTests
 {
-    /// <summary>
-    /// Setup for each test - skip if no UI context is available.
-    /// </summary>
+    /// <summary>Setup for each test - skip if no UI context is available.</summary>
     [Before(Test)]
     public void SetUp()
     {
@@ -33,9 +29,8 @@ public class ReactiveUserControlTests
         }
     }
 
-    /// <summary>
-    /// Validates that TestReactiveUserControl can be instantiated.
-    /// </summary>
+    /// <summary>Validates that TestReactiveUserControl can be instantiated.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactiveUserControl_CanBeInstantiated()
     {
@@ -43,9 +38,8 @@ public class ReactiveUserControlTests
         await Assert.That(control).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that ReactiveUserControl implements IViewFor interface.
-    /// </summary>
+    /// <summary>Validates that ReactiveUserControl implements IViewFor interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactiveUserControl_ImplementsIViewFor()
     {
@@ -53,9 +47,8 @@ public class ReactiveUserControlTests
         await Assert.That(control).IsAssignableTo<IViewFor<TestViewModel>>();
     }
 
-    /// <summary>
-    /// Validates that ReactiveUserControl implements non-generic IViewFor interface.
-    /// </summary>
+    /// <summary>Validates that ReactiveUserControl implements non-generic IViewFor interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactiveUserControl_ImplementsNonGenericIViewFor()
     {
@@ -63,9 +56,8 @@ public class ReactiveUserControlTests
         await Assert.That(control).IsAssignableTo<IViewFor>();
     }
 
-    /// <summary>
-    /// Validates that ReactiveUserControl inherits from UserControl.
-    /// </summary>
+    /// <summary>Validates that ReactiveUserControl inherits from UserControl.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactiveUserControl_InheritsFromUserControl()
     {
@@ -73,9 +65,8 @@ public class ReactiveUserControlTests
         await Assert.That(control).IsAssignableTo<UserControl>();
     }
 
-    /// <summary>
-    /// Validates that ViewModel property is initially null.
-    /// </summary>
+    /// <summary>Validates that ViewModel property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_IsInitiallyNull()
     {
@@ -83,9 +74,8 @@ public class ReactiveUserControlTests
         await Assert.That(control.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewModel property can be set.
-    /// </summary>
+    /// <summary>Validates that ViewModel property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeSet()
     {
@@ -95,21 +85,18 @@ public class ReactiveUserControlTests
         await Assert.That(control.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that ViewModel property can be set to null.
-    /// </summary>
+    /// <summary>Validates that ViewModel property can be set to null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeSetToNull()
     {
-        var control = new TestReactiveUserControl();
-        control.ViewModel = new TestViewModel();
+        var control = new TestReactiveUserControl() { ViewModel = new() };
         control.ViewModel = null;
         await Assert.That(control.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Validates that BindingRoot returns the ViewModel.
-    /// </summary>
+    /// <summary>Validates that BindingRoot returns the ViewModel.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task BindingRoot_ReturnsViewModel()
     {
@@ -119,9 +106,8 @@ public class ReactiveUserControlTests
         await Assert.That(control.BindingRoot).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that BindingRoot returns null when ViewModel is null.
-    /// </summary>
+    /// <summary>Validates that BindingRoot returns null when ViewModel is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task BindingRoot_ReturnsNull_WhenViewModelIsNull()
     {
@@ -129,9 +115,8 @@ public class ReactiveUserControlTests
         await Assert.That(control.BindingRoot).IsNull();
     }
 
-    /// <summary>
-    /// Validates that non-generic IViewFor.ViewModel property works correctly.
-    /// </summary>
+    /// <summary>Validates that non-generic IViewFor.ViewModel property works correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task IViewForViewModel_GetterWorks()
     {
@@ -142,9 +127,8 @@ public class ReactiveUserControlTests
         await Assert.That(nonGenericViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that non-generic IViewFor.ViewModel setter works correctly.
-    /// </summary>
+    /// <summary>Validates that non-generic IViewFor.ViewModel setter works correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task IViewForViewModel_SetterWorks()
     {
@@ -154,28 +138,24 @@ public class ReactiveUserControlTests
         await Assert.That(control.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that non-generic IViewFor.ViewModel can be set to null.
-    /// </summary>
+    /// <summary>Validates that non-generic IViewFor.ViewModel can be set to null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task IViewForViewModel_CanBeSetToNull()
     {
-        var control = new TestReactiveUserControl();
-        control.ViewModel = new TestViewModel();
+        var control = new TestReactiveUserControl() { ViewModel = new() };
         ((IViewFor)control).ViewModel = null;
         await Assert.That(control.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewModelProperty DependencyProperty exists.
-    /// </summary>
+    /// <summary>Validates that ViewModelProperty DependencyProperty exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModelProperty_DependencyProperty_Exists() =>
         await Assert.That(ReactiveUserControl<TestViewModel>.ViewModelProperty).IsNotNull();
 
-    /// <summary>
-    /// Validates that multiple instances can be created independently.
-    /// </summary>
+    /// <summary>Validates that multiple instances can be created independently.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task MultipleInstances_AreIndependent()
     {
@@ -190,13 +170,13 @@ public class ReactiveUserControlTests
         await Assert.That(control2.ViewModel).IsEqualTo(viewModel2);
     }
 
-    /// <summary>
-    /// Test view model for testing purposes.
-    /// </summary>
-    public sealed class TestViewModel;
+    /// <summary>Test view model for testing purposes.</summary>
+    public sealed class TestViewModel
+    {
+        /// <summary>Gets a value indicating whether the test view model was initialized.</summary>
+        public static bool IsInitialized => true;
+    }
 
-    /// <summary>
-    /// Test ReactiveUserControl implementation for testing purposes.
-    /// </summary>
+    /// <summary>Test ReactiveUserControl implementation for testing purposes.</summary>
     public sealed class TestReactiveUserControl : ReactiveUserControl<TestViewModel>;
 }

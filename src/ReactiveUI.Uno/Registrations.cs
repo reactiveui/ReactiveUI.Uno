@@ -3,13 +3,13 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using ReactiveUI.Builder;
-using ReactiveUI.Primitives.Concurrency;
-using Splat;
-using Splat.Builder;
+#if REACTIVE_SHIM
+
+namespace ReactiveUI.Uno.Reactive;
+#else
 
 namespace ReactiveUI.Uno;
+#endif
 
 /// <summary>
 /// Registers platform-specific services, type converters, and binding hooks required for ReactiveUI to operate on the
@@ -48,22 +48,6 @@ public class Registrations : IWantsToRegisterStuff
 
         registrar.RegisterConstant<IPropertyBindingHook>(() => new AutoDataTemplateBindingHook());
         registrar.RegisterConstant<ISuspensionDriver>(() => new WinRTAppDataDriver());
-
-        if (!ModeDetector.InUnitTestRunner() && !AppBuilder.UsingBuilder)
-        {
-#if WINDOWS
-            RxSchedulers.MainThreadScheduler = UnoReactiveUIBuilderExtensions.UnoWinUIMainThreadScheduler;
-#else
-            RxSchedulers.MainThreadScheduler = UnoReactiveUIBuilderExtensions.UnoMainThreadScheduler;
-#endif
-
-#if __WASM__ || BROWSERWASM
-            // WebAssembly doesn't support multithreading, use WasmScheduler instead of TaskPoolScheduler
-            RxSchedulers.TaskpoolScheduler = new SchedulerSequencerAdapter(WasmScheduler.Default);
-#else
-            RxSchedulers.TaskpoolScheduler = TaskPoolSequencer.Default;
-#endif
-        }
 
         // Disables ViewCommand binding messages on Uno platform
         RxSchedulers.SuppressViewCommandBindingMessage = true;

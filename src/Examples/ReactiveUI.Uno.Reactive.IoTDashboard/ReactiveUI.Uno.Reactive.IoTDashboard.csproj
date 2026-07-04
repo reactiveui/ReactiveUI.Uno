@@ -1,0 +1,79 @@
+<Project Sdk="Uno.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(UnoExampleTargetFrameworks)</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+    <ApplicationTitle>ReactiveUI.Uno.Reactive IoT Dashboard</ApplicationTitle>
+    <ApplicationId>com.reactiveui.uno.reactive.iotdashboard</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationPublisher>ReactiveUI and Contributors</ApplicationPublisher>
+    <Description>ReactiveUI.Uno.Reactive IoT dashboard sample powered by Uno Platform.</Description>
+    <UnoFeatures>
+      Hosting;
+      Logging;
+      SkiaRenderer;
+    </UnoFeatures>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishAot>false</PublishAot>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-android'))">
+    <AndroidUseShortFileNames>true</AndroidUseShortFileNames>
+    <BaseOutputPath>$(LOCALAPPDATA)\uno\bin\</BaseOutputPath>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('0-ios'))">
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!$(TargetFramework.EndsWith('0-android')) and !$(TargetFramework.EndsWith('0-ios'))">
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-desktop'">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <DefaultLanguage>en-us</DefaultLanguage>
+    <WindowsPackageType>None</WindowsPackageType>
+    <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
+    <AppxPackage>false</AppxPackage>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Reactive" />
+    <PackageReference Include="ReactiveUI.Primitives.Reactive" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Uno.Reactive\ReactiveUI.Uno.Reactive.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI" />
+    <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Reactive" />
+    <Using Include="ReactiveUI.Reactive.Builder" />
+    <Using Include="ReactiveUI.Reactive.Interfaces" />
+    <Using Include="ReactiveUI.Primitives.Reactive" />
+    <Using Include="ReactiveUI.Primitives.Reactive.Concurrency" />
+    <Using Include="ReactiveUI.Uno.Reactive" />
+    <Using Include="System.Reactive.Unit" Alias="Unit" />
+    <Using Include="System.Reactive.Linq.Observable" Alias="Observable" />
+    <Using Include="System.Reactive.Disposables.Disposable" Alias="Disposable" />
+    <Using Include="System.Reactive.Disposables.CompositeDisposable" Alias="CompositeDisposable" />
+    <Using Include="System.Reactive.Disposables.SerialDisposable" Alias="SerialDisposable" />
+    <Using Include="System.Reactive.Concurrency.IScheduler" Alias="IScheduler" />
+    <Using Include="System.Reactive.Concurrency.TaskPoolScheduler" Alias="TaskPoolScheduler" />
+  </ItemGroup>
+</Project>

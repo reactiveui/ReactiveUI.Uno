@@ -8,40 +8,35 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Converters;
 
-/// <summary>
-/// Tests for the <see cref="BooleanToVisibilityHint"/> enum.
-/// </summary>
+/// <summary>Tests for the <see cref="BooleanToVisibilityHint"/> enum.</summary>
 public class BooleanToVisibilityHintTests
 {
-    /// <summary>
-    /// Verifies None has correct value.
-    /// </summary>
+    /// <summary>Verifies None has correct value.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task None_HasCorrectValue()
     {
         // Arrange
-        var noneValue = (int)BooleanToVisibilityHint.None;
+        var noneValue = Convert.ToInt32(BooleanToVisibilityHint.None);
 
         // Assert
         await Assert.That(noneValue).IsZero();
     }
 
-    /// <summary>
-    /// Verifies Inverse has correct value and string representation.
-    /// </summary>
+    /// <summary>Verifies Inverse has correct value and string representation.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Inverse_HasCorrectValueAndString()
     {
         // Arrange
-        var inverseValue = (int)BooleanToVisibilityHint.Inverse;
+        var inverseValue = Convert.ToInt32(BooleanToVisibilityHint.Inverse);
 
         // Assert
         await Assert.That(inverseValue).IsEqualTo(2);
     }
 
-    /// <summary>
-    /// Verifies Inverse has correct string representation.
-    /// </summary>
+    /// <summary>Verifies Inverse has correct string representation.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Inverse_HasCorrectString()
     {
@@ -49,22 +44,21 @@ public class BooleanToVisibilityHintTests
         await Assert.That(BooleanToVisibilityHint.Inverse.ToString()).IsEqualTo("Inverse");
     }
 
-    /// <summary>
-    /// Verifies enum supports flags operation.
-    /// </summary>
+    /// <summary>Verifies enum supports flags operation.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Enum_SupportsFlags()
     {
         // Act
-        var combined = BooleanToVisibilityHint.None | BooleanToVisibilityHint.Inverse;
+        var initial = Enum.Parse<BooleanToVisibilityHint>(nameof(BooleanToVisibilityHint.None));
+        var combined = initial | BooleanToVisibilityHint.Inverse;
 
         // Assert
         await Assert.That(combined).IsEqualTo(BooleanToVisibilityHint.Inverse);
     }
 
-    /// <summary>
-    /// Verifies enum has Flags attribute.
-    /// </summary>
+    /// <summary>Verifies enum has Flags attribute.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Enum_HasFlagsAttribute()
     {
@@ -78,27 +72,25 @@ public class BooleanToVisibilityHintTests
         await Assert.That(hasFlagsAttribute).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies enum can be cast from integer.
-    /// </summary>
+    /// <summary>Verifies enum can be cast from integer.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Enum_CanBeCastFromInteger()
     {
         // Act
-        var none = (BooleanToVisibilityHint)0;
+        var none = (BooleanToVisibilityHint)Enum.ToObject(typeof(BooleanToVisibilityHint), 0);
 
         // Assert
         await Assert.That(none).IsEqualTo(BooleanToVisibilityHint.None);
     }
 
-    /// <summary>
-    /// Verifies enum can be cast from integer for inverse value.
-    /// </summary>
+    /// <summary>Verifies enum can be cast from integer for inverse value.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Enum_CanBeCastFromInteger_Inverse()
     {
         // Act
-        var inverse = (BooleanToVisibilityHint)2;
+        var inverse = (BooleanToVisibilityHint)Enum.ToObject(typeof(BooleanToVisibilityHint), 2);
 
         // Assert
         await Assert.That(inverse).IsEqualTo(BooleanToVisibilityHint.Inverse);

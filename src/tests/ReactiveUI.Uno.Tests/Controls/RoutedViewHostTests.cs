@@ -6,18 +6,18 @@
 using Microsoft.UI.Xaml;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
+#if REACTIVE_SHIM
 using RxObservable = System.Reactive.Linq.Observable;
+#else
+using RxObservable = ReactiveUI.Primitives.Signals.Signal;
+#endif
 
 namespace ReactiveUI.Uno.Tests.Controls;
 
-/// <summary>
-/// Contains tests for the <see cref="RoutedViewHost"/> class.
-/// </summary>
+/// <summary>Contains tests for the <see cref="RoutedViewHost"/> class.</summary>
 public class RoutedViewHostTests
 {
-    /// <summary>
-    /// Setup for each test - skip if no UI context is available.
-    /// </summary>
+    /// <summary>Setup for each test - skip if no UI context is available.</summary>
     [Before(Test)]
     public void SetUp()
     {
@@ -35,9 +35,8 @@ public class RoutedViewHostTests
         }
     }
 
-    /// <summary>
-    /// Validates that RoutedViewHost can be instantiated.
-    /// </summary>
+    /// <summary>Validates that RoutedViewHost can be instantiated.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task RoutedViewHost_CanBeInstantiated()
     {
@@ -45,9 +44,8 @@ public class RoutedViewHostTests
         await Assert.That(host).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that RoutedViewHost implements IActivatableView.
-    /// </summary>
+    /// <summary>Validates that RoutedViewHost implements IActivatableView.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task RoutedViewHost_ImplementsIActivatableView()
     {
@@ -55,9 +53,8 @@ public class RoutedViewHostTests
         await Assert.That(host).IsAssignableTo<IActivatableView>();
     }
 
-    /// <summary>
-    /// Validates that RoutedViewHost inherits from TransitioningContentControl.
-    /// </summary>
+    /// <summary>Validates that RoutedViewHost inherits from TransitioningContentControl.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task RoutedViewHost_InheritsFromTransitioningContentControl()
     {
@@ -65,9 +62,8 @@ public class RoutedViewHostTests
         await Assert.That(host).IsAssignableTo<TransitioningContentControl>();
     }
 
-    /// <summary>
-    /// Validates that Router property is initially null.
-    /// </summary>
+    /// <summary>Validates that Router property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Router_IsInitiallyNull()
     {
@@ -75,9 +71,8 @@ public class RoutedViewHostTests
         await Assert.That(host.Router).IsNull();
     }
 
-    /// <summary>
-    /// Validates that Router property can be set.
-    /// </summary>
+    /// <summary>Validates that Router property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Router_CanBeSet()
     {
@@ -87,9 +82,8 @@ public class RoutedViewHostTests
         await Assert.That(host.Router).IsEqualTo(router);
     }
 
-    /// <summary>
-    /// Validates that DefaultContent property is initially null.
-    /// </summary>
+    /// <summary>Validates that DefaultContent property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task DefaultContent_IsInitiallyNull()
     {
@@ -97,9 +91,8 @@ public class RoutedViewHostTests
         await Assert.That(host.DefaultContent).IsNull();
     }
 
-    /// <summary>
-    /// Validates that DefaultContent property can be set.
-    /// </summary>
+    /// <summary>Validates that DefaultContent property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task DefaultContent_CanBeSet()
     {
@@ -109,20 +102,17 @@ public class RoutedViewHostTests
         await Assert.That(host.DefaultContent).IsEqualTo(content);
     }
 
-    /// <summary>
-    /// Validates that ViewContract property can be set.
-    /// </summary>
+    /// <summary>Validates that ViewContract property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContract_CanBeSet()
     {
-        var host = new RoutedViewHost();
-        host.ViewContract = "TestContract";
+        var host = new RoutedViewHost() { ViewContract = "TestContract" };
         await Assert.That(host.ViewContract).IsEqualTo("TestContract");
     }
 
-    /// <summary>
-    /// Validates that ViewLocator property is initially null.
-    /// </summary>
+    /// <summary>Validates that ViewLocator property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewLocator_IsInitiallyNull()
     {
@@ -130,9 +120,8 @@ public class RoutedViewHostTests
         await Assert.That(host.ViewLocator).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewContractObservable property is not null.
-    /// </summary>
+    /// <summary>Validates that ViewContractObservable property is not null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContractObservable_IsNotNull()
     {
@@ -140,9 +129,8 @@ public class RoutedViewHostTests
         await Assert.That(host.ViewContractObservable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that ViewContractObservable can be set.
-    /// </summary>
+    /// <summary>Validates that ViewContractObservable can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContractObservable_CanBeSet()
     {
@@ -152,9 +140,8 @@ public class RoutedViewHostTests
         await Assert.That(host.ViewContractObservable).IsEqualTo(observable);
     }
 
-    /// <summary>
-    /// Validates that HorizontalContentAlignment is set to Stretch by default.
-    /// </summary>
+    /// <summary>Validates that HorizontalContentAlignment is set to Stretch by default.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task HorizontalContentAlignment_IsStretchByDefault()
     {
@@ -162,9 +149,8 @@ public class RoutedViewHostTests
         await Assert.That(host.HorizontalContentAlignment).IsEqualTo(HorizontalAlignment.Stretch);
     }
 
-    /// <summary>
-    /// Validates that VerticalContentAlignment is set to Stretch by default.
-    /// </summary>
+    /// <summary>Validates that VerticalContentAlignment is set to Stretch by default.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task VerticalContentAlignment_IsStretchByDefault()
     {
@@ -172,9 +158,8 @@ public class RoutedViewHostTests
         await Assert.That(host.VerticalContentAlignment).IsEqualTo(VerticalAlignment.Stretch);
     }
 
-    /// <summary>
-    /// Validates that setting ViewContract updates ViewContractObservable.
-    /// </summary>
+    /// <summary>Validates that setting ViewContract updates ViewContractObservable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewContract_Setter_UpdatesViewContractObservable()
     {

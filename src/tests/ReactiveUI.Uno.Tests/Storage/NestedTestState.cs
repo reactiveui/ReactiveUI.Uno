@@ -7,21 +7,15 @@ using System.Runtime.Serialization;
 
 namespace ReactiveUI.Uno.Tests.Storage;
 
-/// <summary>
-/// Nested test state for complex serialization tests.
-/// </summary>
+/// <summary>Nested test state for complex serialization tests.</summary>
 [DataContract]
 public class NestedTestState
 {
-    /// <summary>
-    /// Gets or sets the identifier.
-    /// </summary>
+    /// <summary>Gets or sets the identifier.</summary>
     [DataMember]
     public int Id { get; set; }
 
-    /// <summary>
-    /// Gets or sets the inner state.
-    /// </summary>
+    /// <summary>Gets or sets the inner state.</summary>
     [DataMember]
     public TestState? Inner { get; set; }
 }

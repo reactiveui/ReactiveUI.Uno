@@ -1,39 +1,36 @@
-﻿// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
+// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
 // Licensed to reactiveui and contributors under one or more agreements.
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
+#if REACTIVE_SHIM
+using RxVoid = System.Reactive.Unit;
+#else
 using RxVoid = ReactiveUI.Primitives.RxVoid;
+#endif
 
 namespace ReactiveUI.Uno.Tests.Storage;
 
-/// <summary>
-/// Contains tests for the <see cref="WinRTAppDataDriver"/> class, ensuring its functionality
-/// for loading, saving, and invalidating application state.
-/// </summary>
+/// <summary>Contains tests for the <see cref="WinRTAppDataDriver"/> class, ensuring its functionality for loading, saving, and invalidating application state.</summary>
+[NotInParallel("WinRTAppDataDriverStorage")]
 public class WinRTAppDataDriverTests
 {
+    /// <summary>Stores the suspension driver under test.</summary>
     private WinRTAppDataDriver _sut = null!;
 
-    /// <summary>
-    /// Sets up the test by creating a new instance of WinRTAppDataDriver.
-    /// </summary>
+    /// <summary>Sets up the test by creating a new instance of WinRTAppDataDriver.</summary>
     [Before(Test)]
-    public void SetUp() => _sut = new WinRTAppDataDriver();
+    public void SetUp() => _sut = new();
 
-    /// <summary>
-    /// Validates that WinRTAppDataDriver implements ISuspensionDriver interface.
-    /// </summary>
+    /// <summary>Validates that WinRTAppDataDriver implements ISuspensionDriver interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WinRTAppDataDriver_ImplementsISuspensionDriver() => await Assert.That(_sut).IsAssignableTo<ISuspensionDriver>();
 
-    /// <summary>
-    /// Validates that multiple instances can be created independently.
-    /// </summary>
+    /// <summary>Validates that multiple instances can be created independently.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_AllowsMultipleInstances()
     {
@@ -45,9 +42,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(sut1).IsNotSameReferenceAs(sut2);
     }
 
-    /// <summary>
-    /// Validates that default constructor creates a valid instance.
-    /// </summary>
+    /// <summary>Validates that default constructor creates a valid instance.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_CreatesValidInstance()
     {
@@ -61,18 +57,18 @@ public class WinRTAppDataDriverTests
     /// Validates that SaveState throws ArgumentNullException when state is null.
     /// The exception is thrown when the observable is subscribed to.
     /// </summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ThrowsArgumentNullException_WhenStateIsNull()
     {
         var observable = _sut.SaveState<object>(null!);
 
         // The ArgumentNullException is thrown during observable execution
-        await Assert.That(async () => await observable.FirstAsync()).Throws<ArgumentNullException>();
+        await Assert.That(() => observable.ToTask()).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that SaveState returns a non-null observable when state is valid.
-    /// </summary>
+    /// <summary>Validates that SaveState returns a non-null observable when state is valid.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ReturnsNonNullObservable_WhenStateIsValid()
     {
@@ -82,9 +78,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState returns an observable of RxVoid type.
-    /// </summary>
+    /// <summary>Validates that SaveState returns an observable of RxVoid type.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ReturnsObservableOfRxVoid()
     {
@@ -94,9 +89,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
-    /// <summary>
-    /// Validates that SaveState observable can be subscribed to multiple times.
-    /// </summary>
+    /// <summary>Validates that SaveState observable can be subscribed to multiple times.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ObservableCanBeSubscribedMultipleTimes()
     {
@@ -107,11 +101,11 @@ public class WinRTAppDataDriverTests
         var subscription1Received = false;
         var subscription2Received = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => subscription1Received = true,
             _ => subscription1Received = true);
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => subscription2Received = true,
             _ => subscription2Received = true);
 
@@ -122,16 +116,14 @@ public class WinRTAppDataDriverTests
         await Assert.That(subscription1Received || subscription2Received).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo throws ArgumentNullException when state is null.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo throws ArgumentNullException when state is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_ThrowsArgumentNullException_WhenStateIsNull() => await Assert.That(() => _sut.SaveState<TestState>(null!, TestStateJsonContext.Default.TestState))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo throws ArgumentNullException when typeInfo is null.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo throws ArgumentNullException when typeInfo is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_ThrowsArgumentNullException_WhenTypeInfoIsNull()
     {
@@ -141,9 +133,8 @@ public class WinRTAppDataDriverTests
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo returns a non-null observable.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo returns a non-null observable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_ReturnsNonNullObservable()
     {
@@ -153,9 +144,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo returns an observable of RxVoid type.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo returns an observable of RxVoid type.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_ReturnsObservableOfRxVoid()
     {
@@ -165,9 +155,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
-    /// <summary>
-    /// Validates that LoadState returns a non-null observable.
-    /// </summary>
+    /// <summary>Validates that LoadState returns a non-null observable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ReturnsNonNullObservable()
     {
@@ -176,9 +165,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that LoadState returns an observable of object type.
-    /// </summary>
+    /// <summary>Validates that LoadState returns an observable of object type.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ReturnsObservableOfObject()
     {
@@ -187,16 +175,15 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<object?>>();
     }
 
-    /// <summary>
-    /// Validates that LoadState observable can be subscribed to.
-    /// </summary>
+    /// <summary>Validates that LoadState observable can be subscribed to.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ObservableCanBeSubscribed()
     {
         var observable = _sut.LoadState();
         var subscribed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => subscribed = true,
             _ => subscribed = true);
 
@@ -206,16 +193,14 @@ public class WinRTAppDataDriverTests
         await Assert.That(subscribed).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo throws ArgumentNullException when typeInfo is null.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo throws ArgumentNullException when typeInfo is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_ThrowsArgumentNullException_WhenTypeInfoIsNull() => await Assert.That(() => _sut.LoadState<TestState>(null!))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo returns a non-null observable.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo returns a non-null observable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_ReturnsNonNullObservable()
     {
@@ -224,9 +209,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo returns an observable of the specified type.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo returns an observable of the specified type.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_ReturnsObservableOfSpecifiedType()
     {
@@ -235,9 +219,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<TestState?>>();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState returns a non-null observable.
-    /// </summary>
+    /// <summary>Validates that InvalidateState returns a non-null observable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ReturnsNonNullObservable()
     {
@@ -246,9 +229,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState returns an observable of RxVoid type.
-    /// </summary>
+    /// <summary>Validates that InvalidateState returns an observable of RxVoid type.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ReturnsObservableOfRxVoid()
     {
@@ -257,16 +239,15 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState observable can be subscribed to.
-    /// </summary>
+    /// <summary>Validates that InvalidateState observable can be subscribed to.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ObservableCanBeSubscribed()
     {
         var observable = _sut.InvalidateState();
         var subscribed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => subscribed = true,
             _ => subscribed = true);
 
@@ -276,9 +257,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(subscribed).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that calling InvalidateState multiple times returns separate observables.
-    /// </summary>
+    /// <summary>Validates that calling InvalidateState multiple times returns separate observables.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ReturnsNewObservableEachCall()
     {
@@ -288,9 +268,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
 
-    /// <summary>
-    /// Validates that SaveState returns a cold observable (doesn't execute until subscribed).
-    /// </summary>
+    /// <summary>Validates that SaveState returns a cold observable (doesn't execute until subscribed).</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ReturnsColdObservable()
     {
@@ -305,9 +284,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
-    /// <summary>
-    /// Validates that LoadState returns a cold observable (doesn't execute until subscribed).
-    /// </summary>
+    /// <summary>Validates that LoadState returns a cold observable (doesn't execute until subscribed).</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ReturnsColdObservable()
     {
@@ -320,9 +298,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<object?>>();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState returns a cold observable.
-    /// </summary>
+    /// <summary>Validates that InvalidateState returns a cold observable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ReturnsColdObservable()
     {
@@ -335,9 +312,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
 
-    /// <summary>
-    /// Validates that SaveState observable executes when subscribed.
-    /// </summary>
+    /// <summary>Validates that SaveState observable executes when subscribed.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ExecutesWhenSubscribed()
     {
@@ -347,7 +323,7 @@ public class WinRTAppDataDriverTests
         var completed = false;
         var errored = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => completed = true,
             _ => errored = true,
             () => completed = true);
@@ -359,9 +335,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(completed || errored).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that LoadState observable executes when subscribed.
-    /// </summary>
+    /// <summary>Validates that LoadState observable executes when subscribed.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ExecutesWhenSubscribed()
     {
@@ -369,7 +344,7 @@ public class WinRTAppDataDriverTests
 
         var executed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => executed = true,
             _ => executed = true,
             () => executed = true);
@@ -380,9 +355,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState observable executes when subscribed.
-    /// </summary>
+    /// <summary>Validates that InvalidateState observable executes when subscribed.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ExecutesWhenSubscribed()
     {
@@ -390,7 +364,7 @@ public class WinRTAppDataDriverTests
 
         var executed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => executed = true,
             _ => executed = true,
             () => executed = true);
@@ -401,9 +375,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that SaveState generic method exists and is accessible.
-    /// </summary>
+    /// <summary>Validates that SaveState generic method exists and is accessible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_GenericMethod_Exists()
     {
@@ -414,9 +387,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(methods.Count).IsGreaterThanOrEqualTo(1);
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo method exists.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo method exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_Method_Exists()
     {
@@ -427,9 +399,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(methods.Count).IsGreaterThanOrEqualTo(2);
     }
 
-    /// <summary>
-    /// Validates that LoadState non-generic method exists.
-    /// </summary>
+    /// <summary>Validates that LoadState non-generic method exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_NonGenericMethod_Exists()
     {
@@ -440,9 +411,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(method).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo method exists.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo method exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_Method_Exists()
     {
@@ -453,9 +423,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(methods.Count).IsGreaterThanOrEqualTo(2);
     }
 
-    /// <summary>
-    /// Validates that InvalidateState method exists.
-    /// </summary>
+    /// <summary>Validates that InvalidateState method exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_Method_Exists()
     {
@@ -464,9 +433,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(method).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles empty string property values.
-    /// </summary>
+    /// <summary>Validates SaveState handles empty string property values.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesEmptyStringProperty()
     {
@@ -476,9 +444,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles complex nested objects.
-    /// </summary>
+    /// <summary>Validates SaveState handles complex nested objects.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesNestedState()
     {
@@ -492,9 +459,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState with JsonTypeInfo handles complex nested objects.
-    /// </summary>
+    /// <summary>Validates SaveState with JsonTypeInfo handles complex nested objects.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_HandlesNestedState()
     {
@@ -508,9 +474,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState handles null inner state in nested object.
-    /// </summary>
+    /// <summary>Validates that SaveState handles null inner state in nested object.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesNullInnerState()
     {
@@ -524,9 +489,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo handles null inner state.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo handles null inner state.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_HandlesNullInnerState()
     {
@@ -540,16 +504,15 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo can be subscribed to.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo can be subscribed to.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_ObservableCanBeSubscribed()
     {
         var observable = _sut.LoadState(TestStateJsonContext.Default.TestState);
         var subscribed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => subscribed = true,
             _ => subscribed = true);
 
@@ -559,9 +522,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(subscribed).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo observable executes when subscribed.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo observable executes when subscribed.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_ExecutesWhenSubscribed()
     {
@@ -570,7 +532,7 @@ public class WinRTAppDataDriverTests
 
         var executed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => executed = true,
             _ => executed = true,
             () => executed = true);
@@ -581,9 +543,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo observable executes when subscribed.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo observable executes when subscribed.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_ExecutesWhenSubscribed()
     {
@@ -591,7 +552,7 @@ public class WinRTAppDataDriverTests
 
         var executed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => executed = true,
             _ => executed = true,
             () => executed = true);
@@ -606,6 +567,7 @@ public class WinRTAppDataDriverTests
     /// Validates that SaveState observable errors on platform without ApplicationData.
     /// In non-Windows TFMs, ApplicationData.Current throws an exception.
     /// </summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ObservableErrorsOnNonWindowsPlatform()
     {
@@ -615,7 +577,7 @@ public class WinRTAppDataDriverTests
         Exception? caughtException = null;
         var completed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => completed = true,
             ex => caughtException = ex,
             () => completed = true);
@@ -624,12 +586,11 @@ public class WinRTAppDataDriverTests
         await Task.Delay(200);
 
         // Either completes (on Windows with proper setup) or errors (on non-Windows or no roaming folder)
-        await Assert.That(completed || caughtException != null).IsTrue();
+        await Assert.That(completed || caughtException is not null).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that LoadState observable errors on platform without ApplicationData.
-    /// </summary>
+    /// <summary>Validates that LoadState observable errors on platform without ApplicationData.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ObservableErrorsOnNonWindowsPlatform()
     {
@@ -638,7 +599,7 @@ public class WinRTAppDataDriverTests
         Exception? caughtException = null;
         var completed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => completed = true,
             ex => caughtException = ex,
             () => completed = true);
@@ -647,12 +608,11 @@ public class WinRTAppDataDriverTests
         await Task.Delay(200);
 
         // Either completes (on Windows with proper setup) or errors (on non-Windows or no roaming folder)
-        await Assert.That(completed || caughtException != null).IsTrue();
+        await Assert.That(completed || caughtException is not null).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState observable errors on platform without ApplicationData.
-    /// </summary>
+    /// <summary>Validates that InvalidateState observable errors on platform without ApplicationData.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ObservableErrorsOnNonWindowsPlatform()
     {
@@ -661,7 +621,7 @@ public class WinRTAppDataDriverTests
         Exception? caughtException = null;
         var completed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => completed = true,
             ex => caughtException = ex,
             () => completed = true);
@@ -670,12 +630,11 @@ public class WinRTAppDataDriverTests
         await Task.Delay(200);
 
         // Either completes (on Windows with proper setup) or errors (on non-Windows or no roaming folder)
-        await Assert.That(completed || caughtException != null).IsTrue();
+        await Assert.That(completed || caughtException is not null).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo observable errors on platform without ApplicationData.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo observable errors on platform without ApplicationData.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_ObservableErrorsOnNonWindowsPlatform()
     {
@@ -685,7 +644,7 @@ public class WinRTAppDataDriverTests
         Exception? caughtException = null;
         var completed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => completed = true,
             ex => caughtException = ex,
             () => completed = true);
@@ -694,12 +653,11 @@ public class WinRTAppDataDriverTests
         await Task.Delay(200);
 
         // Either completes (on Windows with proper setup) or errors (on non-Windows or no roaming folder)
-        await Assert.That(completed || caughtException != null).IsTrue();
+        await Assert.That(completed || caughtException is not null).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo observable errors on platform without ApplicationData.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo observable errors on platform without ApplicationData.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_ObservableErrorsOnNonWindowsPlatform()
     {
@@ -708,7 +666,7 @@ public class WinRTAppDataDriverTests
         Exception? caughtException = null;
         var completed = false;
 
-        observable.Subscribe(
+        _ = observable.Subscribe(
             _ => completed = true,
             ex => caughtException = ex,
             () => completed = true);
@@ -717,12 +675,79 @@ public class WinRTAppDataDriverTests
         await Task.Delay(200);
 
         // Either completes (on Windows with proper setup) or errors (on non-Windows or no roaming folder)
-        await Assert.That(completed || caughtException != null).IsTrue();
+        await Assert.That(completed || caughtException is not null).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that SaveState returns new observable each call.
-    /// </summary>
+    /// <summary>Validates that XML state can be saved and loaded when application storage is available.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task SaveStateThenLoadState_RoundTripsXmlState_WhenApplicationStorageIsAvailable()
+    {
+        var state = new TestState { Name = "RoundTrip", Value = 42 };
+
+        try
+        {
+            await _sut.SaveState(state).ToTask();
+            var loaded = await _sut.LoadState().ToTask();
+
+            await Assert.That(loaded).IsNotNull();
+            await Assert.That(loaded).IsAssignableTo<TestState>();
+            var loadedState = (TestState)loaded!;
+            await Assert.That(loadedState.Name).IsEqualTo(state.Name);
+            await Assert.That(loadedState.Value).IsEqualTo(state.Value);
+        }
+        catch (Exception ex) when (IsApplicationStorageUnavailable(ex))
+        {
+            Skip.Test($"Application storage is not available in this environment: {ex.GetType().Name}");
+        }
+    }
+
+    /// <summary>Validates that JSON state can be saved and loaded when application storage is available.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task SaveStateThenLoadStateWithTypeInfo_RoundTripsJsonState_WhenApplicationStorageIsAvailable()
+    {
+        var state = new TestState { Name = "JsonRoundTrip", Value = 84 };
+
+        try
+        {
+            await _sut.SaveState(state, TestStateJsonContext.Default.TestState).ToTask();
+            var loaded = await _sut.LoadState(TestStateJsonContext.Default.TestState).ToTask();
+
+            await Assert.That(loaded).IsNotNull();
+            await Assert.That(loaded!.Name).IsEqualTo(state.Name);
+            await Assert.That(loaded.Value).IsEqualTo(state.Value);
+        }
+        catch (Exception ex) when (IsApplicationStorageUnavailable(ex))
+        {
+            Skip.Test($"Application storage is not available in this environment: {ex.GetType().Name}");
+        }
+    }
+
+    /// <summary>Validates that invalidating state covers both existing and missing persisted files.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task InvalidateState_Twice_DeletesExistingFilesThenIgnoresMissingFiles()
+    {
+        var state = new TestState { Name = "Invalidate", Value = 126 };
+
+        try
+        {
+            await _sut.SaveState(state).ToTask();
+            await _sut.SaveState(state, TestStateJsonContext.Default.TestState).ToTask();
+            await _sut.InvalidateState().ToTask();
+            await _sut.InvalidateState().ToTask();
+
+            await Assert.That(_sut.InvalidateState()).IsNotNull();
+        }
+        catch (Exception ex) when (IsApplicationStorageUnavailable(ex))
+        {
+            Skip.Test($"Application storage is not available in this environment: {ex.GetType().Name}");
+        }
+    }
+
+    /// <summary>Validates that SaveState returns new observable each call.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ReturnsNewObservableEachCall()
     {
@@ -733,9 +758,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
 
-    /// <summary>
-    /// Validates that LoadState returns new observable each call.
-    /// </summary>
+    /// <summary>Validates that LoadState returns new observable each call.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ReturnsNewObservableEachCall()
     {
@@ -745,9 +769,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo returns new observable each call.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo returns new observable each call.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_ReturnsNewObservableEachCall()
     {
@@ -758,9 +781,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo returns new observable each call.
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo returns new observable each call.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_ReturnsNewObservableEachCall()
     {
@@ -770,9 +792,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
 
-    /// <summary>
-    /// Validates that SaveState method has RequiresDynamicCode attribute.
-    /// </summary>
+    /// <summary>Validates that SaveState method has RequiresDynamicCode attribute.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HasRequiresDynamicCodeAttribute()
     {
@@ -785,9 +806,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(attribute).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState method has RequiresUnreferencedCode attribute.
-    /// </summary>
+    /// <summary>Validates that SaveState method has RequiresUnreferencedCode attribute.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HasRequiresUnreferencedCodeAttribute()
     {
@@ -800,9 +820,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(attribute).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that LoadState method has RequiresDynamicCode attribute.
-    /// </summary>
+    /// <summary>Validates that LoadState method has RequiresDynamicCode attribute.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_HasRequiresDynamicCodeAttribute()
     {
@@ -816,9 +835,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(attribute).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that LoadState method has RequiresUnreferencedCode attribute.
-    /// </summary>
+    /// <summary>Validates that LoadState method has RequiresUnreferencedCode attribute.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_HasRequiresUnreferencedCodeAttribute()
     {
@@ -832,9 +850,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(attribute).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo does NOT have RequiresDynamicCode attribute (AOT-safe).
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo does NOT have RequiresDynamicCode attribute (AOT-safe).</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_DoesNotHaveRequiresDynamicCodeAttribute()
     {
@@ -847,9 +864,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(attribute).IsNull();
     }
 
-    /// <summary>
-    /// Validates that LoadState with JsonTypeInfo does NOT have RequiresDynamicCode attribute (AOT-safe).
-    /// </summary>
+    /// <summary>Validates that LoadState with JsonTypeInfo does NOT have RequiresDynamicCode attribute (AOT-safe).</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadStateWithTypeInfo_DoesNotHaveRequiresDynamicCodeAttribute()
     {
@@ -862,9 +878,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(attribute).IsNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles state with special characters in string properties.
-    /// </summary>
+    /// <summary>Validates SaveState handles state with special characters in string properties.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesSpecialCharactersInStrings()
     {
@@ -874,9 +889,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles state with unicode characters.
-    /// </summary>
+    /// <summary>Validates SaveState handles state with unicode characters.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesUnicodeCharacters()
     {
@@ -886,21 +900,19 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles state with very long strings.
-    /// </summary>
+    /// <summary>Validates SaveState handles state with very long strings.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesLongStrings()
     {
-        var state = new TestState { Name = new string('x', 10000), Value = 42 };
+        var state = new TestState { Name = new('x', 10_000), Value = 42 };
         var observable = _sut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles state with negative values.
-    /// </summary>
+    /// <summary>Validates SaveState handles state with negative values.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesNegativeValues()
     {
@@ -910,9 +922,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles state with max int value.
-    /// </summary>
+    /// <summary>Validates SaveState handles state with max int value.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesMaxIntValue()
     {
@@ -922,9 +933,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState handles state with min int value.
-    /// </summary>
+    /// <summary>Validates SaveState handles state with min int value.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesMinIntValue()
     {
@@ -934,9 +944,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo handles special characters.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo handles special characters.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_HandlesSpecialCharacters()
     {
@@ -946,9 +955,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that SaveState with JsonTypeInfo handles unicode.
-    /// </summary>
+    /// <summary>Validates that SaveState with JsonTypeInfo handles unicode.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveStateWithTypeInfo_HandlesUnicode()
     {
@@ -958,9 +966,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState observable can be converted to task.
-    /// </summary>
+    /// <summary>Validates SaveState observable can be converted to task.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_ObservableCanBeConvertedToTask()
     {
@@ -974,9 +981,8 @@ public class WinRTAppDataDriverTests
         await Assert.That((object)task).IsAssignableTo<Task>();
     }
 
-    /// <summary>
-    /// Validates LoadState observable can be converted to task.
-    /// </summary>
+    /// <summary>Validates LoadState observable can be converted to task.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task LoadState_ObservableCanBeConvertedToTask()
     {
@@ -989,9 +995,8 @@ public class WinRTAppDataDriverTests
         await Assert.That((object)task).IsAssignableTo<Task>();
     }
 
-    /// <summary>
-    /// Validates InvalidateState observable can be converted to task.
-    /// </summary>
+    /// <summary>Validates InvalidateState observable can be converted to task.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_ObservableCanBeConvertedToTask()
     {
@@ -1004,9 +1009,8 @@ public class WinRTAppDataDriverTests
         await Assert.That((object)task).IsAssignableTo<Task>();
     }
 
-    /// <summary>
-    /// Validates that deeply nested objects can be handled by SaveState.
-    /// </summary>
+    /// <summary>Validates that deeply nested objects can be handled by SaveState.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_HandlesDeeplyNestedObjects()
     {
@@ -1024,9 +1028,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates SaveState with different state instances returns unique observables.
-    /// </summary>
+    /// <summary>Validates SaveState with different state instances returns unique observables.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SaveState_DifferentStateInstances_ReturnUniqueObservables()
     {
@@ -1039,15 +1042,14 @@ public class WinRTAppDataDriverTests
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
 
-    /// <summary>
-    /// Validates that the class can be used in a using statement pattern.
-    /// </summary>
+    /// <summary>Validates that the class can be used in a using statement pattern.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WinRTAppDataDriver_CanBeUsedInScopePattern()
     {
         WinRTAppDataDriver driver;
         {
-            driver = new WinRTAppDataDriver();
+            driver = new();
             await Assert.That(driver).IsNotNull();
         }
 
@@ -1056,9 +1058,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(driver.InvalidateState()).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState method does not have AOT-unsafe attributes.
-    /// </summary>
+    /// <summary>Validates that InvalidateState method does not have AOT-unsafe attributes.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_DoesNotHaveRequiresDynamicCodeAttribute()
     {
@@ -1070,9 +1071,8 @@ public class WinRTAppDataDriverTests
         await Assert.That(attribute).IsNull();
     }
 
-    /// <summary>
-    /// Validates that InvalidateState method does not have AOT-unsafe attributes.
-    /// </summary>
+    /// <summary>Validates that InvalidateState method does not have AOT-unsafe attributes.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task InvalidateState_DoesNotHaveRequiresUnreferencedCodeAttribute()
     {
@@ -1083,4 +1083,10 @@ public class WinRTAppDataDriverTests
 
         await Assert.That(attribute).IsNull();
     }
+
+    /// <summary>Determines whether an exception indicates application storage is unavailable in the current environment.</summary>
+    /// <param name="exception">The exception thrown while accessing application storage.</param>
+    /// <returns><c>true</c> if the exception is caused by unavailable application storage; otherwise, <c>false</c>.</returns>
+    private static bool IsApplicationStorageUnavailable(Exception exception) =>
+        exception is InvalidOperationException or NotSupportedException or UnauthorizedAccessException;
 }

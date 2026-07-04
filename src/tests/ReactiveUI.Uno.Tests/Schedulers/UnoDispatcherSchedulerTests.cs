@@ -3,32 +3,32 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using NSubstitute;
+#if !REACTIVE_SHIM
+using ReactiveUI.Primitives.Concurrency;
+#endif
 using Windows.Foundation;
 using Windows.UI.Core;
 
 namespace ReactiveUI.Uno.Tests.Schedulers;
 
-/// <summary>
-/// Tests for UnoDispatcherScheduler functionality.
-/// </summary>
+/// <summary>Tests for UnoDispatcherScheduler functionality.</summary>
 public class UnoDispatcherSchedulerTests
 {
+    /// <summary>Stores the dispatcher test double used by the scheduler.</summary>
     private CoreDispatcher _mockDispatcher = null!;
+
+    /// <summary>Stores the scheduler under test.</summary>
     private UnoDispatcherScheduler _scheduler = null!;
 
-    /// <summary>
-    /// Setup for each test.
-    /// </summary>
+    /// <summary>Setup for each test.</summary>
     [Before(Test)]
     public void SetUp()
     {
         try
         {
             _mockDispatcher = Substitute.For<CoreDispatcher>();
-            _scheduler = new UnoDispatcherScheduler(_mockDispatcher);
+            _scheduler = new(_mockDispatcher);
         }
         catch (Exception)
         {
@@ -36,9 +36,8 @@ public class UnoDispatcherSchedulerTests
         }
     }
 
-    /// <summary>
-    /// Test constructor with dispatcher parameter sets properties correctly.
-    /// </summary>
+    /// <summary>Test constructor with dispatcher parameter sets properties correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_WithDispatcher_SetsPropertiesCorrectly()
     {
@@ -50,14 +49,13 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(scheduler.Priority).IsEqualTo(CoreDispatcherPriority.Normal);
     }
 
-    /// <summary>
-    /// Test constructor with dispatcher and priority parameters sets properties correctly.
-    /// </summary>
+    /// <summary>Test constructor with dispatcher and priority parameters sets properties correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_WithDispatcherAndPriority_SetsPropertiesCorrectly()
     {
         // Arrange
-        var priority = CoreDispatcherPriority.High;
+        const CoreDispatcherPriority priority = CoreDispatcherPriority.High;
 
         // Act
         var scheduler = new UnoDispatcherScheduler(_mockDispatcher, priority);
@@ -67,9 +65,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(scheduler.Priority).IsEqualTo(priority);
     }
 
-    /// <summary>
-    /// Test constructor throws ArgumentNullException when dispatcher is null.
-    /// </summary>
+    /// <summary>Test constructor throws ArgumentNullException when dispatcher is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_NullDispatcher_ThrowsArgumentNullException()
     {
@@ -77,9 +74,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(() => new UnoDispatcherScheduler(null!)).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Test constructor with priority throws ArgumentNullException when dispatcher is null.
-    /// </summary>
+    /// <summary>Test constructor with priority throws ArgumentNullException when dispatcher is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_NullDispatcherWithPriority_ThrowsArgumentNullException()
     {
@@ -87,9 +83,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(() => new UnoDispatcherScheduler(null!, CoreDispatcherPriority.High)).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Test Schedule method throws ArgumentNullException when action is null.
-    /// </summary>
+    /// <summary>Test Schedule method throws ArgumentNullException when action is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_NullAction_ThrowsArgumentNullException()
     {
@@ -97,9 +92,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(() => _scheduler.Schedule("state", null!)).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Test Schedule with due time throws ArgumentNullException when action is null.
-    /// </summary>
+    /// <summary>Test Schedule with due time throws ArgumentNullException when action is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_WithDueTime_NullAction_ThrowsArgumentNullException()
     {
@@ -107,9 +101,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(() => _scheduler.Schedule("state", TimeSpan.Zero, null!)).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Test SchedulePeriodic throws ArgumentNullException when action is null.
-    /// </summary>
+    /// <summary>Test SchedulePeriodic throws ArgumentNullException when action is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SchedulePeriodic_NullAction_ThrowsArgumentNullException()
     {
@@ -117,9 +110,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(() => _scheduler.SchedulePeriodic("state", TimeSpan.Zero, null!)).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Test SchedulePeriodic throws ArgumentOutOfRangeException when period is negative.
-    /// </summary>
+    /// <summary>Test SchedulePeriodic throws ArgumentOutOfRangeException when period is negative.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SchedulePeriodic_NegativePeriod_ThrowsArgumentOutOfRangeException()
     {
@@ -130,9 +122,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(() => _scheduler.SchedulePeriodic("state", negativePeriod, state => state)).Throws<ArgumentOutOfRangeException>();
     }
 
-    /// <summary>
-    /// Test Schedule method returns non-null disposable.
-    /// </summary>
+    /// <summary>Test Schedule method returns non-null disposable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_ValidAction_ReturnsNonNullDisposable()
     {
@@ -149,9 +140,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(disposable).IsAssignableTo<IDisposable>();
     }
 
-    /// <summary>
-    /// Test Schedule with zero due time calls Schedule without delay.
-    /// </summary>
+    /// <summary>Test Schedule with zero due time calls Schedule without delay.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_WithZeroDueTime_CallsImmediateSchedule()
     {
@@ -165,12 +155,11 @@ public class UnoDispatcherSchedulerTests
 
         // Assert
         await Assert.That(disposable).IsNotNull();
-        _mockDispatcher.Received(1).RunAsync(Arg.Any<CoreDispatcherPriority>(), Arg.Any<DispatchedHandler>());
+        _ = _mockDispatcher.Received(1).RunAsync(Arg.Any<CoreDispatcherPriority>(), Arg.Any<DispatchedHandler>());
     }
 
-    /// <summary>
-    /// Test Schedule with positive due time returns valid disposable.
-    /// </summary>
+    /// <summary>Test Schedule with positive due time returns valid disposable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_WithPositiveDueTime_ReturnsValidDisposable()
     {
@@ -185,26 +174,21 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(disposable).IsAssignableTo<IDisposable>();
     }
 
-    /// <summary>
-    /// Test SchedulePeriodic with zero period returns valid disposable.
-    /// </summary>
+    /// <summary>Test SchedulePeriodic with zero period returns valid disposable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SchedulePeriodic_WithZeroPeriod_ReturnsValidDisposable()
     {
         // Act
-        var disposable = _scheduler.SchedulePeriodic("test", TimeSpan.Zero, state => state + "1");
+        using var disposable = _scheduler.SchedulePeriodic("test", TimeSpan.Zero, state => state + "1");
 
         // Assert
         await Assert.That(disposable).IsNotNull();
         await Assert.That(disposable).IsAssignableTo<IDisposable>();
-
-        // Cleanup
-        disposable.Dispose();
     }
 
-    /// <summary>
-    /// Test SchedulePeriodic with positive period returns valid disposable.
-    /// </summary>
+    /// <summary>Test SchedulePeriodic with positive period returns valid disposable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task SchedulePeriodic_WithPositivePeriod_ReturnsValidDisposable()
     {
@@ -212,19 +196,15 @@ public class UnoDispatcherSchedulerTests
         var period = TimeSpan.FromMilliseconds(50);
 
         // Act
-        var disposable = _scheduler.SchedulePeriodic(0, period, state => state + 1);
+        using var disposable = _scheduler.SchedulePeriodic(0, period, state => state + 1);
 
         // Assert
         await Assert.That(disposable).IsNotNull();
         await Assert.That(disposable).IsAssignableTo<IDisposable>();
-
-        // Cleanup
-        disposable.Dispose();
     }
 
-    /// <summary>
-    /// Test that Dispatcher property is accessible.
-    /// </summary>
+    /// <summary>Test that Dispatcher property is accessible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Dispatcher_Property_IsAccessible()
     {
@@ -232,9 +212,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(_scheduler.Dispatcher).IsEqualTo(_mockDispatcher);
     }
 
-    /// <summary>
-    /// Test that Priority property is accessible.
-    /// </summary>
+    /// <summary>Test that Priority property is accessible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Priority_Property_IsAccessible()
     {
@@ -242,23 +221,21 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(_scheduler.Priority).IsEqualTo(CoreDispatcherPriority.Normal);
     }
 
-    /// <summary>
-    /// Test that Priority property reflects constructor value.
-    /// </summary>
+    /// <summary>Test that Priority property reflects constructor value.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Priority_Property_ReflectsConstructorValue()
     {
         // Arrange
-        var priority = CoreDispatcherPriority.Low;
+        const CoreDispatcherPriority priority = CoreDispatcherPriority.Low;
         var scheduler = new UnoDispatcherScheduler(_mockDispatcher, priority);
 
         // Act & Assert
         await Assert.That(scheduler.Priority).IsEqualTo(priority);
     }
 
-    /// <summary>
-    /// Test disposing returned disposable doesn't throw.
-    /// </summary>
+    /// <summary>Test disposing returned disposable doesn't throw.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task DisposingReturnedDisposable_DoesNotThrow()
     {
@@ -273,9 +250,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(() => disposable.Dispose()).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Test multiple scheduler instantiation is supported.
-    /// </summary>
+    /// <summary>Test multiple scheduler instantiation is supported.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task MultipleSchedulerInstantiation_IsSupported()
     {
@@ -290,9 +266,8 @@ public class UnoDispatcherSchedulerTests
         await Assert.That(scheduler2.Priority).IsEqualTo(CoreDispatcherPriority.High);
     }
 
-    /// <summary>
-    /// Test Current property behavior when no window exists.
-    /// </summary>
+    /// <summary>Test Current property behavior when no window exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Current_Property_WithNoWindow_ThrowsInvalidOperationException()
     {
@@ -309,29 +284,26 @@ public class UnoDispatcherSchedulerTests
         }
     }
 
-    /// <summary>
-    /// Test that scheduler implements ISchedulerPeriodic interface.
-    /// </summary>
+    /// <summary>Test that scheduler exposes periodic scheduling.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task Scheduler_ImplementsISchedulerPeriodic()
+    public async Task Scheduler_ExposesSchedulePeriodic()
     {
         // Act & Assert
-        await Assert.That(_scheduler).IsAssignableTo<ISchedulerPeriodic>();
+        await Assert.That(_scheduler.GetType().GetMethod(nameof(UnoDispatcherScheduler.SchedulePeriodic))).IsNotNull();
     }
 
-    /// <summary>
-    /// Test that scheduler implements IScheduler interface.
-    /// </summary>
+    /// <summary>Test that scheduler implements ISequencer interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task Scheduler_ImplementsIScheduler()
+    public async Task Scheduler_ImplementsISequencer()
     {
         // Act & Assert
-        await Assert.That(_scheduler).IsAssignableTo<IScheduler>();
+        await Assert.That(_scheduler).IsAssignableTo<ISequencer>();
     }
 
-    /// <summary>
-    /// Test schedule verification with mocked dispatcher interaction.
-    /// </summary>
+    /// <summary>Test schedule verification with mocked dispatcher interaction.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_CallsDispatcher_WithCorrectPriority()
     {
@@ -341,31 +313,30 @@ public class UnoDispatcherSchedulerTests
                       .Returns(mockOperation);
 
         // Act
-        _scheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
+        _ = _scheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
 
         // Assert
-        _mockDispatcher.Received(1).RunAsync(CoreDispatcherPriority.Normal, Arg.Any<DispatchedHandler>());
+        _ = _mockDispatcher.Received(1).RunAsync(CoreDispatcherPriority.Normal, Arg.Any<DispatchedHandler>());
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Test schedule with custom priority calls dispatcher correctly.
-    /// </summary>
+    /// <summary>Test schedule with custom priority calls dispatcher correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_WithCustomPriority_CallsDispatcher_WithCorrectPriority()
     {
         // Arrange
-        var customPriority = CoreDispatcherPriority.High;
+        const CoreDispatcherPriority customPriority = CoreDispatcherPriority.High;
         var customScheduler = new UnoDispatcherScheduler(_mockDispatcher, customPriority);
         var mockOperation = Substitute.For<IAsyncAction>();
         _ = _mockDispatcher.RunAsync(Arg.Any<CoreDispatcherPriority>(), Arg.Any<DispatchedHandler>())
                       .Returns(mockOperation);
 
         // Act
-        customScheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
+        _ = customScheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
 
         // Assert
-        _mockDispatcher.Received(1).RunAsync(customPriority, Arg.Any<DispatchedHandler>());
+        _ = _mockDispatcher.Received(1).RunAsync(customPriority, Arg.Any<DispatchedHandler>());
         await Task.CompletedTask;
     }
 }

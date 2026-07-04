@@ -3,20 +3,21 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if REACTIVE_SHIM
+using ReactiveUI.Uno.Reactive;
+#else
 using ReactiveUI.Uno;
+#endif
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Helpers;
 
-/// <summary>
-/// Tests for activation helper functionality.
-/// </summary>
+/// <summary>Tests for activation helper functionality.</summary>
 public class ActivationHelperTests
 {
-    /// <summary>
-    /// Verifies ActivationForViewFetcher can be instantiated.
-    /// </summary>
+    /// <summary>Verifies ActivationForViewFetcher can be instantiated.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ActivationForViewFetcher_CanBeInstantiated()
     {
@@ -27,9 +28,8 @@ public class ActivationHelperTests
         await Assert.That(fetcher).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies ActivationForViewFetcher implements IActivationForViewFetcher.
-    /// </summary>
+    /// <summary>Verifies ActivationForViewFetcher implements IActivationForViewFetcher.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ActivationForViewFetcher_ImplementsInterface()
     {

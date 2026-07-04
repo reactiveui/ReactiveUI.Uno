@@ -1,13 +1,17 @@
-﻿// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
+// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
 // Licensed to reactiveui and contributors under one or more agreements.
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Uno;
+#if REACTIVE_SHIM
 
-/// <summary>
-/// Returns the current orientation of the device on Windows.
-/// </summary>
+namespace ReactiveUI.Uno.Reactive;
+#else
+
+namespace ReactiveUI.Uno;
+#endif
+
+/// <summary>Returns the current orientation of the device on Windows.</summary>
 public class PlatformOperations : IPlatformOperations
 {
     /// <inheritdoc/>
@@ -29,12 +33,7 @@ public class PlatformOperations : IPlatformOperations
                 hasCoreWindow = false;
             }
 
-            if (!hasCoreWindow)
-            {
-                return null;
-            }
-
-            return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
+            return !hasCoreWindow ? null : Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();
         }
         catch
         {

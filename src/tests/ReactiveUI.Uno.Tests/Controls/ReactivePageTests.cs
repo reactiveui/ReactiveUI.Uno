@@ -8,14 +8,10 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace ReactiveUI.Uno.Tests.Controls;
 
-/// <summary>
-/// Contains tests for the <see cref="ReactivePage{TViewModel}"/> class.
-/// </summary>
+/// <summary>Contains tests for the <see cref="ReactivePage{TViewModel}"/> class.</summary>
 public class ReactivePageTests
 {
-    /// <summary>
-    /// Setup for each test - skip if no UI context is available.
-    /// </summary>
+    /// <summary>Setup for each test - skip if no UI context is available.</summary>
     [Before(Test)]
     public void SetUp()
     {
@@ -33,9 +29,8 @@ public class ReactivePageTests
         }
     }
 
-    /// <summary>
-    /// Validates that TestReactivePage can be instantiated.
-    /// </summary>
+    /// <summary>Validates that TestReactivePage can be instantiated.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactivePage_CanBeInstantiated()
     {
@@ -43,9 +38,8 @@ public class ReactivePageTests
         await Assert.That(page).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that ReactivePage implements IViewFor interface.
-    /// </summary>
+    /// <summary>Validates that ReactivePage implements IViewFor interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactivePage_ImplementsIViewFor()
     {
@@ -53,9 +47,8 @@ public class ReactivePageTests
         await Assert.That(page).IsAssignableTo<IViewFor<TestPageViewModel>>();
     }
 
-    /// <summary>
-    /// Validates that ReactivePage implements non-generic IViewFor interface.
-    /// </summary>
+    /// <summary>Validates that ReactivePage implements non-generic IViewFor interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactivePage_ImplementsNonGenericIViewFor()
     {
@@ -63,9 +56,8 @@ public class ReactivePageTests
         await Assert.That(page).IsAssignableTo<IViewFor>();
     }
 
-    /// <summary>
-    /// Validates that ReactivePage inherits from Page.
-    /// </summary>
+    /// <summary>Validates that ReactivePage inherits from Page.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ReactivePage_InheritsFromPage()
     {
@@ -73,9 +65,8 @@ public class ReactivePageTests
         await Assert.That(page).IsAssignableTo<Page>();
     }
 
-    /// <summary>
-    /// Validates that ViewModel property is initially null.
-    /// </summary>
+    /// <summary>Validates that ViewModel property is initially null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_IsInitiallyNull()
     {
@@ -83,9 +74,8 @@ public class ReactivePageTests
         await Assert.That(page.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewModel property can be set.
-    /// </summary>
+    /// <summary>Validates that ViewModel property can be set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeSet()
     {
@@ -95,21 +85,18 @@ public class ReactivePageTests
         await Assert.That(page.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that ViewModel property can be set to null.
-    /// </summary>
+    /// <summary>Validates that ViewModel property can be set to null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeSetToNull()
     {
-        var page = new TestReactivePage();
-        page.ViewModel = new TestPageViewModel();
+        var page = new TestReactivePage() { ViewModel = new() };
         page.ViewModel = null;
         await Assert.That(page.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Validates that BindingRoot returns the ViewModel.
-    /// </summary>
+    /// <summary>Validates that BindingRoot returns the ViewModel.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task BindingRoot_ReturnsViewModel()
     {
@@ -119,9 +106,8 @@ public class ReactivePageTests
         await Assert.That(page.BindingRoot).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that BindingRoot returns null when ViewModel is null.
-    /// </summary>
+    /// <summary>Validates that BindingRoot returns null when ViewModel is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task BindingRoot_ReturnsNull_WhenViewModelIsNull()
     {
@@ -129,9 +115,8 @@ public class ReactivePageTests
         await Assert.That(page.BindingRoot).IsNull();
     }
 
-    /// <summary>
-    /// Validates that non-generic IViewFor.ViewModel property works correctly.
-    /// </summary>
+    /// <summary>Validates that non-generic IViewFor.ViewModel property works correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task IViewForViewModel_GetterWorks()
     {
@@ -142,9 +127,8 @@ public class ReactivePageTests
         await Assert.That(nonGenericViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that non-generic IViewFor.ViewModel setter works correctly.
-    /// </summary>
+    /// <summary>Validates that non-generic IViewFor.ViewModel setter works correctly.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task IViewForViewModel_SetterWorks()
     {
@@ -154,28 +138,24 @@ public class ReactivePageTests
         await Assert.That(page.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Validates that non-generic IViewFor.ViewModel can be set to null.
-    /// </summary>
+    /// <summary>Validates that non-generic IViewFor.ViewModel can be set to null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task IViewForViewModel_CanBeSetToNull()
     {
-        var page = new TestReactivePage();
-        page.ViewModel = new TestPageViewModel();
+        var page = new TestReactivePage() { ViewModel = new() };
         ((IViewFor)page).ViewModel = null;
         await Assert.That(page.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Validates that ViewModelProperty DependencyProperty exists.
-    /// </summary>
+    /// <summary>Validates that ViewModelProperty DependencyProperty exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModelProperty_DependencyProperty_Exists() =>
         await Assert.That(ReactivePage<TestPageViewModel>.ViewModelProperty).IsNotNull();
 
-    /// <summary>
-    /// Validates that multiple instances can be created independently.
-    /// </summary>
+    /// <summary>Validates that multiple instances can be created independently.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task MultipleInstances_AreIndependent()
     {
@@ -190,9 +170,8 @@ public class ReactivePageTests
         await Assert.That(page2.ViewModel).IsEqualTo(viewModel2);
     }
 
-    /// <summary>
-    /// Validates that ViewModel can be updated multiple times.
-    /// </summary>
+    /// <summary>Validates that ViewModel can be updated multiple times.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeUpdatedMultipleTimes()
     {
@@ -205,13 +184,13 @@ public class ReactivePageTests
         await Assert.That(page.ViewModel).IsEqualTo(viewModel2);
     }
 
-    /// <summary>
-    /// Test view model for testing purposes.
-    /// </summary>
-    public sealed class TestPageViewModel;
+    /// <summary>Test view model for testing purposes.</summary>
+    public sealed class TestPageViewModel
+    {
+        /// <summary>Gets a value indicating whether the test view model was initialized.</summary>
+        public static bool IsInitialized => true;
+    }
 
-    /// <summary>
-    /// Test ReactivePage implementation for testing purposes.
-    /// </summary>
+    /// <summary>Test ReactivePage implementation for testing purposes.</summary>
     public sealed class TestReactivePage : ReactivePage<TestPageViewModel>;
 }

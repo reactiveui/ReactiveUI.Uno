@@ -1,15 +1,19 @@
-﻿// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
+// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
 // Licensed to reactiveui and contributors under one or more agreements.
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace ReactiveUI.Uno;
+#if REACTIVE_SHIM
 
-/// <summary>
-/// A <see cref="UserControl"/> that is reactive.
-/// </summary>
+namespace ReactiveUI.Uno.Reactive;
+#else
+
+namespace ReactiveUI.Uno;
+#endif
+
+/// <summary>A <see cref="UserControl"/> that is reactive.</summary>
 /// <remarks>
 /// <para>
 /// This class is a <see cref="UserControl"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
@@ -74,13 +78,11 @@ namespace ReactiveUI.Uno;
 [global::Foundation.Register]
 #endif
 [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-public partial class ReactiveUserControl<TViewModel> :
+public class ReactiveUserControl<TViewModel> :
         UserControl, IViewFor<TViewModel>
         where TViewModel : class
 {
-    /// <summary>
-    /// The view model dependency property.
-    /// </summary>
+    /// <summary>The view model dependency property.</summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
             nameof(ViewModel),
@@ -88,21 +90,17 @@ public partial class ReactiveUserControl<TViewModel> :
             typeof(ReactiveUserControl<TViewModel>),
             new PropertyMetadata(null));
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.</summary>
     protected ReactiveUserControl()
     {
         // needed so the others are optional.
-        this.WhenActivated((Action<IDisposable> _) =>
+        _ = this.WhenActivated((Action<IDisposable> _) =>
         {
             // No-op
         });
     }
 
-    /// <summary>
-    /// Gets the binding root view model.
-    /// </summary>
+    /// <summary>Gets the binding root view model.</summary>
     public TViewModel? BindingRoot => ViewModel;
 
     /// <inheritdoc/>

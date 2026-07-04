@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml;
+#if REACTIVE_SHIM
+using ReactiveUI.Uno.Reactive;
+#else
 using ReactiveUI.Uno;
+#endif
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
 
@@ -15,23 +19,19 @@ namespace ReactiveUI.Uno.Tests.Converters;
 /// </summary>
 public class BooleanToVisibilityTypeConverterTests
 {
-    /// <summary>
-    /// Represents the system under test, an instance of the <see cref="BooleanToVisibilityTypeConverter"/> class.
-    /// </summary>
+    /// <summary>Represents the system under test, an instance of the <see cref="BooleanToVisibilityTypeConverter"/> class.</summary>
     private readonly BooleanToVisibilityTypeConverter _sut = new();
 
-    /// <summary>
-    /// Determines the affinity level for conversions.
-    /// </summary>
+    /// <summary>Determines the affinity level for conversions.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_ReturnsExpectedValue()
     {
         await Assert.That(_sut.GetAffinityForObjects()).IsEqualTo(2);
     }
 
-    /// <summary>
-    /// Converts a boolean true value to Visibility.Visible.
-    /// </summary>
+    /// <summary>Converts a boolean true value to Visibility.Visible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_TrueToVisibility_ReturnsVisible()
     {
@@ -40,9 +40,8 @@ public class BooleanToVisibilityTypeConverterTests
         await Assert.That(result).IsEqualTo(Visibility.Visible);
     }
 
-    /// <summary>
-    /// Converts a boolean false value to Visibility.Collapsed.
-    /// </summary>
+    /// <summary>Converts a boolean false value to Visibility.Collapsed.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_FalseToVisibility_ReturnsCollapsed()
     {
@@ -51,9 +50,8 @@ public class BooleanToVisibilityTypeConverterTests
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
     }
 
-    /// <summary>
-    /// Converts a boolean true value with Inverse hint to Visibility.Collapsed.
-    /// </summary>
+    /// <summary>Converts a boolean true value with Inverse hint to Visibility.Collapsed.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_TrueWithInverse_ReturnsCollapsed()
     {
@@ -62,9 +60,8 @@ public class BooleanToVisibilityTypeConverterTests
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
     }
 
-    /// <summary>
-    /// Converts a boolean false value with Inverse hint to Visibility.Visible.
-    /// </summary>
+    /// <summary>Converts a boolean false value with Inverse hint to Visibility.Visible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_FalseWithInverse_ReturnsVisible()
     {
@@ -73,9 +70,8 @@ public class BooleanToVisibilityTypeConverterTests
         await Assert.That(result).IsEqualTo(Visibility.Visible);
     }
 
-    /// <summary>
-    /// Validates conversion with null conversionHint defaults to None.
-    /// </summary>
+    /// <summary>Validates conversion with null conversionHint defaults to None.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithNullHint_DefaultsToNone()
     {
@@ -84,23 +80,21 @@ public class BooleanToVisibilityTypeConverterTests
         await Assert.That(result).IsEqualTo(Visibility.Visible);
     }
 
-    /// <summary>
-    /// Validates that BooleanToVisibilityTypeConverter implements IBindingTypeConverter.
-    /// </summary>
+    /// <summary>Validates that BooleanToVisibilityTypeConverter implements IBindingTypeConverter.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task BooleanToVisibilityTypeConverter_ImplementsIBindingTypeConverter()
     {
         await Assert.That(_sut).IsAssignableTo<IBindingTypeConverter>();
     }
 
-    /// <summary>
-    /// Validates that multiple conversions return consistent results.
-    /// </summary>
+    /// <summary>Validates that multiple conversions return consistent results.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MultipleConversions_ReturnsConsistentResults()
     {
-        _sut.TryConvert(true, BooleanToVisibilityHint.None, out var result1);
-        _sut.TryConvert(true, BooleanToVisibilityHint.None, out var result2);
+        _ = _sut.TryConvert(true, BooleanToVisibilityHint.None, out var result1);
+        _ = _sut.TryConvert(true, BooleanToVisibilityHint.None, out var result2);
 
         await Assert.That(result1).IsEqualTo(result2);
     }

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" SetTargetFramework="TargetFramework=$(TargetFramework)" />
   </ItemGroup>
 
   <Target Name="RemoveReactiveUIPrimitivesR3BridgeAnalyzer" BeforeTargets="CoreCompile">
@@ -16,5 +16,22 @@
       <Analyzer Remove="@(Analyzer)" Condition="'%(Analyzer.Filename)%(Analyzer.Extension)' == 'ReactiveUI.Primitives.R3Bridge.Generator.dll'" />
     </ItemGroup>
   </Target>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Concurrency" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+    <Using Include="ReactiveUI.Uno" />
+    <Using Include="ReactiveUI.Primitives.RxVoid" Alias="Unit" />
+    <Using Include="ReactiveUI.Primitives.Signals.Signal" Alias="Observable" />
+    <Using Include="ReactiveUI.Primitives.Disposables.Scope" Alias="Disposable" />
+    <Using Include="ReactiveUI.Primitives.Disposables.MultipleDisposable" Alias="CompositeDisposable" />
+    <Using Include="ReactiveUI.Primitives.Disposables.OnceDisposable" Alias="SingleAssignmentDisposable" />
+    <Using Include="ReactiveUI.Primitives.Disposables.MutableDisposable" Alias="MultipleAssignmentDisposable" />
+    <Using Include="ReactiveUI.Primitives.Disposables.SwapDisposable" Alias="SerialDisposable" />
+    <Using Include="ReactiveUI.Primitives.Concurrency.ISequencer" Alias="IScheduler" />
+    <Using Include="ReactiveUI.Primitives.Concurrency.Sequencer" Alias="Scheduler" />
+    <Using Include="ReactiveUI.Primitives.Concurrency.TaskPoolSequencer" Alias="TaskPoolScheduler" />
+  </ItemGroup>
 
 </Project>

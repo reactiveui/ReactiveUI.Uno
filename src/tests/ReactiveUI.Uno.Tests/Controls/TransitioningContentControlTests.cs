@@ -3,21 +3,16 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml.Controls;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Controls;
 
-/// <summary>
-/// Tests for TransitioningContentControl functionality.
-/// </summary>
+/// <summary>Tests for TransitioningContentControl functionality.</summary>
 public class TransitioningContentControlTests
 {
-    /// <summary>
-    /// Setup for each test.
-    /// </summary>
+    /// <summary>Setup for each test.</summary>
     [Before(Test)]
     public void SetUp()
     {
@@ -40,9 +35,8 @@ public class TransitioningContentControlTests
         }
     }
 
-    /// <summary>
-    /// Test constructor creates instance successfully.
-    /// </summary>
+    /// <summary>Test constructor creates instance successfully.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_CreatesInstanceSuccessfully()
     {
@@ -54,9 +48,8 @@ public class TransitioningContentControlTests
         await Assert.That(control).IsAssignableTo<ContentControl>();
     }
 
-    /// <summary>
-    /// Test control inherits from ContentControl.
-    /// </summary>
+    /// <summary>Test control inherits from ContentControl.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_InheritsFromContentControl()
     {
@@ -67,9 +60,8 @@ public class TransitioningContentControlTests
         await Assert.That(control).IsAssignableTo<ContentControl>();
     }
 
-    /// <summary>
-    /// Test control is partial class (compile-time verification).
-    /// </summary>
+    /// <summary>Test control is partial class (compile-time verification).</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_IsPartialClass()
     {
@@ -78,9 +70,8 @@ public class TransitioningContentControlTests
         await Assert.That(control).IsNotNull();
     }
 
-    /// <summary>
-    /// Test multiple instantiation creates separate objects.
-    /// </summary>
+    /// <summary>Test multiple instantiation creates separate objects.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task MultipleInstantiation_CreatesSeparateObjects()
     {
@@ -92,9 +83,8 @@ public class TransitioningContentControlTests
         await Assert.That(control1).IsNotSameReferenceAs(control2);
     }
 
-    /// <summary>
-    /// Test control can be used as ContentControl.
-    /// </summary>
+    /// <summary>Test control can be used as ContentControl.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_CanBeUsedAsContentControl()
     {
@@ -107,9 +97,8 @@ public class TransitioningContentControlTests
         await Assert.That(contentControl).IsSameReferenceAs(control);
     }
 
-    /// <summary>
-    /// Test constructor is public and accessible.
-    /// </summary>
+    /// <summary>Test constructor is public and accessible.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_IsPublicAndAccessible()
     {
@@ -117,15 +106,14 @@ public class TransitioningContentControlTests
         await Assert.That(() => new TransitioningContentControl()).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Test control can have content set.
-    /// </summary>
+    /// <summary>Test control can have content set.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_CanHaveContentSet()
     {
         // Arrange
         var control = new TransitioningContentControl();
-        var testContent = "Test Content";
+        const string testContent = "Test Content";
 
         // Act
         control.Content = testContent;
@@ -134,25 +122,20 @@ public class TransitioningContentControlTests
         await Assert.That(control.Content).IsEqualTo(testContent);
     }
 
-    /// <summary>
-    /// Test control content can be null.
-    /// </summary>
+    /// <summary>Test control content can be null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_ContentCanBeNull()
     {
         // Arrange
-        var control = new TransitioningContentControl();
-
-        // Act
-        control.Content = null;
+        var control = new TransitioningContentControl() { Content = null };
 
         // Assert
         await Assert.That(control.Content).IsNull();
     }
 
-    /// <summary>
-    /// Test control can have UI element as content.
-    /// </summary>
+    /// <summary>Test control can have UI element as content.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_CanHaveUIElementAsContent()
     {
@@ -168,9 +151,8 @@ public class TransitioningContentControlTests
         await Assert.That(control.Content).IsAssignableTo<Button>();
     }
 
-    /// <summary>
-    /// Test control inherits ContentControl properties and methods.
-    /// </summary>
+    /// <summary>Test control inherits ContentControl properties and methods.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_InheritsContentControlFeatures()
     {
@@ -184,9 +166,8 @@ public class TransitioningContentControlTests
         await Assert.That(() => control.VerticalContentAlignment).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Test control namespace is correct.
-    /// </summary>
+    /// <summary>Test control namespace is correct.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Control_HasCorrectNamespace()
     {

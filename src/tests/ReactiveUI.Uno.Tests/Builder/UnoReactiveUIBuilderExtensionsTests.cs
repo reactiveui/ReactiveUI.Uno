@@ -5,22 +5,20 @@
 
 using NSubstitute;
 using ReactiveUI.Builder;
+#if !REACTIVE_SHIM
 using ReactiveUI.Primitives.Concurrency;
+#endif
 using Splat;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Builder;
 
-/// <summary>
-/// Contains tests for the <see cref="UnoReactiveUIBuilderExtensions"/> class, ensuring its functionality
-/// for builder pattern extensions.
-/// </summary>
+/// <summary>Contains tests for the <see cref="UnoReactiveUIBuilderExtensions"/> class, ensuring its functionality for builder pattern extensions.</summary>
 public class UnoReactiveUIBuilderExtensionsTests
 {
-    /// <summary>
-    /// Validates that WithUno throws ArgumentNullException when builder is null.
-    /// </summary>
+    /// <summary>Validates that WithUno throws ArgumentNullException when builder is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUno_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
@@ -28,9 +26,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(exception!.ParamName).IsEqualTo("builder");
     }
 
-    /// <summary>
-    /// Validates that WithUno throws ArgumentNullException when startupWindow is null.
-    /// </summary>
+    /// <summary>Validates that WithUno throws ArgumentNullException when startupWindow is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUno_ThrowsArgumentNullException_WhenStartupWindowIsNull()
     {
@@ -39,9 +36,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(exception!.ParamName).IsEqualTo("startupWindow");
     }
 
-    /// <summary>
-    /// Validates that WithUnoScheduler throws ArgumentNullException when builder is null.
-    /// </summary>
+    /// <summary>Validates that WithUnoScheduler throws ArgumentNullException when builder is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUnoScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
@@ -49,9 +45,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(exception!.ParamName).IsEqualTo("builder");
     }
 
-    /// <summary>
-    /// Validates that WithDefaultIScreen throws ArgumentNullException when builder is null.
-    /// </summary>
+    /// <summary>Validates that WithDefaultIScreen throws ArgumentNullException when builder is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithDefaultIScreen_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
@@ -63,13 +58,14 @@ public class UnoReactiveUIBuilderExtensionsTests
     /// Validates that WithUnoScheduler returns the builder for chaining.
     /// Note: This test may fail in headless environments due to scheduler initialization.
     /// </summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUnoScheduler_ReturnsBuilder_ForChaining()
     {
         try
         {
             var builder = Substitute.For<IReactiveUIBuilder>();
-            builder.WithMainThreadScheduler(Arg.Any<ISequencer>()).Returns(builder);
+            _ = builder.WithMainThreadScheduler(Arg.Any<ISequencer>()).Returns(builder);
 
             var result = builder.WithUnoScheduler();
 
@@ -85,17 +81,18 @@ public class UnoReactiveUIBuilderExtensionsTests
     /// Validates that WithUnoScheduler calls WithMainThreadScheduler on the builder.
     /// Note: This test may fail in headless environments due to scheduler initialization.
     /// </summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUnoScheduler_CallsWithMainThreadScheduler()
     {
         try
         {
             var builder = Substitute.For<IReactiveUIBuilder>();
-            builder.WithMainThreadScheduler(Arg.Any<ISequencer>()).Returns(builder);
+            _ = builder.WithMainThreadScheduler(Arg.Any<ISequencer>()).Returns(builder);
 
-            builder.WithUnoScheduler();
+            _ = builder.WithUnoScheduler();
 
-            builder.Received(1).WithMainThreadScheduler(Arg.Any<ISequencer>());
+            _ = builder.Received(1).WithMainThreadScheduler(Arg.Any<ISequencer>());
             await Task.CompletedTask;
         }
         catch (TypeInitializationException)
@@ -104,46 +101,43 @@ public class UnoReactiveUIBuilderExtensionsTests
         }
     }
 
-    /// <summary>
-    /// Validates that WithDefaultIScreen returns the builder for chaining.
-    /// </summary>
+    /// <summary>Validates that WithDefaultIScreen returns the builder for chaining.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithDefaultIScreen_ReturnsBuilder_ForChaining()
     {
         var builder = Substitute.For<IReactiveUIBuilder>();
-        builder.WithRegistration(Arg.Any<Action<IMutableDependencyResolver>>()).Returns(builder);
+        _ = builder.WithRegistration(Arg.Any<Action<IMutableDependencyResolver>>()).Returns(builder);
 
         var result = builder.WithDefaultIScreen();
 
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Validates that WithDefaultIScreen calls WithRegistration.
-    /// </summary>
+    /// <summary>Validates that WithDefaultIScreen calls WithRegistration.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithDefaultIScreen_CallsWithRegistration()
     {
         var builder = Substitute.For<IReactiveUIBuilder>();
-        builder.WithRegistration(Arg.Any<Action<IMutableDependencyResolver>>()).Returns(builder);
+        _ = builder.WithRegistration(Arg.Any<Action<IMutableDependencyResolver>>()).Returns(builder);
 
-        builder.WithDefaultIScreen();
+        _ = builder.WithDefaultIScreen();
 
-        builder.Received(1).WithRegistration(Arg.Any<Action<IMutableDependencyResolver>>());
+        _ = builder.Received(1).WithRegistration(Arg.Any<Action<IMutableDependencyResolver>>());
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Validates that the WithDefaultIScreen registration delegate registers an IScreen instance.
-    /// </summary>
+    /// <summary>Validates that the WithDefaultIScreen registration delegate registers an IScreen instance.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithDefaultIScreen_RegistrationDelegate_RegistersIScreen()
     {
         var builder = Substitute.For<IReactiveUIBuilder>();
         Action<IMutableDependencyResolver>? capturedRegistration = null;
-        builder.WithRegistration(Arg.Do<Action<IMutableDependencyResolver>>(x => capturedRegistration = x)).Returns(builder);
+        _ = builder.WithRegistration(Arg.Do<Action<IMutableDependencyResolver>>(x => capturedRegistration = x)).Returns(builder);
 
-        builder.WithDefaultIScreen();
+        _ = builder.WithDefaultIScreen();
 
         await Assert.That(capturedRegistration).IsNotNull();
 
@@ -153,17 +147,16 @@ public class UnoReactiveUIBuilderExtensionsTests
         mutableResolver.Received(1).RegisterConstant(Arg.Any<IScreen>());
     }
 
-    /// <summary>
-    /// Validates that BuildApp returns the instance when successful.
-    /// </summary>
+    /// <summary>Validates that BuildApp returns the instance when successful.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task BuildApp_ReturnsInstance_WhenSuccessful()
     {
         var builder = Substitute.For<IReactiveUIBuilder>();
         var instance = Substitute.For<IReactiveUIInstance>();
         var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-        builder.Build().Returns(instance);
+        _ = instance.Current.Returns(resolver);
+        _ = builder.Build().Returns(instance);
 
         var result = builder.BuildApp();
 
@@ -171,17 +164,16 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(result.Current).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that BuildApp validates instance is not null.
-    /// </summary>
+    /// <summary>Validates that BuildApp validates instance is not null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task BuildApp_ValidatesInstanceNotNull()
     {
         var builder = Substitute.For<IReactiveUIBuilder>();
         var instance = Substitute.For<IReactiveUIInstance>();
         var resolver = Substitute.For<IReadonlyDependencyResolver>();
-        instance.Current.Returns(resolver);
-        builder.Build().Returns(instance);
+        _ = instance.Current.Returns(resolver);
+        _ = builder.Build().Returns(instance);
 
         var result = builder.BuildApp();
 
@@ -192,6 +184,7 @@ public class UnoReactiveUIBuilderExtensionsTests
     /// Validates that the UnoMainThreadScheduler property exists.
     /// Note: Accessing the property may fail in headless environment due to type initialization.
     /// </summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task UnoMainThreadScheduler_PropertyExists()
     {
@@ -205,9 +198,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(typeof(ISequencer).IsAssignableFrom(property!.PropertyType)).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that extension methods are defined in the correct namespace.
-    /// </summary>
+    /// <summary>Validates that extension methods are defined in the correct namespace.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ExtensionMethods_AreInCorrectNamespace()
     {
@@ -216,9 +208,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(type.Namespace).IsEqualTo("ReactiveUI.Builder");
     }
 
-    /// <summary>
-    /// Validates that UnoReactiveUIBuilderExtensions is a static class.
-    /// </summary>
+    /// <summary>Validates that UnoReactiveUIBuilderExtensions is a static class.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task UnoReactiveUIBuilderExtensions_IsStaticClass()
     {
@@ -228,9 +219,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(type.IsSealed).IsTrue();
     }
 
-    /// <summary>
-    /// Validates that WithUnoScheduler method exists.
-    /// </summary>
+    /// <summary>Validates that WithUnoScheduler method exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUnoScheduler_MethodExists()
     {
@@ -239,9 +229,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(method).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that WithUno method exists.
-    /// </summary>
+    /// <summary>Validates that WithUno method exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUno_MethodExists()
     {
@@ -250,9 +239,8 @@ public class UnoReactiveUIBuilderExtensionsTests
         await Assert.That(method).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that WithDefaultIScreen method exists.
-    /// </summary>
+    /// <summary>Validates that WithDefaultIScreen method exists.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithDefaultIScreen_MethodExists()
     {

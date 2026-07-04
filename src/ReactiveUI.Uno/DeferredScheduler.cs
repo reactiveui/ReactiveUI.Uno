@@ -3,32 +3,42 @@
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
+#if !REACTIVE_SHIM
+using ReactiveUI.Primitives.Concurrency;
+#endif
+
+#if REACTIVE_SHIM
+
+namespace ReactiveUI.Uno.Reactive;
+#else
 
 namespace ReactiveUI.Uno;
+#endif
 
+/// <summary>Defers scheduler resolution until each scheduled operation is executed.</summary>
+/// <param name="schedulerFactory">The factory used to resolve the current scheduler.</param>
 internal sealed class DeferredScheduler(Func<IScheduler> schedulerFactory) : IScheduler
 {
+    /// <inheritdoc/>
     public DateTimeOffset Now => schedulerFactory().Now;
 
-    public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
+#if REACTIVE_SHIM
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action) => schedulerFactory().Schedule(state, action);
 
-        return schedulerFactory().Schedule(state, action);
-    }
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action) => schedulerFactory().Schedule(state, dueTime, action);
 
-    public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) => schedulerFactory().Schedule(state, dueTime, action);
+#else
+    /// <inheritdoc/>
+    public long Timestamp => schedulerFactory().Timestamp;
 
-        return schedulerFactory().Schedule(state, dueTime, action);
-    }
+    /// <inheritdoc/>
+    public void Schedule(IWorkItem item) => schedulerFactory().Schedule(item);
 
-    public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
-
-        return schedulerFactory().Schedule(state, dueTime, action);
-    }
+    /// <inheritdoc/>
+    public void Schedule(IWorkItem item, long dueTimestamp) => schedulerFactory().Schedule(item, dueTimestamp);
+#endif
 }

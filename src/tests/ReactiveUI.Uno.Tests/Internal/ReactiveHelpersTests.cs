@@ -4,24 +4,23 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
-using Microsoft.UI.Xaml;
+#if REACTIVE_SHIM
+using ReactiveUI.Uno.Reactive.Internal;
+using RxObservable = System.Reactive.Linq.Observable;
+#else
 using ReactiveUI.Uno.Internal;
+using RxObservable = ReactiveUI.Primitives.Signals.Signal;
+#endif
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
-using RxObservable = System.Reactive.Linq.Observable;
 
 namespace ReactiveUI.Uno.Tests.Internal;
 
-/// <summary>
-/// Contains tests for the <see cref="ReactiveHelpers"/> class, ensuring its functionality
-/// for creating property observables and wiring activation.
-/// </summary>
+/// <summary>Contains tests for the <see cref="ReactiveHelpers"/> class, ensuring its functionality for creating property observables and wiring activation.</summary>
 public class ReactiveHelpersTests
 {
-    /// <summary>
-    /// Validates that CreatePropertyChangedPulse throws ArgumentNullException when source is null.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyChangedPulse throws ArgumentNullException when source is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_ThrowsArgumentNullException_WhenSourceIsNull()
     {
@@ -29,9 +28,8 @@ public class ReactiveHelpersTests
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyChangedPulse throws ArgumentNullException when propertyName is null.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyChangedPulse throws ArgumentNullException when propertyName is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_ThrowsArgumentNullException_WhenPropertyNameIsNull()
     {
@@ -40,9 +38,8 @@ public class ReactiveHelpersTests
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyChangedPulse returns a non-null observable.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyChangedPulse returns a non-null observable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_ReturnsNonNullObservable()
     {
@@ -52,9 +49,8 @@ public class ReactiveHelpersTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyChangedPulse emits when the specified property changes.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyChangedPulse emits when the specified property changes.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_EmitsUnit_WhenPropertyChanges()
     {
@@ -70,9 +66,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues[0]).IsEqualTo(Unit.Default);
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyChangedPulse does not emit when a different property changes.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyChangedPulse does not emit when a different property changes.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_DoesNotEmit_WhenDifferentPropertyChanges()
     {
@@ -87,9 +82,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues.Count).IsZero();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyChangedPulse emits when PropertyName is null or empty (all properties changed).
-    /// </summary>
+    /// <summary>Validates that CreatePropertyChangedPulse emits when PropertyName is null or empty (all properties changed).</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_Emits_WhenPropertyNameIsNullOrEmpty()
     {
@@ -104,9 +98,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues.Count).IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyChangedPulse stops emitting after disposal.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyChangedPulse stops emitting after disposal.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_StopsEmitting_AfterDisposal()
     {
@@ -125,9 +118,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues.Count).IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable throws ArgumentNullException when source is null.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable throws ArgumentNullException when source is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_ThrowsArgumentNullException_WhenSourceIsNull()
     {
@@ -135,9 +127,8 @@ public class ReactiveHelpersTests
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable throws ArgumentNullException when propertyName is null.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable throws ArgumentNullException when propertyName is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_ThrowsArgumentNullException_WhenPropertyNameIsNull()
     {
@@ -146,9 +137,8 @@ public class ReactiveHelpersTests
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable throws ArgumentNullException when getPropertyValue is null.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable throws ArgumentNullException when getPropertyValue is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_ThrowsArgumentNullException_WhenGetPropertyValueIsNull()
     {
@@ -157,9 +147,8 @@ public class ReactiveHelpersTests
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable returns a non-null observable.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable returns a non-null observable.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_ReturnsNonNullObservable()
     {
@@ -172,9 +161,8 @@ public class ReactiveHelpersTests
         await Assert.That(observable).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable emits initial value upon subscription.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable emits initial value upon subscription.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_EmitsInitialValue_UponSubscription()
     {
@@ -191,9 +179,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues[0]).IsEqualTo("InitialValue");
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable emits new value when property changes.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable emits new value when property changes.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_EmitsNewValue_WhenPropertyChanges()
     {
@@ -212,9 +199,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues[1]).IsEqualTo("NewValue");
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable does not emit when different property changes.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable does not emit when different property changes.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_DoesNotEmit_WhenDifferentPropertyChanges()
     {
@@ -232,9 +218,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues.Count).IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Validates that CreatePropertyValueObservable stops emitting after disposal.
-    /// </summary>
+    /// <summary>Validates that CreatePropertyValueObservable stops emitting after disposal.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_StopsEmitting_AfterDisposal()
     {
@@ -256,9 +241,8 @@ public class ReactiveHelpersTests
         await Assert.That(emittedValues.Count).IsEqualTo(2);
     }
 
-    /// <summary>
-    /// Validates that WireActivationIfSupported returns Disposable.Empty when viewModel is null.
-    /// </summary>
+    /// <summary>Validates that WireActivationIfSupported returns Disposable.Empty when viewModel is null.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WireActivationIfSupported_ReturnsDisposableEmpty_WhenViewModelIsNull()
     {
@@ -273,6 +257,7 @@ public class ReactiveHelpersTests
     /// <summary>
     /// Validates that WireActivationIfSupported returns Disposable.Empty when viewModel does not implement IActivatableViewModel.
     /// </summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WireActivationIfSupported_ReturnsDisposableEmpty_WhenViewModelIsNotActivatable()
     {
@@ -285,9 +270,8 @@ public class ReactiveHelpersTests
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that WireActivationIfSupported returns non-empty disposable when viewModel implements IActivatableViewModel.
-    /// </summary>
+    /// <summary>Validates that WireActivationIfSupported returns non-empty disposable when viewModel implements IActivatableViewModel.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WireActivationIfSupported_ReturnsNonEmptyDisposable_WhenViewModelIsActivatable()
     {
@@ -300,9 +284,29 @@ public class ReactiveHelpersTests
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    /// Validates that WireActivationIfSupported can be disposed without error.
-    /// </summary>
+    /// <summary>Validates that WireActivationIfSupported forwards activation signals to an activatable view model.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task WireActivationIfSupported_ForwardsActivationSignals_ToViewModelActivator()
+    {
+        var viewModel = new ActivatableViewModel();
+        using var activatedSignal = new TestSignal<Unit>();
+        using var deactivatedSignal = new TestSignal<Unit>();
+        var activatedCount = 0;
+        var deactivatedCount = 0;
+        using var activatedSubscription = viewModel.Activator.Activated.Subscribe(_ => activatedCount++);
+        using var deactivatedSubscription = viewModel.Activator.Deactivated.Subscribe(_ => deactivatedCount++);
+        using var wiring = ReactiveHelpers.WireActivationIfSupported(viewModel, activatedSignal, deactivatedSignal);
+
+        activatedSignal.OnNext(Unit.Default);
+        deactivatedSignal.OnNext(Unit.Default);
+
+        await Assert.That(activatedCount).IsEqualTo(1);
+        await Assert.That(deactivatedCount).IsEqualTo(1);
+    }
+
+    /// <summary>Validates that WireActivationIfSupported can be disposed without error.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WireActivationIfSupported_CanBeDisposed_WithoutError()
     {
@@ -315,54 +319,84 @@ public class ReactiveHelpersTests
         await Assert.That(() => result.Dispose()).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Test implementation of INotifyPropertyChanged for testing purposes.
-    /// </summary>
+    /// <summary>Test implementation of INotifyPropertyChanged for testing purposes.</summary>
     private sealed class TestNotifyPropertyChanged : INotifyPropertyChanged
     {
-        private string? _name;
-        private int _value;
-
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>Gets or sets the test name.</summary>
         public string? Name
         {
-            get => _name;
+            get => field;
             set
             {
-                _name = value;
+                field = value;
                 OnPropertyChanged(nameof(Name));
             }
         }
 
+        /// <summary>Gets or sets the test value.</summary>
         public int Value
         {
-            get => _value;
+            get => field;
             set
             {
-                _value = value;
+                field = value;
                 OnPropertyChanged(nameof(Value));
             }
         }
 
+        /// <summary>Raises a property changed notification for all properties.</summary>
         public void RaiseAllPropertiesChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
 
+        /// <summary>Raises a property changed notification for the supplied property.</summary>
+        /// <param name="propertyName">The changed property name.</param>
         private void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    /// <summary>
-    /// Non-activatable view model for testing.
-    /// </summary>
+    /// <summary>Non-activatable view model for testing.</summary>
     private sealed class NonActivatableViewModel
     {
+        /// <summary>Gets a value indicating whether the test view model was initialized.</summary>
+        public static bool IsInitialized => true;
     }
 
-    /// <summary>
-    /// Activatable view model for testing.
-    /// </summary>
+    /// <summary>Activatable view model for testing.</summary>
     private sealed class ActivatableViewModel : IActivatableViewModel
     {
+        /// <inheritdoc/>
         public ViewModelActivator Activator { get; } = new ViewModelActivator();
+    }
+
+    /// <summary>Simple observable signal for activation tests.</summary>
+    /// <typeparam name="T">The signal value type.</typeparam>
+    private sealed class TestSignal<T> : IObservable<T>, IDisposable
+    {
+        /// <summary>Stores the current signal observers.</summary>
+        private readonly List<IObserver<T>> _observers = [];
+
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            ArgumentNullException.ThrowIfNull(observer);
+
+            _observers.Add(observer);
+            return Disposable.Create(() => _observers.Remove(observer));
+        }
+
+        /// <summary>Publishes a value to current subscribers.</summary>
+        /// <param name="value">The value to publish.</param>
+        public void OnNext(T value)
+        {
+            foreach (var observer in _observers.ToArray())
+            {
+                observer.OnNext(value);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose() => _observers.Clear();
     }
 }

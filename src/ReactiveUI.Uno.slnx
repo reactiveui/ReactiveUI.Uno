@@ -1,4 +1,12 @@
 <Solution>
+  <Folder Name="/Examples/">
+    <Project Path="Examples/ReactiveUI.Uno.Reactive.IoTDashboard/ReactiveUI.Uno.Reactive.IoTDashboard.csproj">
+      <Deploy Solution="Debug|*" />
+    </Project>
+    <Project Path="Examples/ReactiveUI.Uno.SQLiteStudio/ReactiveUI.Uno.SQLiteStudio.csproj">
+      <Deploy Solution="Debug|*" />
+    </Project>
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../.editorconfig" />
     <File Path="../.github/workflows/ci-build.yml" />
@@ -14,13 +22,12 @@
     <File Path="stylecop.json" />
     <File Path="testconfig.json" />
   </Folder>
-  <Project Path="examples/ReactiveUI.Uno.SQLiteStudio/ReactiveUI.Uno.SQLiteStudio.csproj">
-    <Deploy Solution="Debug|*" />
-  </Project>
-  <!-- Example project temporarily excluded pending API updates for ReactiveUI 23.1.0-beta.1 -->
-  <!-- <Project Path="examples/ReactiveUI.Uno.SQLiteStudio/ReactiveUI.Uno.SQLiteStudio.csproj" /> -->
+  <Folder Name="/Tests/">
+    <Project Path="tests/ReactiveUI.Uno.Reactive.Tests/ReactiveUI.Uno.Reactive.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Uno.Tests/ReactiveUI.Uno.Tests.csproj" />
+  </Folder>
+  <Project Path="ReactiveUI.Uno.Reactive/ReactiveUI.Uno.Reactive.csproj" />
   <Project Path="ReactiveUI.Uno/ReactiveUI.Uno.csproj" />
-  <Project Path="tests/ReactiveUI.Uno.Tests/ReactiveUI.Uno.Tests.csproj" />
   <Properties Name="TestCaseManagementSettings" Scope="PostLoad">
     <Property Name="CategoryFile" Value="ReactiveUI.vsmdi" />
   </Properties>

@@ -1,15 +1,22 @@
-﻿// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
+// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
 // Licensed to reactiveui and contributors under one or more agreements.
 // The reactiveui and contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Linq;
 using System.Reflection;
+#if REACTIVE_SHIM
+using ReactiveUI.Uno.Reactive.Internal;
+#else
 using ReactiveUI.Uno.Internal;
-using Windows.Foundation;
-using RxObservable = System.Reactive.Linq.Observable;
+#endif
+
+#if REACTIVE_SHIM
+
+namespace ReactiveUI.Uno.Reactive;
+#else
 
 namespace ReactiveUI.Uno;
+#endif
 
 /// <summary>
 /// ActivationForViewFetcher is how ReactiveUI determine when a
@@ -26,24 +33,24 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     {
         if (view is not FrameworkElement fe)
         {
-            return RxObservable.Empty<bool>();
+            return Observable.Empty<bool>();
         }
 
-#pragma warning disable SA1114 // Parameter list after.
-        var viewLoaded = RxObservable.FromEvent<TypedEventHandler<FrameworkElement, object>, bool>(
+        var viewLoaded = Observable.Create<bool>(observer =>
+        {
+            void Handler(FrameworkElement sender, object args) => observer.OnNext(true);
 
-            eventHandler => (_, _) => eventHandler(true),
-            x => fe.Loading += x,
-            x => fe.Loading -= x);
+            fe.Loading += Handler;
+            return Disposable.Create(() => fe.Loading -= Handler);
+        });
 
-        var viewUnloaded = RxObservable.FromEvent<RoutedEventHandler, bool>(
-            handler =>
-            {
-                void EventHandler(object sender, RoutedEventArgs e) => handler(false);
-                return EventHandler;
-            },
-            x => fe.Unloaded += x,
-            x => fe.Unloaded -= x);
+        var viewUnloaded = Observable.Create<bool>(observer =>
+        {
+            void Handler(object sender, RoutedEventArgs args) => observer.OnNext(false);
+
+            fe.Unloaded += Handler;
+            return Disposable.Create(() => fe.Unloaded -= Handler);
+        });
 
         // Observe IsHitTestVisible property changes using DependencyProperty (AOT-safe)
         var isHitTestVisible = ReactiveHelpers.CreatePropertyValueObservable(
@@ -54,7 +61,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         return viewLoaded
                .Merge(viewUnloaded)
-               .Select(b => b ? isHitTestVisible.SkipWhile(x => !x) : RxObservable.Return(false))
+               .Select(b => b ? isHitTestVisible.SkipWhile(x => !x) : Observable.Return(false))
                .Switch()
                .DistinctUntilChanged();
     }
