@@ -702,6 +702,42 @@ public class WinRTAppDataDriverTests
         }
     }
 
+    /// <summary>Validates that XML state parsing preserves type names with Unix line endings.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task ParseXmlishState_WithLfHeader_PreservesFullTypeName()
+    {
+        var typeName = typeof(TestState).AssemblyQualifiedName!;
+        var (parsedTypeName, xml) = WinRTAppDataDriver.ParseXmlishState($"{typeName}\n<state />");
+
+        await Assert.That(parsedTypeName).IsEqualTo(typeName);
+        await Assert.That(xml).IsEqualTo("<state />");
+    }
+
+    /// <summary>Validates that XML state parsing preserves type names with Windows line endings.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task ParseXmlishState_WithCrLfHeader_PreservesFullTypeName()
+    {
+        var typeName = typeof(TestState).AssemblyQualifiedName!;
+        var (parsedTypeName, xml) = WinRTAppDataDriver.ParseXmlishState($"{typeName}\r\n<state />");
+
+        await Assert.That(parsedTypeName).IsEqualTo(typeName);
+        await Assert.That(xml).IsEqualTo("<state />");
+    }
+
+    /// <summary>Validates that XML state parsing rejects content without a type header.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task ParseXmlishState_WithoutHeader_ThrowsInvalidDataException() =>
+        await Assert.That(() => WinRTAppDataDriver.ParseXmlishState("<state />")).Throws<InvalidDataException>();
+
+    /// <summary>Validates that XML state parsing rejects an empty type header.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task ParseXmlishState_WithEmptyHeader_ThrowsInvalidDataException() =>
+        await Assert.That(() => WinRTAppDataDriver.ParseXmlishState("\n<state />")).Throws<InvalidDataException>();
+
     /// <summary>Validates that JSON state can be saved and loaded when application storage is available.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]

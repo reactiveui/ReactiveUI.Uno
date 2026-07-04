@@ -30,12 +30,11 @@ public class WinRTAppDataDriver : ISuspensionDriver
         var x = await ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish");
         var t = await FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8);
 
-        var line = t.IndexOf('\n');
-        var typeName = t.Substring(0, line - 1); // -1 for CR
-        var serializer = new DataContractSerializer(Type.GetType(typeName!)!);
+        var (typeName, xml) = ParseXmlishState(t);
+        var serializer = new DataContractSerializer(Type.GetType(typeName, throwOnError: true)!);
 
         // NB: WinRT is terrible
-        return serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(t.Substring(line + 1))));
+        return serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(xml)));
     });
 
     /// <inheritdoc/>
@@ -131,4 +130,28 @@ public class WinRTAppDataDriver : ISuspensionDriver
 
             return Unit.Default;
         });
+
+    /// <summary>Splits the persisted XML state into the saved type name and XML payload.</summary>
+    /// <param name="content">The persisted XML state content.</param>
+    /// <returns>The saved type name and XML payload.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="content"/> is <c>null</c>.</exception>
+    /// <exception cref="InvalidDataException">Thrown when the persisted state header is missing or empty.</exception>
+    internal static (string TypeName, string Xml) ParseXmlishState(string content)
+    {
+        ArgumentNullException.ThrowIfNull(content);
+
+        var line = content.IndexOf('\n');
+        if (line < 0)
+        {
+            throw new InvalidDataException("Persisted state is missing a type header.");
+        }
+
+        var typeName = content[..line].TrimEnd('\r');
+        if (string.IsNullOrWhiteSpace(typeName))
+        {
+            throw new InvalidDataException("Persisted state has an empty type header.");
+        }
+
+        return (typeName, content[(line + 1)..]);
+    }
 }
