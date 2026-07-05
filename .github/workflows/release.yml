@@ -12,6 +12,17 @@ on:
           - minor
           - major
 
+      channel:
+        description: 'Release channel. none = stable RTM; alpha/beta/rc cut a pre-release (e.g. major + beta -> 6.0.0-beta.1, then 6.0.0-beta.2). Finalise by re-running with the same bump and channel=none.'
+        required: true
+        default: none
+        type: choice
+        options:
+          - none
+          - alpha
+          - beta
+          - rc
+
       sourceRef:
         description: 'Optional git ref (tag/branch/SHA) to release from. Leave blank to release from this branch (normally main).'
         required: false
@@ -27,11 +38,12 @@ jobs:
   release:
     uses: reactiveui/actions-common/.github/workflows/workflow-common-release.yml@main
     with:
-      solutionFile: ReactiveUI.Uno.slnx
+      solutionFile: reactiveui.uno.slnx
       installWorkloads: true
-      useUNO: true
-      minverMinimumMajorMinor: '22.2'
+      # Release tags are unprefixed (e.g. 23.2.28); the workflow default is 'v'.
+      minverTagPrefix: ''
       bump: ${{ inputs.bump }}
+      preRelease: ${{ inputs.channel != 'none' && inputs.channel || '' }}
       ref: ${{ inputs.sourceRef }}
     secrets:
       CERTUM_USER_ID: ${{ secrets.CERTUM_USER_ID }}
@@ -74,3 +86,4 @@ jobs:
       version: ${{ needs.release.outputs.semver2 }}
       tag: ${{ needs.release.outputs.tag }}
       target: ${{ needs.release.outputs.sourceSha }}
+      prerelease: ${{ needs.release.outputs.prerelease == 'true' }}
