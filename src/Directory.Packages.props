@@ -19,7 +19,7 @@
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.300" />
     <PackageVersion Include="MinVer" Version="7.0.0" />
-    <PackageVersion Include="StyleSharp.Analyzers" Version="3.17.6" />
+    <PackageVersion Include="StyleSharp.Analyzers" Version="3.17.9" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
