@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml;
@@ -85,7 +84,7 @@ public class ViewModelViewHostTests
     public async Task ViewModel_CanBeSet()
     {
         var host = new ViewModelViewHost();
-        var viewModel = new TestViewModel();
+        var viewModel = new object();
         host.ViewModel = viewModel;
         await Assert.That(host.ViewModel).IsEqualTo(viewModel);
     }
@@ -171,41 +170,28 @@ public class ViewModelViewHostTests
     /// <summary>Validates that ViewModelProperty DependencyProperty exists.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task ViewModelProperty_DependencyProperty_Exists()
-    {
+    public async Task ViewModelProperty_DependencyProperty_Exists() =>
         await Assert.That(ViewModelViewHost.ViewModelProperty).IsNotNull();
-    }
 
     /// <summary>Validates that DefaultContentProperty DependencyProperty exists.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task DefaultContentProperty_DependencyProperty_Exists()
-    {
+    public async Task DefaultContentProperty_DependencyProperty_Exists() =>
         await Assert.That(ViewModelViewHost.DefaultContentProperty).IsNotNull();
-    }
 
     /// <summary>Validates that ViewContractObservableProperty DependencyProperty exists.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task ViewContractObservableProperty_DependencyProperty_Exists()
-    {
+    public async Task ViewContractObservableProperty_DependencyProperty_Exists() =>
         await Assert.That(ViewModelViewHost.ViewContractObservableProperty).IsNotNull();
-    }
 
     /// <summary>Validates that ViewModel can be set to null.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ViewModel_CanBeSetToNull()
     {
-        var host = new ViewModelViewHost() { ViewModel = new TestViewModel() };
+        var host = new ViewModelViewHost() { ViewModel = new() };
         host.ViewModel = null;
         await Assert.That(host.ViewModel).IsNull();
-    }
-
-    /// <summary>Test view model for testing purposes.</summary>
-    private sealed class TestViewModel
-    {
-        /// <summary>Gets a value indicating whether the test view model was initialized.</summary>
-        public static bool IsInitialized => true;
     }
 }

@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using TUnit.Assertions.Extensions;
@@ -11,6 +10,9 @@ namespace ReactiveUI.Uno.Tests.Converters;
 /// <summary>Tests for the <see cref="BooleanToVisibilityHint"/> enum.</summary>
 public class BooleanToVisibilityHintTests
 {
+    /// <summary>The numeric value of the inverse enum member.</summary>
+    private const int InverseValue = 2;
+
     /// <summary>Verifies None has correct value.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
@@ -32,17 +34,14 @@ public class BooleanToVisibilityHintTests
         var inverseValue = Convert.ToInt32(BooleanToVisibilityHint.Inverse);
 
         // Assert
-        await Assert.That(inverseValue).IsEqualTo(2);
+        await Assert.That(inverseValue).IsEqualTo(InverseValue);
     }
 
     /// <summary>Verifies Inverse has correct string representation.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task Inverse_HasCorrectString()
-    {
-        // Assert
+    public async Task Inverse_HasCorrectString() =>
         await Assert.That(BooleanToVisibilityHint.Inverse.ToString()).IsEqualTo("Inverse");
-    }
 
     /// <summary>Verifies enum supports flags operation.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
@@ -90,7 +89,7 @@ public class BooleanToVisibilityHintTests
     public async Task Enum_CanBeCastFromInteger_Inverse()
     {
         // Act
-        var inverse = (BooleanToVisibilityHint)Enum.ToObject(typeof(BooleanToVisibilityHint), 2);
+        var inverse = (BooleanToVisibilityHint)Enum.ToObject(typeof(BooleanToVisibilityHint), InverseValue);
 
         // Assert
         await Assert.That(inverse).IsEqualTo(BooleanToVisibilityHint.Inverse);

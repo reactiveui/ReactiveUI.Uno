@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if __WASM__ || BROWSERWASM
@@ -27,10 +26,12 @@ public static class UnoReactiveUIBuilderExtensions
 {
 #if WINDOWS
     /// <summary>Gets the Uno WinUI main thread scheduler.</summary>
-    public static ISequencer UnoWinUIMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+    public static ISequencer UnoWinUIMainThreadScheduler { get; } =
+        new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
 #else
     /// <summary>Gets the Uno main thread scheduler.</summary>
-    public static ISequencer UnoMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
+    public static ISequencer UnoMainThreadScheduler { get; } =
+        new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
 #endif
 
     /// <summary>Provides extension members for ReactiveUI builders.</summary>
@@ -71,7 +72,8 @@ public static class UnoReactiveUIBuilderExtensions
 
             return AddUnoDictionary(
                 builder
-                    .WithRegistration(mutable => new UnoRegistrations().Register(new DependencyResolverRegistrar(mutable)))
+                    .WithRegistration(
+                        mutable => new UnoRegistrations().Register(new DependencyResolverRegistrar(mutable)))
                     .WithMainThreadScheduler(GetUnoMainThreadScheduler(startupWindow))
                     .WithTaskPoolScheduler(GetUnoTaskPoolScheduler()),
                 startupWindow);
@@ -121,11 +123,13 @@ public static class UnoReactiveUIBuilderExtensions
 #if WINDOWS
     /// <summary>Gets the current Uno main-thread scheduler.</summary>
     /// <returns>The Uno main-thread scheduler.</returns>
-    internal static ISequencer GetUnoMainThreadRxScheduler() => new DeferredScheduler(() => UnoWinUIDispatcherScheduler.Current);
+    internal static ISequencer GetUnoMainThreadRxScheduler() =>
+        new DeferredScheduler(() => UnoWinUIDispatcherScheduler.Current);
 #else
     /// <summary>Gets the current Uno main-thread scheduler.</summary>
     /// <returns>The Uno main-thread scheduler.</returns>
-    internal static ISequencer GetUnoMainThreadRxScheduler() => new DeferredScheduler(() => UnoDispatcherScheduler.Current);
+    internal static ISequencer GetUnoMainThreadRxScheduler() =>
+        new DeferredScheduler(() => UnoDispatcherScheduler.Current);
 #endif
 
     /// <summary>Adds the Uno resource dictionary to the application when the startup window is activated.</summary>
@@ -133,7 +137,9 @@ public static class UnoReactiveUIBuilderExtensions
     /// resource dictionaries after the startup window is activated. This setup is performed only once per application
     /// startup.</remarks>
     /// <param name="builder">The reactive UI builder to configure. Cannot be null.</param>
-    /// <param name="startupWindow">The window whose activation triggers the addition of the Uno dictionary. Cannot be null.</param>
+    /// <param name="startupWindow">
+    /// The window whose activation triggers the addition of the Uno dictionary. Cannot be null.
+    /// </param>
     /// <returns>The same instance of <paramref name="builder"/> for method chaining.</returns>
     private static IReactiveUIBuilder AddUnoDictionary(IReactiveUIBuilder builder, Window startupWindow)
     {
@@ -142,7 +148,7 @@ public static class UnoReactiveUIBuilderExtensions
         startupWindow.Activated += SetupDictionary;
         return builder;
 
-        static void SetupDictionary(object obj, WindowActivatedEventArgs args)
+        static void SetupDictionary(object sender, WindowActivatedEventArgs _)
         {
             // Ensure the dictionary is added after build is complete
             if (!Application.Current.Resources.MergedDictionaries.Contains(new ReactiveUIUnoDictionary()))
@@ -150,7 +156,12 @@ public static class UnoReactiveUIBuilderExtensions
                 Application.Current.Resources.MergedDictionaries.Add(new ReactiveUIUnoDictionary());
             }
 
-            Window.Current?.Activated -= SetupDictionary;
+            if (sender is not Window window)
+            {
+                return;
+            }
+
+            window.Activated -= SetupDictionary;
         }
     }
 }

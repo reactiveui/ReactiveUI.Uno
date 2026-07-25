@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -11,10 +10,8 @@ using ReactiveUI.Uno.SQLiteStudio.Views;
 
 namespace ReactiveUI.Uno.SQLiteStudio;
 
-/// <summary>Represents the application entry point and manages application-level events and initialization logic for the app.</summary>
-/// <remarks>This class is responsible for configuring services, setting up the main window, and initializing the
-/// application's navigation and data services when the app is launched. It extends the platform-specific Application
-/// base class and is typically instantiated by the system at startup.</remarks>
+/// <summary>Represents the application entry point.</summary>
+/// <remarks>Configures services, creates the main window, and initializes navigation and data services.</remarks>
 public partial class App : Application
 {
     /// <summary>Stores the application window.</summary>
@@ -26,11 +23,11 @@ public partial class App : Application
     /// <summary>Initializes a new instance of the <see cref="App"/> class.</summary>
     public App() => InitializeComponent();
 
-    /// <summary>Handles application launch activation and initializes the main window and application services.</summary>
+    /// <summary>Handles launch activation and initializes the main window and services.</summary>
     /// <remarks>This method sets up dependency injection, registers application services, and navigates to
     /// the main view. It also ensures that sample data is seeded asynchronously after initialization. This override is
     /// typically called by the system when the application is launched by the user.</remarks>
-    /// <param name="args">The launch activation arguments that provide details about how the application was launched.</param>
+    /// <param name="args">The launch activation arguments.</param>
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         try
@@ -96,10 +93,7 @@ public partial class App : Application
 
         var viewModel = new MainViewModel(screen, sqlite, csv);
 
-        window.Content = new MainView
-        {
-            ViewModel = viewModel
-        };
+        window.Content = new MainView { ViewModel = viewModel };
 
         return (sqlite, viewModel);
     }

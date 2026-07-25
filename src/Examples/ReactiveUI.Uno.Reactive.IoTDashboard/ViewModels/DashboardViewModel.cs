@@ -1,9 +1,7 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.ComponentModel;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Models;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Services;
 
@@ -12,35 +10,45 @@ namespace ReactiveUI.Uno.Reactive.IoTDashboard.ViewModels;
 /// <summary>Coordinates the live IoT dashboard state and commands.</summary>
 public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
+    /// <summary>Stores the text used when no active alert is available.</summary>
+    private const string NoActiveAlertsText = "No active alerts.";
+
+    /// <summary>Stores the local clock display format.</summary>
+    private const string LocalClockFormat = "HH':'mm':'ss";
+
+    /// <summary>Stores the simulated snapshot refresh delay.</summary>
+    private const int SnapshotRefreshDelayMilliseconds = 150;
+
+    /// <summary>Stores the maximum number of alerts retained in the feed.</summary>
+    private const int MaximumAlertCount = 8;
+
     /// <summary>Stores the telemetry service.</summary>
     private readonly IIoTTelemetryService _telemetry;
+
+    /// <summary>Stores the clock used for operator event timestamps.</summary>
+    private readonly TimeProvider _timeProvider;
+
+    /// <summary>Publishes whether the alert command can execute.</summary>
+    private readonly BehaviorSubject<bool> _canAcknowledgeAlert = new(false);
 
     /// <summary>Stores the live telemetry subscription.</summary>
     private readonly IDisposable _telemetrySubscription;
 
-    /// <summary>Stores the derived stream state text.</summary>
-    private readonly ObservableAsPropertyHelper<string> _streamStateText;
-
-    /// <summary>Stores the derived sample count text.</summary>
-    private readonly ObservableAsPropertyHelper<string> _sampleCountText;
-
-    /// <summary>Stores the derived selected device text.</summary>
-    private readonly ObservableAsPropertyHelper<string> _selectedDeviceSummary;
-
-    /// <summary>Stores the derived latest update text.</summary>
-    private readonly ObservableAsPropertyHelper<string> _lastUpdatedText;
-
     /// <summary>Initializes a new instance of the <see cref="DashboardViewModel"/> class.</summary>
     /// <param name="hostScreen">The screen that hosts this route.</param>
     /// <param name="telemetry">The local telemetry service.</param>
-    public DashboardViewModel(IScreen hostScreen, IIoTTelemetryService telemetry)
+    /// <param name="timeProvider">The clock used for operator event timestamps.</param>
+    public DashboardViewModel(IScreen hostScreen, IIoTTelemetryService telemetry, TimeProvider timeProvider)
     {
         ArgumentNullException.ThrowIfNull(hostScreen);
         ArgumentNullException.ThrowIfNull(telemetry);
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
         HostScreen = hostScreen;
         UrlPathSegment = "iot-dashboard";
         _telemetry = telemetry;
+        _timeProvider = timeProvider;
+        LastUpdated = _timeProvider.GetUtcNow();
 
         foreach (var reading in _telemetry.GetSnapshot())
         {
@@ -53,27 +61,13 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
             SelectedDevice.IsSelected = true;
         }
 
-        _streamStateText = this.WhenAnyValue(x => x.IsStreaming)
-            .Select(static isStreaming => isStreaming ? "Live stream running" : "Live stream paused")
-            .ToProperty(this, static x => x.StreamStateText);
-
-        _sampleCountText = this.WhenAnyValue(x => x.TotalReadings)
-            .Select(static count => string.Create(CultureInfo.InvariantCulture, $"{count:N0} samples processed"))
-            .ToProperty(this, static x => x.SampleCountText);
-
-        _selectedDeviceSummary = this.WhenAnyValue(x => x.SelectedDevice)
-            .Select(static device => device is null ? "Select a device" : $"{device.DisplayName} | {device.Kind} | {device.StatusText}")
-            .ToProperty(this, static x => x.SelectedDeviceSummary);
-
-        _lastUpdatedText = this.WhenAnyValue(x => x.LastUpdated)
-            .Select(static timestamp => $"Last update {timestamp.ToLocalTime():HH:mm:ss}")
-            .ToProperty(this, static x => x.LastUpdatedText);
-
         ToggleStreaming = ReactiveCommand.Create(ToggleStream);
         RefreshSnapshot = ReactiveCommand.CreateFromTask(RefreshSnapshotAsync);
         ResetSimulation = ReactiveCommand.Create(Reset);
         SelectDevice = ReactiveCommand.Create<DeviceTileViewModel>(Select);
-        AcknowledgeAlert = ReactiveCommand.CreateFromObservable(AcknowledgeAlertObservable, this.WhenAnyValue(x => x.HasActiveAlert));
+        AcknowledgeAlert = ReactiveCommand.CreateFromObservable(
+            AcknowledgeAlertObservable,
+            _canAcknowledgeAlert);
 
         _telemetrySubscription = _telemetry.Readings
             .Where(_ => IsStreaming)
@@ -100,7 +94,16 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     public DeviceTileViewModel? SelectedDevice
     {
         get;
-        set => _ = this.RaiseAndSetIfChanged(ref field, value);
+        set
+        {
+            if (ReferenceEquals(field, value))
+            {
+                return;
+            }
+
+            _ = this.RaiseAndSetIfChanged(ref field, value);
+            RaiseDependentPropertyChanged(nameof(SelectedDeviceSummary));
+        }
     }
 
     /// <summary>Gets or sets the search text used to demonstrate two-way binding.</summary>
@@ -123,22 +126,49 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     public bool IsStreaming
     {
         get;
-        set => _ = this.RaiseAndSetIfChanged(ref field, value);
+        set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            _ = this.RaiseAndSetIfChanged(ref field, value);
+            RaiseDependentPropertyChanged(nameof(StreamStateText));
+        }
     } = true;
 
     /// <summary>Gets the number of processed readings.</summary>
     public int TotalReadings
     {
         get;
-        private set => _ = this.RaiseAndSetIfChanged(ref field, value);
+        private set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            _ = this.RaiseAndSetIfChanged(ref field, value);
+            RaiseDependentPropertyChanged(nameof(SampleCountText));
+        }
     }
 
     /// <summary>Gets the latest update timestamp.</summary>
     public DateTimeOffset LastUpdated
     {
         get;
-        private set => _ = this.RaiseAndSetIfChanged(ref field, value);
-    } = DateTimeOffset.Now;
+        private set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            _ = this.RaiseAndSetIfChanged(ref field, value);
+            RaiseDependentPropertyChanged(nameof(LastUpdatedText));
+        }
+    }
 
     /// <summary>Gets the current operator status message.</summary>
     public string StatusMessage
@@ -158,7 +188,16 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     public bool HasActiveAlert
     {
         get;
-        private set => _ = this.RaiseAndSetIfChanged(ref field, value);
+        private set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            _ = this.RaiseAndSetIfChanged(ref field, value);
+            _canAcknowledgeAlert.OnNext(value);
+        }
     }
 
     /// <summary>Gets the latest alert display text.</summary>
@@ -166,19 +205,23 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     {
         get;
         private set => _ = this.RaiseAndSetIfChanged(ref field, value);
-    } = "No active alerts.";
+    } = NoActiveAlertsText;
 
     /// <summary>Gets the derived stream state text.</summary>
-    public string StreamStateText => _streamStateText.Value;
+    public string StreamStateText => IsStreaming ? "Live stream running" : "Live stream paused";
 
     /// <summary>Gets the derived sample count text.</summary>
-    public string SampleCountText => _sampleCountText.Value;
+    public string SampleCountText =>
+        string.Create(CultureInfo.InvariantCulture, $"{TotalReadings:N0} samples processed");
 
     /// <summary>Gets the derived selected device summary.</summary>
-    public string SelectedDeviceSummary => _selectedDeviceSummary.Value;
+    public string SelectedDeviceSummary => SelectedDevice is null
+        ? "Select a device"
+        : $"{SelectedDevice.DisplayName} | {SelectedDevice.Kind} | {SelectedDevice.StatusText}";
 
     /// <summary>Gets the derived latest update text.</summary>
-    public string LastUpdatedText => _lastUpdatedText.Value;
+    public string LastUpdatedText =>
+        $"Last update {LastUpdated.ToLocalTime().ToString(LocalClockFormat, CultureInfo.InvariantCulture)}";
 
     /// <summary>Gets the text describing how many devices match the current search text.</summary>
     public string FilterSummary
@@ -190,7 +233,8 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
                 return $"{Devices.Count} devices visible";
             }
 
-            var count = Devices.Count(device => device.DisplayName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            var count = Devices.Count(
+                device => device.DisplayName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
             return $"{count} devices match '{SearchText}'";
         }
     }
@@ -214,20 +258,12 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     public void Dispose()
     {
         _telemetrySubscription.Dispose();
-        _streamStateText.Dispose();
-        _sampleCountText.Dispose();
-        _selectedDeviceSummary.Dispose();
-        _lastUpdatedText.Dispose();
         ToggleStreaming.Dispose();
         RefreshSnapshot.Dispose();
         AcknowledgeAlert.Dispose();
+        _canAcknowledgeAlert.Dispose();
         ResetSimulation.Dispose();
         SelectDevice.Dispose();
-
-        foreach (var device in Devices)
-        {
-            device.Dispose();
-        }
     }
 
     /// <summary>Toggles the live stream state.</summary>
@@ -242,7 +278,7 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     private async Task RefreshSnapshotAsync()
     {
         StatusMessage = "Refreshing device snapshot...";
-        await Task.Delay(150).ConfigureAwait(true);
+        await Task.Delay(SnapshotRefreshDelayMilliseconds).ConfigureAwait(true);
 
         foreach (var reading in _telemetry.GetSnapshot())
         {
@@ -275,7 +311,10 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
         }
 
         alert.IsAcknowledged = true;
-        InteractionMessage = $"Operator acknowledged {alert.Event.DeviceName} at {DateTimeOffset.Now.ToLocalTime():HH:mm:ss}.";
+        var acknowledgedAt = _timeProvider.GetUtcNow()
+            .ToLocalTime()
+            .ToString(LocalClockFormat, CultureInfo.InvariantCulture);
+        InteractionMessage = $"Operator acknowledged {alert.Event.DeviceName} at {acknowledgedAt}.";
         UpdateAlertState($"Acknowledged {alert.Event.DeviceName}.");
 
         return Unit.Default;
@@ -287,7 +326,7 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
         Alerts.Clear();
         TotalReadings = 0;
         HasActiveAlert = false;
-        LatestAlertText = "No active alerts.";
+        LatestAlertText = NoActiveAlertsText;
         InteractionMessage = "Simulation reset.";
         StatusMessage = "Dashboard state reset.";
     }
@@ -327,7 +366,7 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
         }
         else if (!HasActiveAlert)
         {
-            LatestAlertText = "No active alerts.";
+            LatestAlertText = NoActiveAlertsText;
         }
 
         StatusMessage = $"{reading.DeviceName} published {device.ValueText}.";
@@ -343,11 +382,13 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     /// <param name="reading">The critical reading.</param>
     private void AddAlert(SensorReading reading)
     {
-        var message = string.Create(CultureInfo.InvariantCulture, $"{reading.DeviceName} reported {reading.Value:0.0} {reading.Unit}.");
+        var message = string.Create(
+            CultureInfo.InvariantCulture,
+            $"{reading.DeviceName} reported {reading.Value:0.0} {reading.Unit}.");
         var alert = new AlertEventViewModel(new(reading.DeviceName, message, reading.Status, reading.Timestamp));
 
         Alerts.Insert(0, alert);
-        while (Alerts.Count > 8)
+        while (Alerts.Count > MaximumAlertCount)
         {
             Alerts.RemoveAt(Alerts.Count - 1);
         }
@@ -360,11 +401,11 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     private void UpdateAlertState(string latestAlertText)
     {
         HasActiveAlert = Alerts.Any(static item => !item.IsAcknowledged);
-        LatestAlertText = HasActiveAlert ? latestAlertText : "No active alerts.";
+        LatestAlertText = HasActiveAlert ? latestAlertText : NoActiveAlertsText;
     }
 
     /// <summary>Raises a dependent property change notification.</summary>
     /// <param name="propertyName">The property name to notify.</param>
     private void RaiseDependentPropertyChanged(string propertyName) =>
-        ((IReactiveObject)this).RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
+        ((IReactiveObject)this).RaisePropertyChanged(new(propertyName));
 }

@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Uno.Reactive.IoTDashboard.Models;
@@ -10,6 +9,27 @@ namespace ReactiveUI.Uno.Reactive.IoTDashboard.Services;
 /// <summary>Generates deterministic local telemetry for the IoT dashboard sample.</summary>
 public sealed class LocalIoTTelemetryService : IIoTTelemetryService
 {
+    /// <summary>Stores the telemetry publication interval.</summary>
+    private const int TelemetryIntervalMilliseconds = 650;
+
+    /// <summary>Stores the phase stride applied to the device signal wave.</summary>
+    private const int WavePhaseStride = 7;
+
+    /// <summary>Stores the signal wave multiplier.</summary>
+    private const double WaveMultiplier = 0.37;
+
+    /// <summary>Stores the phase stride applied to deterministic jitter.</summary>
+    private const int JitterPhaseStride = 11;
+
+    /// <summary>Stores the deterministic jitter multiplier.</summary>
+    private const double JitterMultiplier = 1.91;
+
+    /// <summary>Stores the deterministic jitter scale.</summary>
+    private const double JitterScale = 0.5;
+
+    /// <summary>Stores the modulus that controls synthetic security events.</summary>
+    private const int SecurityEventModulo = 19;
+
     /// <summary>Stores the simulated devices.</summary>
     private readonly DeviceProfile[] _devices =
     [
@@ -21,12 +41,24 @@ public sealed class LocalIoTTelemetryService : IIoTTelemetryService
         new("coolant", "Coolant loop flow", SensorKind.Flow, 118, 16, 2.2, "L/min", 92, 84, LowerIsWorse: true)
     ];
 
+    /// <summary>Stores the clock used for generated sample timestamps.</summary>
+    private readonly TimeProvider _timeProvider;
+
     /// <summary>Initializes a new instance of the <see cref="LocalIoTTelemetryService"/> class.</summary>
-    public LocalIoTTelemetryService() =>
-        Readings = Observable.Interval(TimeSpan.FromMilliseconds(650), ReactiveUI.Reactive.RxSchedulers.TaskpoolScheduler)
+    /// <param name="timeProvider">The clock used for generated sample timestamps.</param>
+    public LocalIoTTelemetryService(TimeProvider timeProvider)
+    {
+        ArgumentNullException.ThrowIfNull(timeProvider);
+
+        _timeProvider = timeProvider;
+        Readings = Observable
+            .Interval(
+                TimeSpan.FromMilliseconds(TelemetryIntervalMilliseconds),
+                ReactiveUI.Reactive.RxSchedulers.TaskpoolScheduler)
             .Select(CreateReading)
             .Publish()
             .RefCount();
+    }
 
     /// <inheritdoc/>
     public IObservable<SensorReading> Readings { get; }
@@ -42,9 +74,9 @@ public sealed class LocalIoTTelemetryService : IIoTTelemetryService
     {
         var index = (int)(Math.Abs(tick) % _devices.Length);
         var device = _devices[index];
-        var wave = Math.Sin((tick + (index * 7)) * 0.37);
-        var jitter = Math.Sin((tick + (index * 11)) * 1.91) * device.Noise * 0.5;
-        var securityValue = Convert.ToDouble(((tick + index) % 19) == 0);
+        var wave = Math.Sin((tick + (index * WavePhaseStride)) * WaveMultiplier);
+        var jitter = Math.Sin((tick + (index * JitterPhaseStride)) * JitterMultiplier) * device.Noise * JitterScale;
+        var securityValue = Convert.ToDouble(((tick + index) % SecurityEventModulo) == 0);
         var signalValue = Math.Round(device.Baseline + (wave * device.Amplitude) + jitter, 1);
         var value = device.Kind == SensorKind.Security ? securityValue : signalValue;
 
@@ -55,7 +87,7 @@ public sealed class LocalIoTTelemetryService : IIoTTelemetryService
             value,
             device.Unit,
             device.GetStatus(value),
-            DateTimeOffset.Now);
+            _timeProvider.GetUtcNow());
     }
 
     /// <summary>Describes one simulated device profile.</summary>

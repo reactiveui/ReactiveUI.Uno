@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
@@ -27,17 +26,19 @@ internal static class ReactiveHelpers
     /// This method uses Observable.Create for better performance compared to Observable.FromEvent.
     /// It filters PropertyChanged events to only emit when the specified property changes.
     /// </remarks>
-    public static IObservable<Unit> CreatePropertyChangedPulse(INotifyPropertyChanged source, string propertyName)
+    internal static IObservable<Unit> CreatePropertyChangedPulse(
+        INotifyPropertyChanged source,
+        string propertyName)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(propertyName);
 
         return Observable.Create<Unit>(observer =>
         {
-            void Handler(object? sender, PropertyChangedEventArgs e)
+            void Handler(object? _, PropertyChangedEventArgs e)
             {
-                if (!string.IsNullOrEmpty(e.PropertyName) &&
-                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName)
+                    && !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
                     return;
                 }
@@ -64,7 +65,7 @@ internal static class ReactiveHelpers
     /// The observable immediately emits the current value upon subscription, then emits whenever the property changes.
     /// This overload works with any INotifyPropertyChanged implementation and is available for MAUI.
     /// </remarks>
-    public static IObservable<T> CreatePropertyValueObservable<T>(
+    internal static IObservable<T> CreatePropertyValueObservable<T>(
         INotifyPropertyChanged source,
         string propertyName,
         Func<T> getPropertyValue)
@@ -78,10 +79,10 @@ internal static class ReactiveHelpers
             // Emit initial value
             observer.OnNext(getPropertyValue());
 
-            void Handler(object? sender, PropertyChangedEventArgs e)
+            void Handler(object? _, PropertyChangedEventArgs e)
             {
-                if (!string.IsNullOrEmpty(e.PropertyName) &&
-                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName)
+                    && !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
                     return;
                 }
@@ -108,7 +109,7 @@ internal static class ReactiveHelpers
     /// This provides an AOT-friendly alternative to WhenAnyValue by avoiding expression trees and reflection.
     /// The observable immediately emits the current value upon subscription, then emits whenever the property changes.
     /// </remarks>
-    public static IObservable<T> CreatePropertyValueObservable<T>(
+    internal static IObservable<T> CreatePropertyValueObservable<T>(
         DependencyObject source,
         string propertyName,
         DependencyProperty property,
@@ -125,7 +126,9 @@ internal static class ReactiveHelpers
             observer.OnNext(getPropertyValue());
 
             // Register for property changes using the provided DependencyProperty
-            var token = source.RegisterPropertyChangedCallback(property, (sender, dp) => observer.OnNext(getPropertyValue()));
+            var token = source.RegisterPropertyChangedCallback(
+                property,
+                (_, _) => observer.OnNext(getPropertyValue()));
 
             return Disposable.Create(() => source.UnregisterPropertyChangedCallback(property, token));
         });
@@ -136,7 +139,7 @@ internal static class ReactiveHelpers
     /// <param name="activatedSignal">Observable that signals when the view is activated.</param>
     /// <param name="deactivatedSignal">Observable that signals when the view is deactivated.</param>
     /// <returns>A disposable that manages the activation subscriptions.</returns>
-    public static IDisposable WireActivationIfSupported(
+    internal static IDisposable WireActivationIfSupported(
         object? viewModel,
         IObservable<Unit> activatedSignal,
         IObservable<Unit> deactivatedSignal)

@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
@@ -29,21 +28,33 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
     /// property system. It is typically used when interacting with APIs that require a DependencyProperty identifier,
     /// such as property metadata or data binding operations.</remarks>
     public static readonly DependencyProperty DefaultContentProperty =
-        DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(
+            nameof(DefaultContent),
+            typeof(object),
+            typeof(ViewModelViewHost),
+            new(null));
 
     /// <summary>Identifies the ViewModel dependency property.</summary>
     /// <remarks>This field is used to register and reference the ViewModel property with the Windows
     /// Presentation Foundation (WPF) property system. It enables styling, data binding, animation, and default value
     /// support for the ViewModel property on ViewModelViewHost instances.</remarks>
     public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(
+            nameof(ViewModel),
+            typeof(object),
+            typeof(ViewModelViewHost),
+            new(null));
 
     /// <summary>Identifies the ViewContractObservable dependency property.</summary>
     /// <remarks>This field is used to register and reference the ViewContractObservable property with the
     /// Windows Presentation Foundation (WPF) property system. It is typically used when interacting with APIs that
     /// require a DependencyProperty identifier, such as property metadata or data binding operations.</remarks>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string?>), typeof(ViewModelViewHost), new PropertyMetadata(Observable.Never<string?>()));
+        DependencyProperty.Register(
+            nameof(ViewContractObservable),
+            typeof(IObservable<string?>),
+            typeof(ViewModelViewHost),
+            new(Observable.Never<string?>()));
 
     /// <summary>Stores the latest resolved view contract.</summary>
     private string? _viewContract;
@@ -59,7 +70,12 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
         {
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
-            this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+            this.Log().Error(
+                string.Concat(
+                    "Couldn't find an IPlatformOperations implementation. ",
+                    "Please make sure you have installed the latest version of the ReactiveUI packages ",
+                    "for your platform. ",
+                    "See https://reactiveui.net/docs/getting-started/installation for guidance."));
         }
         else
         {
@@ -70,15 +86,18 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
             ? Observable.Never<string?>()
             : Observable.Create<string?>(observer =>
               {
-                  void Handler(object sender, SizeChangedEventArgs args) => observer.OnNext(platformGetter());
+                  SizeChangedEventHandler handler = (_, _) => observer.OnNext(platformGetter());
 
-                  SizeChanged += Handler;
-                  return Disposable.Create(() => SizeChanged -= Handler);
+                  SizeChanged += handler;
+                  return Disposable.Create(() => SizeChanged -= handler);
               })
               .StartWith(platformGetter())
               .DistinctUntilChanged();
 
-        var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
+        var contractChanged = this
+            .WhenAnyObservable(x => x.ViewContractObservable)
+            .Do(x => _viewContract = x)
+            .StartWith(ViewContract);
         var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
         var viewModelAndContract = contractChanged
             .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
@@ -102,7 +121,10 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
             .ObserveOn(UnoReactiveUIBuilderExtensions.GetUnoMainThreadRxScheduler())
             .Subscribe(x => _viewContract = x ?? string.Empty));
 
-            d(viewModelAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
+            d(
+                viewModelAndContract
+                    .DistinctUntilChanged()
+                    .Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
         });
     }
 
@@ -155,7 +177,11 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
         if (viewInstance is null)
         {
             Content = DefaultContent;
-            this.Log().Warn($"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
+            this.Log().Warn(
+                "The {0} could not find a valid view for the view model of type {1} and value {2}.",
+                nameof(ViewModelViewHost),
+                viewModel.GetType(),
+                viewModel);
             return;
         }
 

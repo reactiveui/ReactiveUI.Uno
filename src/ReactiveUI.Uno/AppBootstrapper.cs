@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if REACTIVE_SHIM
@@ -11,7 +10,7 @@ namespace ReactiveUI.Uno.Reactive;
 namespace ReactiveUI.Uno;
 #endif
 
-/// <summary>Represents the application's main bootstrapper, providing routing and navigation state for the user interface.</summary>
+/// <summary>Provides the application's routing and navigation state.</summary>
 /// <remarks>AppBootstrapper serves as the entry point for initializing and managing navigation within the
 /// application. It implements the IScreen interface, which is used by ReactiveUI for view model routing. This class is
 /// typically used to configure the application's initial navigation state and to provide a central location for routing
@@ -19,5 +18,5 @@ namespace ReactiveUI.Uno;
 public sealed class AppBootstrapper() : ReactiveObject, IScreen
 {
     /// <summary>Gets the Router associated with this Screen.</summary>
-    public RoutingState Router { get; } = new RoutingState();
+    public RoutingState Router { get; } = new();
 }

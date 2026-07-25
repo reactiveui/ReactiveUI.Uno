@@ -1,9 +1,7 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.ComponentModel;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Models;
 
 namespace ReactiveUI.Uno.Reactive.IoTDashboard.ViewModels;
@@ -11,6 +9,9 @@ namespace ReactiveUI.Uno.Reactive.IoTDashboard.ViewModels;
 /// <summary>Represents an alert shown in the operator alert feed.</summary>
 public sealed class AlertEventViewModel : ReactiveObject
 {
+    /// <summary>Stores the local clock display format.</summary>
+    private const string LocalClockFormat = "HH':'mm':'ss";
+
     /// <summary>Initializes a new instance of the <see cref="AlertEventViewModel"/> class.</summary>
     /// <param name="alert">The alert event.</param>
     public AlertEventViewModel(AlertEvent alert)
@@ -29,7 +30,8 @@ public sealed class AlertEventViewModel : ReactiveObject
     public string Message => Event.Message;
 
     /// <summary>Gets the formatted timestamp.</summary>
-    public string TimestampText => Event.Timestamp.ToLocalTime().ToString("HH:mm:ss", CultureInfo.CurrentCulture);
+    public string TimestampText =>
+        Event.Timestamp.ToLocalTime().ToString(LocalClockFormat, CultureInfo.InvariantCulture);
 
     /// <summary>Gets or sets a value indicating whether the alert was acknowledged.</summary>
     public bool IsAcknowledged
@@ -56,5 +58,5 @@ public sealed class AlertEventViewModel : ReactiveObject
     /// <summary>Raises a dependent property change notification.</summary>
     /// <param name="propertyName">The property name to notify.</param>
     private void RaiseDependentPropertyChanged(string propertyName) =>
-        ((IReactiveObject)this).RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
+        ((IReactiveObject)this).RaisePropertyChanged(new(propertyName));
 }

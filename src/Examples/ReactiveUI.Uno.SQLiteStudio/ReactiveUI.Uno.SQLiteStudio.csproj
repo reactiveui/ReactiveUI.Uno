@@ -1,4 +1,4 @@
-﻿<Project Sdk="Uno.Sdk">
+<Project Sdk="Uno.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(UnoExampleTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
@@ -71,9 +71,22 @@
     <ProjectReference Include="..\..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.IO" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Net.Http" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="Microsoft.UI.Xaml" />
+    <Using Include="ReactiveUI" />
+    <Using Include="ReactiveUI.Builder" />
     <Using Include="ReactiveUI.Primitives" />
     <Using Include="ReactiveUI.Primitives.Concurrency" />
     <Using Include="ReactiveUI.Primitives.Signals" />
+    <Using Include="ReactiveUI.Uno" />
+    <Using Include="Splat" />
     <Using Include="ReactiveUI.Primitives.RxVoid" Alias="Unit" />
     <Using Include="ReactiveUI.Primitives.Signals.Signal" Alias="Observable" />
     <Using Include="ReactiveUI.Primitives.Disposables.Scope" Alias="Disposable" />

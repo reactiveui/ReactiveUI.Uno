@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml.Markup;
@@ -34,14 +33,23 @@ $$"""
     xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
     xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
     xmlns:rxui='using:{{reactiveNamespace}}'>
-    <rxui:ViewModelViewHost ViewModel="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+    <rxui:ViewModelViewHost
+        ViewModel="{Binding}"
+        VerticalContentAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        IsTabStop="False" />
 </DataTemplate>
 """;
         return (DataTemplate)XamlReader.Load(template);
     });
 
     /// <inheritdoc/>
-    public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
+    public bool ExecuteHook(
+        object? source,
+        object target,
+        Func<IObservedChange<object, object>[]> getCurrentViewModelProperties,
+        Func<IObservedChange<object, object>[]> getCurrentViewProperties,
+        BindingDirection direction)
     {
         ArgumentNullException.ThrowIfNull(getCurrentViewProperties);
 

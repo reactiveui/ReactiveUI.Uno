@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml;
@@ -12,6 +11,9 @@ namespace ReactiveUI.Uno.Tests.Resources;
 /// <summary>Tests for ReactiveUIUnoDictionary functionality.</summary>
 public class ReactiveUIUnoDictionaryTests
 {
+    /// <summary>The reason UI-dependent tests are skipped in a headless environment.</summary>
+    private const string NoUiContextSkipReason = "No UI context is available in the headless environment.";
+
 #if REACTIVE_SHIM
     /// <summary>Expected dictionary source URI for the reactive package.</summary>
     private const string ExpectedUri = "ms-appx:///ReactiveUI.Uno.Reactive/Resources/ReactiveUI.Uno.Reactive.xaml";
@@ -36,16 +38,16 @@ public class ReactiveUIUnoDictionaryTests
             var window = Microsoft.UI.Xaml.Window.Current;
             if (window is null)
             {
-                Skip.Test("Skipping test because no UI context is available (headless environment)");
+                Skip.Test(NoUiContextSkipReason);
             }
         }
         catch (TypeInitializationException)
         {
-            Skip.Test("Skipping test because no UI context is available (headless environment)");
+            Skip.Test(NoUiContextSkipReason);
         }
         catch (NotSupportedException)
         {
-            Skip.Test("Skipping test because no UI context is available (headless environment)");
+            Skip.Test(NoUiContextSkipReason);
         }
     }
 
@@ -126,11 +128,8 @@ public class ReactiveUIUnoDictionaryTests
     /// <summary>Test constructor is public and accessible.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task Constructor_IsPublicAndAccessible()
-    {
-        // Act & Assert
+    public async Task Constructor_IsPublicAndAccessible() =>
         await Assert.That(() => new ReactiveUIUnoDictionary()).ThrowsNothing();
-    }
 
     /// <summary>Test that the dictionary can be used as ResourceDictionary.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>

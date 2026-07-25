@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
@@ -23,26 +22,38 @@ namespace ReactiveUI.Uno;
 [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
 {
-    /// <summary>Identifies the Router dependency property, which holds the current routing state for the view host.</summary>
+    /// <summary>Identifies the dependency property that holds the current routing state.</summary>
     /// <remarks>This field is used when interacting with the WPF property system, such as when calling
     /// methods like SetValue or GetValue on a RoutedViewHost instance. The Router property enables data binding,
     /// styling, and animation support for routing state within the view host.</remarks>
     public static readonly DependencyProperty RouterProperty =
-        DependencyProperty.Register(nameof(Router), typeof(RoutingState), typeof(RoutedViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(
+            nameof(Router),
+            typeof(RoutingState),
+            typeof(RoutedViewHost),
+            new(null));
 
     /// <summary>Identifies the DefaultContent dependency property.</summary>
     /// <remarks>This field is used to register and reference the DefaultContent property with the Windows
     /// Presentation Foundation (WPF) property system. It is typically used when calling methods such as SetValue or
     /// GetValue on instances of RoutedViewHost.</remarks>
     public static readonly DependencyProperty DefaultContentProperty =
-        DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(RoutedViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(
+            nameof(DefaultContent),
+            typeof(object),
+            typeof(RoutedViewHost),
+            new(null));
 
     /// <summary>Identifies the ViewContractObservable dependency property.</summary>
     /// <remarks>This field is used to register and reference the ViewContractObservable property with the WPF
     /// property system. It enables data binding, styling, and other WPF property features for the
     /// ViewContractObservable property on RoutedViewHost instances.</remarks>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string?>), typeof(RoutedViewHost), new PropertyMetadata(Observable.Never<string?>()));
+        DependencyProperty.Register(
+            nameof(ViewContractObservable),
+            typeof(IObservable<string?>),
+            typeof(RoutedViewHost),
+            new(Observable.Never<string?>()));
 
     /// <summary>Stores the latest resolved view contract.</summary>
     private string? _viewContract;
@@ -58,7 +69,12 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
 
         if (platform is null)
         {
-            this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+            this.Log().Error(
+                string.Concat(
+                    "Couldn't find an IPlatformOperations implementation. ",
+                    "Please make sure you have installed the latest version of the ReactiveUI packages ",
+                    "for your platform. ",
+                    "See https://reactiveui.net/docs/getting-started/installation for guidance."));
         }
         else
         {
@@ -69,31 +85,39 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
             ? Observable.Never<string?>()
             : Observable.Create<string?>(observer =>
                 {
-                    void Handler(object sender, SizeChangedEventArgs args) => observer.OnNext(platformGetter());
+                    SizeChangedEventHandler handler = (_, _) => observer.OnNext(platformGetter());
 
-                    SizeChanged += Handler;
-                    return Disposable.Create(() => SizeChanged -= Handler);
+                    SizeChanged += handler;
+                    return Disposable.Create(() => SizeChanged -= handler);
                 })
            .StartWith(platformGetter())
            .DistinctUntilChanged();
 
         IRoutableViewModel? currentViewModel = null;
-        var viewModelAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x).StartWith(currentViewModel).CombineLatest(
-            this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract),
+        var currentViewModelChanged = this
+            .WhenAnyObservable(x => x.Router.CurrentViewModel)
+            .Do(x => currentViewModel = x)
+            .StartWith(currentViewModel);
+        var viewContractChanged = this
+            .WhenAnyObservable(x => x.ViewContractObservable)
+            .Do(x => _viewContract = x)
+            .StartWith(ViewContract);
+        var viewModelAndContract = currentViewModelChanged.CombineLatest(
+            viewContractChanged,
             (viewModel, contract) => (viewModel, contract));
 
         if (ModeDetector.InUnitTestRunner())
         {
             _ = viewModelAndContract
                 .DistinctUntilChanged()
-                .Subscribe(ResolveViewForViewModel, ex => RxState.DefaultExceptionHandler.OnNext(ex));
+                .Subscribe(ResolveViewForViewModel, RxState.DefaultExceptionHandler.OnNext);
             return;
         }
 
         _ = this.WhenActivated((d) =>
             d(viewModelAndContract.DistinctUntilChanged().Subscribe(
                 ResolveViewForViewModel,
-                ex => RxState.DefaultExceptionHandler.OnNext(ex))));
+                RxState.DefaultExceptionHandler.OnNext)));
     }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
@@ -144,7 +168,9 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = (viewLocator.ResolveView(x.viewModel, x.contract) ?? viewLocator.ResolveView(x.viewModel)) ?? throw new InvalidOperationException($"Couldn't find view for '{x.viewModel}'.");
+        var view = viewLocator.ResolveView(x.viewModel, x.contract)
+            ?? viewLocator.ResolveView(x.viewModel)
+            ?? throw new InvalidOperationException($"Couldn't find view for '{x.viewModel}'.");
         view.ViewModel = x.viewModel;
         Content = view;
     }

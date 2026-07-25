@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml;
@@ -14,21 +13,20 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Converters;
 
-/// <summary>
-/// Unit tests for the BooleanToVisibilityTypeConverter class, which provides conversions between boolean values and Microsoft.UI.Xaml.Visibility.
-/// </summary>
+/// <summary>Unit tests for BooleanToVisibilityTypeConverter.</summary>
 public class BooleanToVisibilityTypeConverterTests
 {
-    /// <summary>Represents the system under test, an instance of the <see cref="BooleanToVisibilityTypeConverter"/> class.</summary>
+    /// <summary>The expected conversion affinity.</summary>
+    private const int ExpectedAffinity = 2;
+
+    /// <summary>Represents the system under test.</summary>
     private readonly BooleanToVisibilityTypeConverter _sut = new();
 
     /// <summary>Determines the affinity level for conversions.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task GetAffinityForObjects_ReturnsExpectedValue()
-    {
-        await Assert.That(_sut.GetAffinityForObjects()).IsEqualTo(2);
-    }
+    public async Task GetAffinityForObjects_ReturnsExpectedValue() =>
+        await Assert.That(_sut.GetAffinityForObjects()).IsEqualTo(ExpectedAffinity);
 
     /// <summary>Converts a boolean true value to Visibility.Visible.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
@@ -83,10 +81,8 @@ public class BooleanToVisibilityTypeConverterTests
     /// <summary>Validates that BooleanToVisibilityTypeConverter implements IBindingTypeConverter.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task BooleanToVisibilityTypeConverter_ImplementsIBindingTypeConverter()
-    {
+    public async Task BooleanToVisibilityTypeConverter_ImplementsIBindingTypeConverter() =>
         await Assert.That(_sut).IsAssignableTo<IBindingTypeConverter>();
-    }
 
     /// <summary>Validates that multiple conversions return consistent results.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
