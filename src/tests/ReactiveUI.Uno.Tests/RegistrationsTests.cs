@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using NSubstitute;
@@ -12,9 +11,12 @@ using UnoRegistrations = ReactiveUI.Uno.Registrations;
 
 namespace ReactiveUI.Uno.Tests;
 
-/// <summary>Contains tests for the Uno registrations class, specifically validating its functionality for registering services.</summary>
+/// <summary>Tests Uno service registrations.</summary>
 public class RegistrationsTests
 {
+    /// <summary>The expected number of binding converter registrations.</summary>
+    private const int ExpectedBindingTypeConverterRegistrationCount = 16;
+
     /// <summary>Validates that Register throws ArgumentNullException when registrar is null.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
@@ -85,22 +87,22 @@ public class RegistrationsTests
 
         registrar
             .When(x => x.RegisterConstant(Arg.Any<Func<IPlatformOperations>>()))
-            .Do(x => _ = x.Arg<Func<IPlatformOperations>>()());
+            .Do(x => _ = x.Arg<Func<IPlatformOperations>>()!());
         registrar
             .When(x => x.RegisterConstant(Arg.Any<Func<IActivationForViewFetcher>>()))
-            .Do(x => _ = x.Arg<Func<IActivationForViewFetcher>>()());
+            .Do(x => _ = x.Arg<Func<IActivationForViewFetcher>>()!());
         registrar
             .When(x => x.RegisterConstant(Arg.Any<Func<ICreatesObservableForProperty>>()))
-            .Do(x => _ = x.Arg<Func<ICreatesObservableForProperty>>()());
+            .Do(x => _ = x.Arg<Func<ICreatesObservableForProperty>>()!());
         registrar
             .When(x => x.RegisterConstant(Arg.Any<Func<IPropertyBindingHook>>()))
-            .Do(x => _ = x.Arg<Func<IPropertyBindingHook>>()());
+            .Do(x => _ = x.Arg<Func<IPropertyBindingHook>>()!());
         registrar
             .When(x => x.RegisterConstant(Arg.Any<Func<ISuspensionDriver>>()))
-            .Do(x => _ = x.Arg<Func<ISuspensionDriver>>()());
+            .Do(x => _ = x.Arg<Func<ISuspensionDriver>>()!());
         registrar
             .When(x => x.RegisterConstant(Arg.Any<Func<IBindingTypeConverter>>()))
-            .Do(x => _ = x.Arg<Func<IBindingTypeConverter>>()());
+            .Do(x => _ = x.Arg<Func<IBindingTypeConverter>>()!());
 
         sut.Register(registrar);
 
@@ -109,7 +111,8 @@ public class RegistrationsTests
         registrar.Received(1).RegisterConstant(Arg.Any<Func<ICreatesObservableForProperty>>());
         registrar.Received(1).RegisterConstant(Arg.Any<Func<IPropertyBindingHook>>());
         registrar.Received(1).RegisterConstant(Arg.Any<Func<ISuspensionDriver>>());
-        registrar.Received(16).RegisterConstant(Arg.Any<Func<IBindingTypeConverter>>());
+        registrar.Received(ExpectedBindingTypeConverterRegistrationCount)
+            .RegisterConstant(Arg.Any<Func<IBindingTypeConverter>>());
         await Assert.That(RxSchedulers.SuppressViewCommandBindingMessage).IsTrue();
     }
 }

@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -35,50 +34,17 @@ public sealed class SqliteService : ISqliteService
     /// application. The instance is initialized on first access and is thread-safe.</remarks>
     public static ISqliteService Instance => LazyInstance.Value;
 
-    /// <summary>Initializes the database connection asynchronously, creating the database file if it does not exist.</summary>
-    /// <remarks>If the connection is already initialized, this method returns immediately. The method ensures
-    /// the target directory exists and configures the database for write-ahead logging and foreign key constraints
-    /// where supported. Failures to set these options are ignored.</remarks>
-    /// <param name="dbPath">The optional file path to the database. If null, a default path in the local application data folder is used.</param>
+    /// <summary>Initializes the database connection asynchronously using the default database path.</summary>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
-    public async Task InitializeAsync(string? dbPath = null)
+    public Task InitializeAsync() => InitializeCoreAsync(null);
+
+    /// <summary>Initializes the database connection asynchronously with an explicit database file path.</summary>
+    /// <param name="dbPath">The database file path.</param>
+    /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    public Task InitializeAsync(string dbPath)
     {
-        if (_connection is not null)
-        {
-            return;
-        }
-
-        dbPath ??= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "app.db3");
-
-        // Ensure folder exists
-        var dir = Path.GetDirectoryName(dbPath);
-        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-        {
-            _ = Directory.CreateDirectory(dir);
-        }
-
-        const SQLiteOpenFlags flags = SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache;
-        _connection = new(dbPath, flags);
-
-        // Some platforms/providers will throw for this PRAGMA. Ignore failures.
-        try
-        {
-            await _connection.ExecuteAsync("PRAGMA journal_mode=WAL;").ConfigureAwait(false);
-        }
-        catch (SQLiteException ex)
-        {
-            Debug.WriteLine($"SQLite journal mode pragma was not applied: {ex.Message}");
-        }
-
-        // Enable FK constraints where supported (ignore failures)
-        try
-        {
-            await _connection.ExecuteAsync("PRAGMA foreign_keys=ON;").ConfigureAwait(false);
-        }
-        catch (SQLiteException ex)
-        {
-            Debug.WriteLine($"SQLite foreign key pragma was not applied: {ex.Message}");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(dbPath);
+        return InitializeCoreAsync(dbPath);
     }
 
     /// <summary>
@@ -91,7 +57,9 @@ public sealed class SqliteService : ISqliteService
     public async Task EnsureSampleDataAsync()
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
-        await conn.ExecuteAsync("CREATE TABLE IF NOT EXISTS Users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Age INTEGER);").ConfigureAwait(false);
+        await conn.ExecuteAsync(
+                "CREATE TABLE IF NOT EXISTS Users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Age INTEGER);")
+            .ConfigureAwait(false);
 
         var count = await conn.ExecuteScalarAsync<int>("SELECT COUNT(1) FROM Users;").ConfigureAwait(false);
         if (count != 0)
@@ -107,12 +75,13 @@ public sealed class SqliteService : ISqliteService
     /// <summary>Asynchronously retrieves the names of all user-defined tables in the database.</summary>
     /// <remarks>System tables and tables with names starting with 'sqlite_' are excluded from the results.
     /// The operation does not include views or other database objects.</remarks>
-    /// <returns>A read-only list of strings containing the names of all user-defined tables. The list is empty if no such tables
-    /// exist.</returns>
+    /// <returns>A read-only list of user-defined table names.</returns>
     public async Task<IReadOnlyList<string>> ListTablesAsync()
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
-        var tables = await conn.QueryAsync<MasterRow>("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY 1").ConfigureAwait(false);
+        var tables = await conn.QueryAsync<MasterRow>(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY 1")
+            .ConfigureAwait(false);
         var names = new List<string>(tables.Count);
         foreach (var table in tables)
         {
@@ -134,18 +103,15 @@ public sealed class SqliteService : ISqliteService
         await conn.ExecuteAsync(sql).ConfigureAwait(false);
     }
 
-    /// <summary>Executes the specified SQL query asynchronously and returns the results as a read-only list of objects.</summary>
+    /// <summary>Executes the specified SQL query asynchronously.</summary>
     /// <remarks>The type and content of the returned objects depend on the SQL statement. For queries against
     /// the 'users' table, the list contains user row objects. For queries against 'sqlite_master', the list contains
     /// the names of the objects as strings. For other SELECT statements, the list contains the first column values as
     /// strings if possible. For non-SELECT statements, the list contains a status or error message. This method does
     /// not throw exceptions for SQL execution errors; instead, error messages are returned in the result
     /// list.</remarks>
-    /// <param name="sql">The SQL statement to execute. This can be a SELECT or a non-SELECT statement. Cannot be null or whitespace.</param>
-    /// <returns>A read-only list of objects representing the query results. For SELECT statements, the list contains the result
-    /// rows or column values. For non-SELECT statements, the list contains a status message indicating the number of
-    /// rows affected or an error message if execution fails. Returns an empty list if the SQL statement is null or
-    /// whitespace.</returns>
+    /// <param name="sql">The SQL statement to execute. This can be a SELECT or a non-SELECT statement.</param>
+    /// <returns>A read-only list of objects representing query results or a status row.</returns>
     public async Task<IReadOnlyList<object>> QueryAsync(string sql)
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
@@ -156,88 +122,51 @@ public sealed class SqliteService : ISqliteService
 
         var lowered = sql.Trim().ToLowerInvariant();
         return lowered.StartsWith("select")
-            ? await QuerySelectAsync(conn, sql, lowered).ConfigureAwait(false)
-            : await ExecuteNonQueryAsync(conn, sql).ConfigureAwait(false);
+            ? await SqliteQueryMapper.QuerySelectAsync(conn, sql, lowered).ConfigureAwait(false)
+            : await SqliteQueryMapper.ExecuteNonQueryAsync(conn, sql).ConfigureAwait(false);
     }
 
-    /// <summary>Executes a SELECT statement and maps the result rows.</summary>
-    /// <param name="connection">The SQLite connection to use.</param>
-    /// <param name="sql">The SQL statement to execute.</param>
-    /// <param name="loweredSql">The lower-case SQL statement used for routing.</param>
-    /// <returns>A task that returns the mapped query results.</returns>
-    private static async Task<IReadOnlyList<object>> QuerySelectAsync(SQLiteAsyncConnection connection, string sql, string loweredSql)
+    /// <summary>Initializes the database connection asynchronously, creating the database file if needed.</summary>
+    /// <remarks>Write-ahead logging and foreign keys are enabled where the SQLite provider supports them.</remarks>
+    /// <param name="dbPath">The database file path, or null for the default local application data path.</param>
+    /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    private async Task InitializeCoreAsync(string? dbPath)
     {
-        if (loweredSql.Contains(" from users"))
+        if (_connection is not null)
         {
-            return await QueryUsersAsync(connection, sql).ConfigureAwait(false);
+            return;
         }
 
-        return loweredSql.Contains("from sqlite_master")
-            ? await QueryMasterAsync(connection, sql).ConfigureAwait(false)
-            : await QueryScalarFallbackAsync(connection, sql).ConfigureAwait(false);
-    }
+        dbPath ??= Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "app.db3");
 
-    /// <summary>Queries sample user rows.</summary>
-    /// <param name="connection">The SQLite connection to use.</param>
-    /// <param name="sql">The SQL statement to execute.</param>
-    /// <returns>A task that returns the user rows as objects.</returns>
-    private static async Task<IReadOnlyList<object>> QueryUsersAsync(SQLiteAsyncConnection connection, string sql)
-    {
-        var rows = await connection.QueryAsync<UserRow>(sql).ConfigureAwait(false);
-        var result = new List<object>(rows.Count);
-        result.AddRange(rows);
-        return result;
-    }
-
-    /// <summary>Queries sqlite_master rows.</summary>
-    /// <param name="connection">The SQLite connection to use.</param>
-    /// <param name="sql">The SQL statement to execute.</param>
-    /// <returns>A task that returns the sqlite_master names as objects.</returns>
-    private static async Task<IReadOnlyList<object>> QueryMasterAsync(SQLiteAsyncConnection connection, string sql)
-    {
-        var rows = await connection.QueryAsync<MasterRow>(sql).ConfigureAwait(false);
-        var result = new List<object>(rows.Count);
-        foreach (var row in rows)
+        var dir = Path.GetDirectoryName(dbPath);
+        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
         {
-            result.Add(row.Name);
+            _ = Directory.CreateDirectory(dir);
         }
 
-        return result;
-    }
+        const SQLiteOpenFlags flags =
+            SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.SharedCache;
+        _connection = new(dbPath, flags);
 
-    /// <summary>Queries scalar string values as a fallback for SELECT statements.</summary>
-    /// <param name="connection">The SQLite connection to use.</param>
-    /// <param name="sql">The SQL statement to execute.</param>
-    /// <returns>A task that returns scalar values or a fallback status message.</returns>
-    private static async Task<IReadOnlyList<object>> QueryScalarFallbackAsync(SQLiteAsyncConnection connection, string sql)
-    {
         try
         {
-            var scalarList = await connection.QueryScalarsAsync<string>(sql).ConfigureAwait(false);
-            var result = new List<object>(scalarList.Count);
-            result.AddRange(scalarList);
-            return result;
-        }
-        catch (SQLiteException)
-        {
-            return ["Query executed."];
-        }
-    }
-
-    /// <summary>Executes a non-query SQL statement and returns a status row.</summary>
-    /// <param name="connection">The SQLite connection to use.</param>
-    /// <param name="sql">The SQL statement to execute.</param>
-    /// <returns>A task that returns a status row.</returns>
-    private static async Task<IReadOnlyList<object>> ExecuteNonQueryAsync(SQLiteAsyncConnection connection, string sql)
-    {
-        try
-        {
-            var affected = await connection.ExecuteAsync(sql).ConfigureAwait(false);
-            return [$"Rows affected: {affected}"];
+            await _connection.ExecuteAsync("PRAGMA journal_mode=WAL;").ConfigureAwait(false);
         }
         catch (SQLiteException ex)
         {
-            return [ex.Message];
+            Debug.WriteLine($"SQLite journal mode pragma was not applied: {ex.Message}");
+        }
+
+        try
+        {
+            await _connection.ExecuteAsync("PRAGMA foreign_keys=ON;").ConfigureAwait(false);
+        }
+        catch (SQLiteException ex)
+        {
+            Debug.WriteLine($"SQLite foreign key pragma was not applied: {ex.Message}");
         }
     }
 
@@ -254,7 +183,7 @@ public sealed class SqliteService : ISqliteService
     }
 
     /// <summary>Represents a row from sqlite_master.</summary>
-    private sealed class MasterRow
+    public sealed class MasterRow
     {
         /// <summary>Gets or sets the table name.</summary>
         [Column("name")]
@@ -262,7 +191,7 @@ public sealed class SqliteService : ISqliteService
     }
 
     /// <summary>Represents a sample user row.</summary>
-    private sealed class UserRow
+    public sealed class UserRow
     {
         /// <summary>Gets or sets the user identifier.</summary>
         public int Id { get; set; }
@@ -273,6 +202,7 @@ public sealed class SqliteService : ISqliteService
         /// <summary>Gets or sets the user age.</summary>
         public int Age { get; set; }
 
+        /// <inheritdoc/>
         public override string ToString() => $"{Id}: {Name} ({Age})";
     }
 }

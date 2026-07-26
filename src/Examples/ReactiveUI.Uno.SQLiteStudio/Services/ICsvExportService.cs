@@ -1,7 +1,7 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
 namespace ReactiveUI.Uno.SQLiteStudio.Services;
 
 /// <summary>Defines a service for exporting a collection of items to a CSV file asynchronously.</summary>
@@ -11,9 +11,14 @@ namespace ReactiveUI.Uno.SQLiteStudio.Services;
 /// a standard, comma-separated values format for interoperability or reporting purposes.</remarks>
 public interface ICsvExportService
 {
-    /// <summary>Asynchronously exports the specified collection of items to a CSV file.</summary>
-    /// <param name="items">The collection of items to export. Each item should represent a row in the resulting CSV file. Cannot be null.</param>
-    /// <param name="fileName">The name of the CSV file to create. If not specified, defaults to "results.csv". Cannot be null or empty.</param>
+    /// <summary>Asynchronously exports the specified collection of items to the default CSV file.</summary>
+    /// <param name="items">The collection of items to export. Each item should represent a CSV row.</param>
     /// <returns>A task that represents the asynchronous export operation.</returns>
-    Task ExportAsync(System.Collections.IEnumerable items, string fileName = "results.csv");
+    Task ExportAsync(System.Collections.IEnumerable items);
+
+    /// <summary>Asynchronously exports the specified collection of items to a CSV file.</summary>
+    /// <param name="items">The collection of items to export. Each item should represent a CSV row.</param>
+    /// <param name="fileName">The name of the CSV file to create. Cannot be null or empty.</param>
+    /// <returns>A task that represents the asynchronous export operation.</returns>
+    Task ExportAsync(System.Collections.IEnumerable items, string fileName);
 }

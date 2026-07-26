@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
@@ -20,6 +19,25 @@ namespace ReactiveUI.Uno.SQLiteStudio.Presentation;
 /// and export functionality, and is suitable for binding in reactive user interfaces.</remarks>
 public class MainViewModel : ReactiveObject, IRoutableViewModel
 {
+    /// <summary>Stores the default query used by the sample database.</summary>
+    private const string DefaultUsersQuery = "SELECT * FROM Users;";
+
+    /// <summary>Stores the ordered sample users query.</summary>
+    private const string OrderedUsersQuery = "SELECT * FROM Users ORDER BY Name;";
+
+    /// <summary>Stores the create users table SQL statement.</summary>
+    private const string CreateUsersTableSql =
+        "CREATE TABLE IF NOT EXISTS Users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Age INTEGER);";
+
+    /// <summary>Stores the sample insert SQL statement.</summary>
+    private const string InsertSampleUserSql = "INSERT INTO Users (Name, Age) VALUES ('Dave', 28);";
+
+    /// <summary>Stores the sample delete SQL statement.</summary>
+    private const string DeleteSampleUserSql = "DELETE FROM Users WHERE Name = 'Dave';";
+
+    /// <summary>Stores the drop users table SQL statement.</summary>
+    private const string DropUsersTableSql = "DROP TABLE IF EXISTS Users;";
+
     /// <summary>Stores the SQLite database service.</summary>
     private readonly ISqliteService _db;
 
@@ -29,10 +47,10 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     /// <summary>Stores the mutable backing collection for query results.</summary>
     private ObservableCollection<object> _resultsBacking = [];
 
-    /// <summary>Initializes a new instance of the <see cref="MainViewModel"/> class with the specified navigation host and service dependencies.</summary>
+    /// <summary>Initializes a new instance of the <see cref="MainViewModel"/> class.</summary>
     /// <remarks>The view model sets up commands for querying, exporting, and managing database tables, and is
     /// intended for use in reactive UI scenarios.</remarks>
-    /// <param name="hostScreen">The navigation host screen used for routing and view model location. Cannot be null.</param>
+    /// <param name="hostScreen">The navigation host screen used for routing and view model location.</param>
     /// <param name="sqlite">The SQLite service used for database operations.</param>
     /// <param name="csv">The CSV export service used for exporting result data.</param>
     public MainViewModel(IScreen hostScreen, ISqliteService sqlite, ICsvExportService csv)
@@ -47,96 +65,16 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
         _db = sqlite;
         _csv = csv;
 
-        ExecuteQuery = ReactiveCommand.CreateFromTask(async () =>
-        {
-            Status = "Running...";
-            try
-            {
-                var result = await _db.QueryAsync(QueryText ?? string.Empty).ConfigureAwait(true);
-                UpdateResults(result);
-                Status = $"Rows: {_resultsBacking.Count}";
-            }
-            catch (Exception ex)
-            {
-                Status = ex.Message;
-            }
-        });
-
+        ExecuteQuery = ReactiveCommand.CreateFromTask(ExecuteQueryAsync);
         ExportCsv = ReactiveCommand.CreateFromTask(
-            async () =>
-            {
-                try
-                {
-                    await _csv.ExportAsync(_resultsBacking).ConfigureAwait(true);
-                    Status = "Exported results.csv";
-                }
-                catch (Exception ex)
-                {
-                    Status = ex.Message;
-                }
-            },
-            this.WhenAnyValue(x => x.Results, results => results is { Count: > 0 }));
-
-        ListTables = ReactiveCommand.CreateFromTask(async () =>
-        {
-            try
-            {
-                var tables = await _db.ListTablesAsync().ConfigureAwait(true);
-                var tableResults = new List<object>(tables.Count);
-                tableResults.AddRange(tables);
-
-                UpdateResults(tableResults);
-                Status = $"Tables: {_resultsBacking.Count}";
-            }
-            catch (Exception ex)
-            {
-                Status = ex.Message;
-            }
-        });
-
-        CreateUsersTable = ReactiveCommand.CreateFromTask(async () =>
-        {
-            try
-            {
-                const string sql = "CREATE TABLE IF NOT EXISTS Users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Age INTEGER);";
-                await _db.ExecuteAsync(sql).ConfigureAwait(true);
-                Status = "Users table ensured.";
-            }
-            catch (Exception ex)
-            {
-                Status = ex.Message;
-            }
-        });
-
-        DropUsersTable = ReactiveCommand.CreateFromTask(async () =>
-        {
-            try
-            {
-                await _db.ExecuteAsync("DROP TABLE IF EXISTS Users;").ConfigureAwait(true);
-                Status = "Users table dropped.";
-            }
-            catch (Exception ex)
-            {
-                Status = ex.Message;
-            }
-        });
-
-        // Sample scripts
+            ExportCsvAsync,
+            this.WhenAnyValue(static x => x.Results, static results => results is { Count: > 0 }));
+        ListTables = ReactiveCommand.CreateFromTask(ListTablesAsync);
+        CreateUsersTable = ReactiveCommand.CreateFromTask(CreateUsersTableAsync);
+        DropUsersTable = ReactiveCommand.CreateFromTask(DropUsersTableAsync);
         SampleSelect = ReactiveCommand.Create(SetSampleSelectQuery);
-
-        SampleInsert = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await _db.ExecuteAsync("INSERT INTO Users (Name, Age) VALUES ('Dave', 28);").ConfigureAwait(true);
-            QueryText = "SELECT * FROM Users;";
-            await ExecuteQuery.Execute();
-        });
-
-        SampleDelete = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await _db.ExecuteAsync("DELETE FROM Users WHERE Name = 'Dave';").ConfigureAwait(true);
-            QueryText = "SELECT * FROM Users;";
-            await ExecuteQuery.Execute();
-        });
+        SampleInsert = ReactiveCommand.CreateFromTask(InsertSampleUserAsync);
+        SampleDelete = ReactiveCommand.CreateFromTask(DeleteSampleUserAsync);
     }
 
     /// <summary>Gets the URL path segment associated with this resource.</summary>
@@ -154,7 +92,7 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
         get;
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
-    = "SELECT * FROM Users;";
+    = DefaultUsersQuery;
 
     /// <summary>Gets a read-only observable collection containing the current results.</summary>
     public ReadOnlyObservableCollection<object> Results
@@ -221,18 +159,113 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     /// observable to determine if deletion is currently possible.</remarks>
     public ReactiveCommand<RxVoid, RxVoid> SampleDelete { get; }
 
-    /// <summary>Formats result rows for the sample result pane.</summary>
-    /// <param name="results">The result rows to format.</param>
-    /// <returns>A display string for the result pane.</returns>
-    private static string FormatResults(IEnumerable<object> results)
+    /// <summary>Executes the current SQL query.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task ExecuteQueryAsync()
     {
-        var rows = results.Select(static item => item?.ToString() ?? string.Empty);
-        var text = string.Join(Environment.NewLine, rows);
-        return string.IsNullOrWhiteSpace(text) ? "(no rows)" : text;
+        Status = "Running...";
+        try
+        {
+            var result = await _db.QueryAsync(QueryText ?? string.Empty).ConfigureAwait(true);
+            UpdateResults(result);
+            Status = $"Rows: {_resultsBacking.Count}";
+        }
+        catch (Exception ex)
+        {
+            Status = ex.Message;
+        }
+    }
+
+    /// <summary>Exports the current result set to CSV.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task ExportCsvAsync()
+    {
+        try
+        {
+            await _csv.ExportAsync(_resultsBacking).ConfigureAwait(true);
+            Status = "Exported results.csv";
+        }
+        catch (Exception ex)
+        {
+            Status = ex.Message;
+        }
+    }
+
+    /// <summary>Lists database tables.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task ListTablesAsync()
+    {
+        try
+        {
+            var tables = await _db.ListTablesAsync().ConfigureAwait(true);
+            var tableResults = new List<object>(tables.Count);
+            tableResults.AddRange(tables);
+
+            UpdateResults(tableResults);
+            Status = $"Tables: {_resultsBacking.Count}";
+        }
+        catch (Exception ex)
+        {
+            Status = ex.Message;
+        }
+    }
+
+    /// <summary>Creates the sample users table.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task CreateUsersTableAsync()
+    {
+        try
+        {
+            await _db.ExecuteAsync(CreateUsersTableSql).ConfigureAwait(true);
+            Status = "Users table ensured.";
+        }
+        catch (Exception ex)
+        {
+            Status = ex.Message;
+        }
+    }
+
+    /// <summary>Drops the sample users table.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task DropUsersTableAsync()
+    {
+        try
+        {
+            await _db.ExecuteAsync(DropUsersTableSql).ConfigureAwait(true);
+            Status = "Users table dropped.";
+        }
+        catch (Exception ex)
+        {
+            Status = ex.Message;
+        }
+    }
+
+    /// <summary>Inserts a sample user and refreshes the query results.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task InsertSampleUserAsync()
+    {
+        await _db.ExecuteAsync(InsertSampleUserSql).ConfigureAwait(true);
+        await RefreshUsersAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>Deletes the sample user and refreshes the query results.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task DeleteSampleUserAsync()
+    {
+        await _db.ExecuteAsync(DeleteSampleUserSql).ConfigureAwait(true);
+        await RefreshUsersAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>Refreshes the default users query.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task RefreshUsersAsync()
+    {
+        QueryText = DefaultUsersQuery;
+        await ExecuteQuery.Execute();
     }
 
     /// <summary>Sets the query text to the sample select query.</summary>
-    private void SetSampleSelectQuery() => QueryText = "SELECT * FROM Users ORDER BY Name;";
+    private void SetSampleSelectQuery() => QueryText = OrderedUsersQuery;
 
     /// <summary>Updates the collection and text representation of the current results.</summary>
     /// <param name="results">The result rows to publish.</param>
@@ -240,6 +273,6 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     {
         _resultsBacking = new(results);
         Results = new(_resultsBacking);
-        ResultsText = FormatResults(_resultsBacking);
+        ResultsText = ResultFormatter.FormatResults(_resultsBacking);
     }
 }

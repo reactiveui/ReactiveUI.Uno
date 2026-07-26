@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if !REACTIVE_SHIM
@@ -12,12 +11,18 @@ namespace ReactiveUI.Uno.Tests.Schedulers;
 /// <summary>Tests for <see cref="DeferredScheduler"/>.</summary>
 public class DeferredSchedulerTests
 {
+    /// <summary>The state supplied to scheduled test actions.</summary>
+    private const string ExpectedScheduledState = "state";
+
+    /// <summary>Gets the deterministic UTC time used by scheduler tests.</summary>
+    private static DateTimeOffset FixedUtcNow => new(2026, 7, 4, 12, 0, 0, TimeSpan.Zero);
+
     /// <summary>Verifies that Now is read from the scheduler returned by the factory.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Now_UsesFactoryScheduler()
     {
-        var now = new DateTimeOffset(2026, 7, 4, 12, 0, 0, TimeSpan.Zero);
+        var now = FixedUtcNow;
         var scheduler = new RecordingSequencer { Now = now };
         var sut = new DeferredScheduler(() => scheduler);
 
@@ -75,7 +80,7 @@ public class DeferredSchedulerTests
         var scheduler = new RecordingSequencer();
         var sut = new DeferredScheduler(() => scheduler);
 
-        using var disposable = sut.Schedule("state", static (_, _) => Disposable.Empty);
+        using var disposable = sut.Schedule(ExpectedScheduledState, static (_, _) => Disposable.Empty);
 
         await Assert.That(disposable).IsNotNull();
         await Assert.That(scheduler.ScheduledItem).IsNotNull();
@@ -89,13 +94,13 @@ public class DeferredSchedulerTests
         var scheduler = new RecordingSequencer();
         var sut = new DeferredScheduler(() => scheduler);
 
-        using var disposable = sut.Schedule("state", static (_, _) => Disposable.Empty);
+        using var disposable = sut.Schedule(ExpectedScheduledState, static (_, _) => Disposable.Empty);
 
         await Assert.That(disposable).IsNotNull();
-        await Assert.That(scheduler.ScheduledState).IsEqualTo("state");
+        await Assert.That(scheduler.ScheduledState).IsEqualTo(ExpectedScheduledState);
     }
 
-    /// <summary>Verifies that delayed TimeSpan scheduling is delegated to the scheduler returned by the factory.</summary>
+    /// <summary>Verifies that delayed relative scheduling reaches the factory scheduler.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_WithDueTime_DelegatesToFactoryScheduler()
@@ -104,26 +109,26 @@ public class DeferredSchedulerTests
         var scheduler = new RecordingSequencer();
         var sut = new DeferredScheduler(() => scheduler);
 
-        using var disposable = sut.Schedule("state", dueTime, static (_, _) => Disposable.Empty);
+        using var disposable = sut.Schedule(ExpectedScheduledState, dueTime, static (_, _) => Disposable.Empty);
 
         await Assert.That(disposable).IsNotNull();
-        await Assert.That(scheduler.ScheduledState).IsEqualTo("state");
+        await Assert.That(scheduler.ScheduledState).IsEqualTo(ExpectedScheduledState);
         await Assert.That(scheduler.DueTime).IsEqualTo(dueTime);
     }
 
-    /// <summary>Verifies that delayed DateTimeOffset scheduling is delegated to the scheduler returned by the factory.</summary>
+    /// <summary>Verifies that delayed absolute scheduling reaches the factory scheduler.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Schedule_WithDueDateTime_DelegatesToFactoryScheduler()
     {
-        var dueTime = DateTimeOffset.UtcNow.AddSeconds(1);
+        var dueTime = FixedUtcNow.AddSeconds(1);
         var scheduler = new RecordingSequencer();
         var sut = new DeferredScheduler(() => scheduler);
 
-        using var disposable = sut.Schedule("state", dueTime, static (_, _) => Disposable.Empty);
+        using var disposable = sut.Schedule(ExpectedScheduledState, dueTime, static (_, _) => Disposable.Empty);
 
         await Assert.That(disposable).IsNotNull();
-        await Assert.That(scheduler.ScheduledState).IsEqualTo("state");
+        await Assert.That(scheduler.ScheduledState).IsEqualTo(ExpectedScheduledState);
         await Assert.That(scheduler.DueDateTime).IsEqualTo(dueTime);
     }
 #endif
@@ -136,9 +141,12 @@ public class DeferredSchedulerTests
         var scheduler = new RecordingSequencer();
         var sut = new DeferredScheduler(() => scheduler);
 
-        await Assert.That(() => sut.Schedule("state", null!)).Throws<ArgumentNullException>();
-        await Assert.That(() => sut.Schedule("state", DateTimeOffset.Now, null!)).Throws<ArgumentNullException>();
-        await Assert.That(() => sut.Schedule("state", TimeSpan.Zero, null!)).Throws<ArgumentNullException>();
+        await Assert.That(() => sut.Schedule(ExpectedScheduledState, null!)).Throws<ArgumentNullException>();
+        await Assert.That(
+            () => sut.Schedule(ExpectedScheduledState, FixedUtcNow, null!))
+            .Throws<ArgumentNullException>();
+        await Assert.That(() => sut.Schedule(ExpectedScheduledState, TimeSpan.Zero, null!))
+            .Throws<ArgumentNullException>();
     }
 
 #if REACTIVE_SHIM
@@ -146,7 +154,7 @@ public class DeferredSchedulerTests
     private sealed class RecordingSequencer : ISequencer
     {
         /// <inheritdoc/>
-        public DateTimeOffset Now { get; init; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset Now { get; init; } = FixedUtcNow;
 
         /// <summary>Gets the most recent scheduled state.</summary>
         public object? ScheduledState { get; private set; }
@@ -167,7 +175,10 @@ public class DeferredSchedulerTests
         }
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+        public IDisposable Schedule<TState>(
+            TState state,
+            TimeSpan dueTime,
+            Func<IScheduler, TState, IDisposable> action)
         {
             ArgumentNullException.ThrowIfNull(action);
 
@@ -177,7 +188,10 @@ public class DeferredSchedulerTests
         }
 
         /// <inheritdoc/>
-        public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
+        public IDisposable Schedule<TState>(
+            TState state,
+            DateTimeOffset dueTime,
+            Func<IScheduler, TState, IDisposable> action)
         {
             ArgumentNullException.ThrowIfNull(action);
 
@@ -191,7 +205,7 @@ public class DeferredSchedulerTests
     private sealed class RecordingSequencer : ISequencer
     {
         /// <inheritdoc/>
-        public DateTimeOffset Now { get; init; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset Now { get; init; } = FixedUtcNow;
 
         /// <inheritdoc/>
         public long Timestamp { get; init; }

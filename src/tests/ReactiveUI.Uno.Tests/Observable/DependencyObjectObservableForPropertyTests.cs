@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
@@ -11,26 +10,24 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Observable;
 
-/// <summary>Contains tests for the <see cref="DependencyObjectObservableForProperty"/> class, ensuring its functionality for creating observables from dependency properties.</summary>
+/// <summary>Contains tests for dependency property observable creation.</summary>
 public class DependencyObjectObservableForPropertyTests
 {
+    /// <summary>The expected affinity for dependency object properties.</summary>
+    private const int ExpectedDependencyObjectAffinity = 6;
+
     /// <summary>The system under test.</summary>
     private DependencyObjectObservableForProperty _sut = null!;
 
     /// <summary>Sets up the test by creating a new instance of DependencyObjectObservableForProperty.</summary>
     [Before(Test)]
-    public void SetUp()
-    {
-        _sut = new();
-    }
+    public void SetUp() => _sut = new();
 
-    /// <summary>Validates that DependencyObjectObservableForProperty implements ICreatesObservableForProperty.</summary>
+    /// <summary>Validates DependencyObjectObservableForProperty interface implementation.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task DependencyObjectObservableForProperty_ImplementsICreatesObservableForProperty()
-    {
+    public async Task DependencyObjectObservableForProperty_ImplementsICreatesObservableForProperty() =>
         await Assert.That(_sut).IsAssignableTo<ICreatesObservableForProperty>();
-    }
 
     /// <summary>Validates that GetAffinityForObject returns zero for non-DependencyObject types.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
@@ -68,22 +65,22 @@ public class DependencyObjectObservableForPropertyTests
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>Validates that GetAffinityForObject returns positive affinity for FrameworkElement with valid property.</summary>
+    /// <summary>Validates affinity for a valid framework element property.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObject_ReturnsPositiveAffinity_ForFrameworkElementWithValidProperty()
     {
         var affinity = _sut.GetAffinityForObject(typeof(FrameworkElement), nameof(FrameworkElement.Width));
-        await Assert.That(affinity).IsEqualTo(6);
+        await Assert.That(affinity).IsEqualTo(ExpectedDependencyObjectAffinity);
     }
 
-    /// <summary>Validates that GetAffinityForObject returns positive affinity for ContentControl with Content property.</summary>
+    /// <summary>Validates affinity for the content control content property.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObject_ReturnsPositiveAffinity_ForContentControlWithContentProperty()
     {
         var affinity = _sut.GetAffinityForObject(typeof(ContentControl), nameof(ContentControl.Content));
-        await Assert.That(affinity).IsEqualTo(6);
+        await Assert.That(affinity).IsEqualTo(ExpectedDependencyObjectAffinity);
     }
 
     /// <summary>
@@ -95,8 +92,11 @@ public class DependencyObjectObservableForPropertyTests
     [Test]
     public async Task GetAffinityForObject_ReturnsPositiveAffinity_ForBeforeChanged()
     {
-        var affinity = _sut.GetAffinityForObject(typeof(FrameworkElement), nameof(FrameworkElement.Width), beforeChanged: true);
-        await Assert.That(affinity).IsEqualTo(6);
+        var affinity = _sut.GetAffinityForObject(
+            typeof(FrameworkElement),
+            nameof(FrameworkElement.Width),
+            beforeChanged: true);
+        await Assert.That(affinity).IsEqualTo(ExpectedDependencyObjectAffinity);
     }
 
     /// <summary>Validates that GetNotificationForProperty throws ArgumentNullException when sender is null.</summary>
@@ -105,18 +105,20 @@ public class DependencyObjectObservableForPropertyTests
     public async Task GetNotificationForProperty_ThrowsArgumentNullException_WhenSenderIsNull()
     {
         Expression<Func<object>> expr = () => new object();
-        var exception = await Assert.That(() => _sut.GetNotificationForProperty(null!, expr, "Property")).Throws<ArgumentNullException>();
+        var exception = await Assert.That(
+            () => _sut.GetNotificationForProperty(null!, expr, "Property")).Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo("sender");
     }
 
-    /// <summary>Validates that GetNotificationForProperty throws ArgumentException when sender is not DependencyObject.</summary>
+    /// <summary>Validates that a non-dependency-object sender throws <see cref="ArgumentException"/>.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetNotificationForProperty_ThrowsArgumentException_WhenSenderIsNotDependencyObject()
     {
         var sender = new object();
         Expression<Func<object>> expr = () => sender;
-        var exception = await Assert.That(() => _sut.GetNotificationForProperty(sender, expr, "Property")).Throws<ArgumentException>();
+        var exception = await Assert.That(
+            () => _sut.GetNotificationForProperty(sender, expr, "Property")).Throws<ArgumentException>();
         await Assert.That(exception!.ParamName).IsEqualTo("sender");
     }
 
@@ -133,7 +135,7 @@ public class DependencyObjectObservableForPropertyTests
         await Assert.That(sut1).IsNotSameReferenceAs(sut2);
     }
 
-    /// <summary>Validates that GetAffinityForObject returns consistent results for the same type and property.</summary>
+    /// <summary>Validates that repeated affinity queries return consistent results.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObject_ReturnsConsistentResults_ForSameTypeAndProperty()
@@ -153,12 +155,12 @@ public class DependencyObjectObservableForPropertyTests
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>Validates that GetAffinityForObject returns positive affinity for derived DependencyObject types.</summary>
+    /// <summary>Validates affinity for a derived dependency object type.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObject_ReturnsPositiveAffinity_ForDerivedDependencyObjectTypes()
     {
         var affinity = _sut.GetAffinityForObject(typeof(Button), nameof(Button.Content));
-        await Assert.That(affinity).IsEqualTo(6);
+        await Assert.That(affinity).IsEqualTo(ExpectedDependencyObjectAffinity);
     }
 }

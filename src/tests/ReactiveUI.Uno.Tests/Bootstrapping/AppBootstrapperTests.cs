@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using TUnit.Assertions.Extensions;
@@ -8,9 +7,12 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Bootstrapping;
 
-/// <summary>Contains tests for the <see cref="AppBootstrapper"/> class, ensuring its functionality for application bootstrapping with ReactiveUI.</summary>
+/// <summary>Contains tests for <see cref="AppBootstrapper"/> application bootstrapping with ReactiveUI.</summary>
 public class AppBootstrapperTests
 {
+    /// <summary>The expected stack count after two navigations.</summary>
+    private const int NavigationStackCountAfterTwoNavigations = 2;
+
     /// <summary>Validates that AppBootstrapper can be instantiated without errors.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
@@ -110,7 +112,8 @@ public class AppBootstrapperTests
 
         await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel1));
         await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel2));
-        await Assert.That(bootstrapper.Router.NavigationStack.Count).IsEqualTo(2);
+        await Assert.That(bootstrapper.Router.NavigationStack.Count)
+            .IsEqualTo(NavigationStackCountAfterTwoNavigations);
 
         await ExecuteNavigationAsync(bootstrapper.Router.NavigateBack.Execute());
 
@@ -149,7 +152,8 @@ public class AppBootstrapperTests
 
         await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel1));
         await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel2));
-        await Assert.That(bootstrapper.Router.NavigationStack.Count).IsEqualTo(2);
+        await Assert.That(bootstrapper.Router.NavigationStack.Count)
+            .IsEqualTo(NavigationStackCountAfterTwoNavigations);
 
         await ExecuteNavigationAsync(bootstrapper.Router.NavigateAndReset.Execute(viewModel3));
 

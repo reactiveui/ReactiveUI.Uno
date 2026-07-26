@@ -1,4 +1,4 @@
-﻿<Project Sdk="Uno.Sdk">
+<Project Sdk="Uno.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(UnoTargetFrameworks)</TargetFrameworks>
     <UnoSingleProject>true</UnoSingleProject>
@@ -23,6 +23,12 @@
       SkiaRenderer;
     </UnoFeatures>
   </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <Content>
+      <Pack>false</Pack>
+    </Content>
+  </ItemDefinitionGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>

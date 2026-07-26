@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if REACTIVE_SHIM
@@ -15,9 +14,9 @@ namespace ReactiveUI.Uno;
 [Flags]
 public enum BooleanToVisibilityHint
 {
-    /// <summary>No special behavior. true => <see cref="Visibility.Visible"/>, false => <see cref="Visibility.Collapsed"/>.</summary>
+    /// <summary>Uses the normal true-visible and false-collapsed mapping.</summary>
     None = 0,
 
-    /// <summary>Invert the conversion behavior. true => <see cref="Visibility.Collapsed"/>, false => <see cref="Visibility.Visible"/>.</summary>
+    /// <summary>Inverts the true-visible and false-collapsed mapping.</summary>
     Inverse = 1 << 1,
 }

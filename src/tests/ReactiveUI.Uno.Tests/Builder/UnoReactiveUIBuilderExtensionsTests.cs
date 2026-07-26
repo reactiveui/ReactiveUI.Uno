@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using NSubstitute;
@@ -14,16 +13,20 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests.Builder;
 
-/// <summary>Contains tests for the <see cref="UnoReactiveUIBuilderExtensions"/> class, ensuring its functionality for builder pattern extensions.</summary>
+/// <summary>Contains tests for <see cref="UnoReactiveUIBuilderExtensions"/> builder pattern extensions.</summary>
 public class UnoReactiveUIBuilderExtensionsTests
 {
+    /// <summary>The builder argument parameter name.</summary>
+    private const string BuilderParameterName = "builder";
+
     /// <summary>Validates that WithUno throws ArgumentNullException when builder is null.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WithUno_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithUno(null!, null!)).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("builder");
+        var exception = await Assert.That(
+            () => UnoReactiveUIBuilderExtensions.WithUno(null!, null!)).Throws<ArgumentNullException>();
+        await Assert.That(exception!.ParamName).IsEqualTo(BuilderParameterName);
     }
 
     /// <summary>Validates that WithUno throws ArgumentNullException when startupWindow is null.</summary>
@@ -41,8 +44,9 @@ public class UnoReactiveUIBuilderExtensionsTests
     [Test]
     public async Task WithUnoScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithUnoScheduler(null!)).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("builder");
+        var exception = await Assert.That(
+            () => UnoReactiveUIBuilderExtensions.WithUnoScheduler(null!)).Throws<ArgumentNullException>();
+        await Assert.That(exception!.ParamName).IsEqualTo(BuilderParameterName);
     }
 
     /// <summary>Validates that WithDefaultIScreen throws ArgumentNullException when builder is null.</summary>
@@ -50,8 +54,9 @@ public class UnoReactiveUIBuilderExtensionsTests
     [Test]
     public async Task WithDefaultIScreen_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        var exception = await Assert.That(() => UnoReactiveUIBuilderExtensions.WithDefaultIScreen(null!)).Throws<ArgumentNullException>();
-        await Assert.That(exception!.ParamName).IsEqualTo("builder");
+        var exception = await Assert.That(
+            () => UnoReactiveUIBuilderExtensions.WithDefaultIScreen(null!)).Throws<ArgumentNullException>();
+        await Assert.That(exception!.ParamName).IsEqualTo(BuilderParameterName);
     }
 
     /// <summary>
@@ -135,7 +140,8 @@ public class UnoReactiveUIBuilderExtensionsTests
     {
         var builder = Substitute.For<IReactiveUIBuilder>();
         Action<IMutableDependencyResolver>? capturedRegistration = null;
-        _ = builder.WithRegistration(Arg.Do<Action<IMutableDependencyResolver>>(x => capturedRegistration = x)).Returns(builder);
+        _ = builder.WithRegistration(
+            Arg.Do<Action<IMutableDependencyResolver>>(x => capturedRegistration = x)).Returns(builder);
 
         _ = builder.WithDefaultIScreen();
 
@@ -224,7 +230,8 @@ public class UnoReactiveUIBuilderExtensionsTests
     [Test]
     public async Task WithUnoScheduler_MethodExists()
     {
-        var method = typeof(UnoReactiveUIBuilderExtensions).GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithUnoScheduler));
+        var method = typeof(UnoReactiveUIBuilderExtensions)
+            .GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithUnoScheduler));
 
         await Assert.That(method).IsNotNull();
     }
@@ -244,7 +251,8 @@ public class UnoReactiveUIBuilderExtensionsTests
     [Test]
     public async Task WithDefaultIScreen_MethodExists()
     {
-        var method = typeof(UnoReactiveUIBuilderExtensions).GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithDefaultIScreen));
+        var method = typeof(UnoReactiveUIBuilderExtensions)
+            .GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithDefaultIScreen));
 
         await Assert.That(method).IsNotNull();
     }

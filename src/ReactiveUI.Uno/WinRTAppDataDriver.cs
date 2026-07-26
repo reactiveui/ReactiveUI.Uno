@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
@@ -21,13 +20,19 @@ namespace ReactiveUI.Uno;
 /// <summary>Loads and saves state to persistent storage.</summary>
 public class WinRTAppDataDriver : ISuspensionDriver
 {
+    /// <summary>The JSON state file name.</summary>
+    private const string JsonStateFileName = "appData.json";
+
+    /// <summary>The data-contract state file name.</summary>
+    private const string XmlStateFileName = "appData.xmlish";
+
     /// <inheritdoc/>
     [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
     [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
     public IObservable<object?> LoadState() => Observable.FromAsync(
     async () =>
     {
-        var x = await ApplicationData.Current.RoamingFolder.GetFileAsync("appData.xmlish");
+        var x = await ApplicationData.Current.RoamingFolder.GetFileAsync(XmlStateFileName);
         var t = await FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8);
 
         var (typeName, xml) = ParseXmlishState(t);
@@ -42,10 +47,10 @@ public class WinRTAppDataDriver : ISuspensionDriver
     {
         ArgumentNullException.ThrowIfNull(typeInfo);
 
-        return Observable.FromAsync<T?>(
+        return Observable.FromAsync(
         async () =>
         {
-            var file = await ApplicationData.Current.RoamingFolder.GetFileAsync("appData.json");
+            var file = await ApplicationData.Current.RoamingFolder.GetFileAsync(JsonStateFileName);
             var json = await FileIO.ReadTextAsync(file, UnicodeEncoding.Utf8);
 
             return JsonSerializer.Deserialize(json, typeInfo);
@@ -60,23 +65,18 @@ public class WinRTAppDataDriver : ISuspensionDriver
     {
         ArgumentNullException.ThrowIfNull(state);
 
-        try
-        {
-            await using var ms = new MemoryStream();
-            await using var writer = new StreamWriter(ms, Encoding.UTF8);
-            var serializer = new DataContractSerializer(state.GetType());
-            await writer.WriteLineAsync(state.GetType().AssemblyQualifiedName);
-            await writer.FlushAsync();
+        await using var ms = new MemoryStream();
+        await using var writer = new StreamWriter(ms, Encoding.UTF8);
+        var serializer = new DataContractSerializer(state.GetType());
+        await writer.WriteLineAsync(state.GetType().AssemblyQualifiedName);
+        await writer.FlushAsync();
 
-            serializer.WriteObject(ms, state);
+        serializer.WriteObject(ms, state);
 
-            var x = await ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.xmlish", CreationCollisionOption.ReplaceExisting);
-            await FileIO.WriteBytesAsync(x, ms.ToArray());
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        var x = await ApplicationData.Current.RoamingFolder.CreateFileAsync(
+            XmlStateFileName,
+            CreationCollisionOption.ReplaceExisting);
+        await FileIO.WriteBytesAsync(x, ms.ToArray());
 
         return Unit.Default;
     });
@@ -92,7 +92,9 @@ public class WinRTAppDataDriver : ISuspensionDriver
         {
             var json = JsonSerializer.Serialize(state, typeInfo);
 
-            var file = await ApplicationData.Current.RoamingFolder.CreateFileAsync("appData.json", CreationCollisionOption.ReplaceExisting);
+            var file = await ApplicationData.Current.RoamingFolder.CreateFileAsync(
+                JsonStateFileName,
+                CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(file, json, UnicodeEncoding.Utf8);
 
             return Unit.Default;
@@ -106,27 +108,8 @@ public class WinRTAppDataDriver : ISuspensionDriver
         {
             var folder = ApplicationData.Current.RoamingFolder;
 
-            // Delete xmlish file (used by DataContract serialization)
-            try
-            {
-                var xmlFile = await folder.GetFileAsync("appData.xmlish");
-                await xmlFile.DeleteAsync();
-            }
-            catch (FileNotFoundException)
-            {
-                // File doesn't exist, nothing to invalidate
-            }
-
-            // Delete json file (used by JSON serialization)
-            try
-            {
-                var jsonFile = await folder.GetFileAsync("appData.json");
-                await jsonFile.DeleteAsync();
-            }
-            catch (FileNotFoundException)
-            {
-                // File doesn't exist, nothing to invalidate
-            }
+            await DeleteIfPresentAsync(folder, XmlStateFileName);
+            await DeleteIfPresentAsync(folder, JsonStateFileName);
 
             return Unit.Default;
         });
@@ -153,5 +136,22 @@ public class WinRTAppDataDriver : ISuspensionDriver
         }
 
         return (typeName, content[(line + 1)..]);
+    }
+
+    /// <summary>Deletes a state file when it exists.</summary>
+    /// <param name="folder">The storage folder containing the state file.</param>
+    /// <param name="fileName">The state file name.</param>
+    /// <returns>A task that completes after the file has been deleted or found to be absent.</returns>
+    private static async Task DeleteIfPresentAsync(StorageFolder folder, string fileName)
+    {
+        try
+        {
+            var file = await folder.GetFileAsync(fileName);
+            await file.DeleteAsync();
+        }
+        catch (FileNotFoundException)
+        {
+            // File does not exist, so there is no state to invalidate.
+        }
     }
 }

@@ -14,7 +14,6 @@
     <File Path="../.gitignore" />
     <File Path="../LICENSE" />
     <File Path="../README.md" />
-    <File Path="../version.json" />
     <File Path="Directory.build.props" />
     <File Path="Directory.build.targets" />
     <File Path="Directory.Packages.props" />

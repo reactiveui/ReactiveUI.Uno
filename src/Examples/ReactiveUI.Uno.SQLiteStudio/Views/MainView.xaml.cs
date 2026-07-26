@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Text;
@@ -18,31 +17,39 @@ namespace ReactiveUI.Uno.SQLiteStudio.Views;
 /// queries, export results, and manage database tables.</remarks>
 public sealed partial class MainView : MainViewBase
 {
+    /// <summary>Stores the minimum SQL editor height.</summary>
+    private const double QueryEditorMinimumHeight = 100;
+
+    /// <summary>Stores the standard spacing used in layout padding.</summary>
+    private const double StandardSpacing = 16;
+
+    /// <summary>Stores compact spacing for header layout.</summary>
+    private const double CompactSpacing = 12;
+
+    /// <summary>Stores tight title bottom spacing.</summary>
+    private const double TitleBottomSpacing = 4;
+
+    /// <summary>Stores the header title font size.</summary>
+    private const double HeaderTitleFontSize = 18;
+
+    /// <summary>Stores the status row index.</summary>
+    private const int StatusRowIndex = 2;
+
+    /// <summary>Stores the current view binding scope.</summary>
+    private CompositeDisposable? _bindings;
+
     /// <summary>Initializes a new instance of the <see cref="MainView"/> class.</summary>
     public MainView()
     {
         BuildLayout();
-
-        _ = this.WhenActivated((disposables) =>
-        {
-            disposables(this.Bind(ViewModel, vm => vm.QueryText, v => v.QueryEditor.Text));
-            disposables(this.BindCommand(ViewModel, vm => vm.ExecuteQuery, v => v.ExecuteButton));
-            disposables(this.BindCommand(ViewModel, vm => vm.ExportCsv, v => v.ExportButton));
-            disposables(this.BindCommand(ViewModel, vm => vm.ListTables, v => v.ListTablesButton));
-            disposables(this.BindCommand(ViewModel, vm => vm.CreateUsersTable, v => v.CreateUsersButton));
-            disposables(this.BindCommand(ViewModel, vm => vm.DropUsersTable, v => v.DropUsersButton));
-            disposables(this.BindCommand(ViewModel, vm => vm.SampleSelect, v => v.SampleSelectButton));
-            disposables(this.BindCommand(ViewModel, vm => vm.SampleInsert, v => v.SampleInsertButton));
-            disposables(this.BindCommand(ViewModel, vm => vm.SampleDelete, v => v.SampleDeleteButton));
-            disposables(this.OneWayBind(ViewModel, vm => vm.ResultsText, v => v.ResultsViewer.Text));
-            disposables(this.OneWayBind(ViewModel, vm => vm.Status, v => v.StatusText.Text));
-        });
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
     /// <summary>Gets the SQL editor text box.</summary>
     private TextBox QueryEditor { get; } = new()
     {
-        MinHeight = 100,
+        MinHeight = QueryEditorMinimumHeight,
         AcceptsReturn = true,
         TextWrapping = TextWrapping.Wrap,
         Background = CreateBrush(Microsoft.UI.Colors.White),
@@ -51,60 +58,28 @@ public sealed partial class MainView : MainViewBase
     };
 
     /// <summary>Gets the command button that executes the current SQL query.</summary>
-    private AppBarButton ExecuteButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.Play),
-        Label = "Run"
-    };
+    private AppBarButton ExecuteButton { get; } = new() { Icon = new SymbolIcon(Symbol.Play), Label = "Run" };
 
     /// <summary>Gets the command button that exports the current result set to CSV.</summary>
-    private AppBarButton ExportButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.Save),
-        Label = "Export CSV"
-    };
+    private AppBarButton ExportButton { get; } = new() { Icon = new SymbolIcon(Symbol.Save), Label = "Export CSV" };
 
     /// <summary>Gets the command button that lists database tables.</summary>
-    private AppBarButton ListTablesButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.List),
-        Label = "List Tables"
-    };
+    private AppBarButton ListTablesButton { get; } = new() { Icon = new SymbolIcon(Symbol.List), Label = "List Tables" };
 
     /// <summary>Gets the command button that creates the sample users table.</summary>
-    private AppBarButton CreateUsersButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.Add),
-        Label = "Create Users"
-    };
+    private AppBarButton CreateUsersButton { get; } = new() { Icon = new SymbolIcon(Symbol.Add), Label = "Create Users" };
 
     /// <summary>Gets the command button that drops the sample users table.</summary>
-    private AppBarButton DropUsersButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.Delete),
-        Label = "Drop Users"
-    };
+    private AppBarButton DropUsersButton { get; } = new() { Icon = new SymbolIcon(Symbol.Delete), Label = "Drop Users" };
 
     /// <summary>Gets the command button that selects the sample SELECT statement.</summary>
-    private AppBarButton SampleSelectButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.Find),
-        Label = "Sample SELECT"
-    };
+    private AppBarButton SampleSelectButton { get; } = new() { Icon = new SymbolIcon(Symbol.Find), Label = "Sample SELECT" };
 
     /// <summary>Gets the command button that inserts a sample user row.</summary>
-    private AppBarButton SampleInsertButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.AddFriend),
-        Label = "Sample INSERT"
-    };
+    private AppBarButton SampleInsertButton { get; } = new() { Icon = new SymbolIcon(Symbol.AddFriend), Label = "Sample INSERT" };
 
     /// <summary>Gets the command button that deletes the sample inserted row.</summary>
-    private AppBarButton SampleDeleteButton { get; } = new()
-    {
-        Icon = new SymbolIcon(Symbol.Delete),
-        Label = "Sample DELETE"
-    };
+    private AppBarButton SampleDeleteButton { get; } = new() { Icon = new SymbolIcon(Symbol.Delete), Label = "Sample DELETE" };
 
     /// <summary>Gets the read-only text box that displays query results.</summary>
     private TextBox ResultsViewer { get; } = new()
@@ -119,11 +94,7 @@ public sealed partial class MainView : MainViewBase
     };
 
     /// <summary>Gets the status text displayed at the bottom of the view.</summary>
-    private TextBlock StatusText { get; } = new()
-    {
-        Padding = new(12),
-        Foreground = CreateBrush(Microsoft.UI.Colors.Black)
-    };
+    private TextBlock StatusText { get; } = new() { Padding = new(CompactSpacing), Foreground = CreateBrush(Microsoft.UI.Colors.Black) };
 
     /// <summary>Creates a solid color brush for code-built WinUI elements.</summary>
     /// <param name="color">The color to apply.</param>
@@ -133,10 +104,7 @@ public sealed partial class MainView : MainViewBase
     /// <summary>Builds the view layout using WinUI controls.</summary>
     private void BuildLayout()
     {
-        var root = new Grid
-        {
-            Background = CreateBrush(Microsoft.UI.Colors.WhiteSmoke)
-        };
+        var root = new Grid { Background = CreateBrush(Microsoft.UI.Colors.WhiteSmoke) };
         root.RowDefinitions.Add(new() { Height = GridLength.Auto });
         root.RowDefinitions.Add(new() { Height = new(1, GridUnitType.Star) });
         root.RowDefinitions.Add(new() { Height = GridLength.Auto });
@@ -149,12 +117,8 @@ public sealed partial class MainView : MainViewBase
         Grid.SetRow(content, 1);
         root.Children.Add(content);
 
-        var status = new Border
-        {
-            Background = CreateBrush(Microsoft.UI.Colors.Gainsboro),
-            Child = StatusText
-        };
-        Grid.SetRow(status, 2);
+        var status = new Border { Background = CreateBrush(Microsoft.UI.Colors.Gainsboro), Child = StatusText };
+        Grid.SetRow(status, StatusRowIndex);
         root.Children.Add(status);
 
         Content = root;
@@ -164,17 +128,14 @@ public sealed partial class MainView : MainViewBase
     /// <returns>The header layout.</returns>
     private Grid BuildHeader()
     {
-        var header = new Grid
-        {
-            Background = CreateBrush(Microsoft.UI.Colors.DarkSlateGray)
-        };
+        var header = new Grid { Background = CreateBrush(Microsoft.UI.Colors.DarkSlateGray) };
         header.RowDefinitions.Add(new() { Height = GridLength.Auto });
         header.RowDefinitions.Add(new() { Height = GridLength.Auto });
 
         var title = new TextBlock
         {
-            Margin = new(16, 12, 16, 4),
-            FontSize = 18,
+            Margin = new(StandardSpacing, CompactSpacing, StandardSpacing, TitleBottomSpacing),
+            FontSize = HeaderTitleFontSize,
             FontWeight = FontWeights.SemiBold,
             Foreground = CreateBrush(Microsoft.UI.Colors.White),
             Text = "ReactiveUI.Uno SQLite Studio"
@@ -209,11 +170,7 @@ public sealed partial class MainView : MainViewBase
     /// <returns>The content layout.</returns>
     private Grid BuildContent()
     {
-        var content = new Grid
-        {
-            Padding = new(16),
-            RowSpacing = 12
-        };
+        var content = new Grid { Padding = new(StandardSpacing), RowSpacing = CompactSpacing };
         content.RowDefinitions.Add(new() { Height = GridLength.Auto });
         content.RowDefinitions.Add(new() { Height = new(1, GridUnitType.Star) });
 
@@ -224,5 +181,85 @@ public sealed partial class MainView : MainViewBase
         content.Children.Add(ResultsViewer);
 
         return content;
+    }
+
+    /// <summary>Creates ReactiveUI bindings when the view enters the visual tree.</summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="args">The event arguments.</param>
+    private void OnLoaded(object sender, RoutedEventArgs args)
+    {
+        ArgumentNullException.ThrowIfNull(sender);
+        ArgumentNullException.ThrowIfNull(args);
+
+        if (_bindings is not null)
+        {
+            return;
+        }
+
+        var disposables = new CompositeDisposable();
+        _bindings = disposables;
+        RegisterBindings(disposables);
+    }
+
+    /// <summary>Registers ReactiveUI bindings into the supplied disposable scope.</summary>
+    /// <param name="disposables">The binding scope.</param>
+    private void RegisterBindings(CompositeDisposable disposables)
+    {
+        disposables.Add(this.Bind(
+            ViewModel,
+            static vm => vm.QueryText,
+            static view => view.QueryEditor.Text));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.ExecuteQuery,
+            static view => view.ExecuteButton));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.ExportCsv,
+            static view => view.ExportButton));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.ListTables,
+            static view => view.ListTablesButton));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.CreateUsersTable,
+            static view => view.CreateUsersButton));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.DropUsersTable,
+            static view => view.DropUsersButton));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.SampleSelect,
+            static view => view.SampleSelectButton));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.SampleInsert,
+            static view => view.SampleInsertButton));
+        disposables.Add(this.BindCommand(
+            ViewModel,
+            static vm => vm.SampleDelete,
+            static view => view.SampleDeleteButton));
+        disposables.Add(this.OneWayBind(
+            ViewModel,
+            static vm => vm.ResultsText,
+            static view => view.ResultsViewer.Text));
+        disposables.Add(this.OneWayBind(
+            ViewModel,
+            static vm => vm.Status,
+            static view => view.StatusText.Text));
+    }
+
+    /// <summary>Disposes ReactiveUI bindings when the view leaves the visual tree.</summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="args">The event arguments.</param>
+    private void OnUnloaded(object sender, RoutedEventArgs args)
+    {
+        ArgumentNullException.ThrowIfNull(sender);
+        ArgumentNullException.ThrowIfNull(args);
+
+        _bindings?.Dispose();
+        _bindings = null;
     }
 }

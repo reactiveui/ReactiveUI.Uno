@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
@@ -25,8 +24,14 @@ namespace ReactiveUI.Uno;
 /// </summary>
 public class ActivationForViewFetcher : IActivationForViewFetcher
 {
+    /// <summary>The affinity assigned to framework element views.</summary>
+    private const int FrameworkElementAffinity = 10;
+
     /// <inheritdoc/>
-    public int GetAffinityForView(Type view) => typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
+    public int GetAffinityForView(Type view) =>
+        typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
+            ? FrameworkElementAffinity
+            : 0;
 
     /// <inheritdoc/>
     public IObservable<bool> GetActivationForView(IActivatableView view)
@@ -38,18 +43,19 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         var viewLoaded = Observable.Create<bool>(observer =>
         {
-            void Handler(FrameworkElement sender, object args) => observer.OnNext(true);
+            Windows.Foundation.TypedEventHandler<FrameworkElement, object> handler =
+                (_, _) => observer.OnNext(true);
 
-            fe.Loading += Handler;
-            return Disposable.Create(() => fe.Loading -= Handler);
+            fe.Loading += handler;
+            return Disposable.Create(() => fe.Loading -= handler);
         });
 
         var viewUnloaded = Observable.Create<bool>(observer =>
         {
-            void Handler(object sender, RoutedEventArgs args) => observer.OnNext(false);
+            RoutedEventHandler handler = (_, _) => observer.OnNext(false);
 
-            fe.Unloaded += Handler;
-            return Disposable.Create(() => fe.Unloaded -= Handler);
+            fe.Unloaded += handler;
+            return Disposable.Create(() => fe.Unloaded -= handler);
         });
 
         // Observe IsHitTestVisible property changes using DependencyProperty (AOT-safe)

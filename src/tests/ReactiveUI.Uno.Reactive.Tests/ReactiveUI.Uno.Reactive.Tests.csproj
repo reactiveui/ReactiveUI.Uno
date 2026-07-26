@@ -29,6 +29,10 @@
     <Using Include="ReactiveUI.Primitives.Reactive" />
     <Using Include="ReactiveUI.Primitives.Reactive.Concurrency" />
     <Using Include="ReactiveUI.Uno.Reactive" />
+    <Using Include="TUnit.Assertions" />
+    <Using Include="TUnit.Assertions.Extensions" />
+    <Using Include="TUnit.Core" />
+    <Using Include="TUnit.Core.HookType" Static="true" />
     <Using Include="System.Reactive.Unit" Alias="Unit" />
     <Using Include="System.Reactive.Linq.Observable" Alias="Observable" />
     <Using Include="System.Reactive.Disposables.Disposable" Alias="Disposable" />

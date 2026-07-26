@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
@@ -10,7 +9,7 @@ using CsvHelper.Configuration;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Services;
 
-/// <summary>Provides functionality to export collections of data to a CSV file using a singleton service instance.</summary>
+/// <summary>Provides functionality to export collections of data to a CSV file.</summary>
 /// <remarks>This service is intended for exporting data to CSV format in local application storage. The singleton
 /// instance can be accessed via the <see cref="Instance"/> property. The service supports exporting collections of
 /// items, including dictionaries with string keys and object values, to a CSV file. Thread safety is ensured for
@@ -18,6 +17,9 @@ namespace ReactiveUI.Uno.SQLiteStudio.Services;
 /// file.</remarks>
 public sealed class CsvExportService : ICsvExportService
 {
+    /// <summary>Stores the default CSV export file name.</summary>
+    private const string DefaultFileName = "results.csv";
+
     /// <summary>Stores the lazy singleton CSV export service instance.</summary>
     private static readonly Lazy<ICsvExportService> LazyInstance = new(() => new CsvExportService());
 
@@ -31,27 +33,26 @@ public sealed class CsvExportService : ICsvExportService
     /// instance is lazily initialized and intended for reuse throughout the application.</remarks>
     public static ICsvExportService Instance => LazyInstance.Value;
 
-    /// <summary>Asynchronously exports the specified collection of items to a CSV file in the local application data folder.</summary>
-    /// <remarks>If an item in the collection is an IReadOnlyDictionary{string, object?}, each key-value pair
-    /// is written as a pair of fields in the CSV. Otherwise, the item's string representation is written as a single
-    /// field. The CSV file does not include a header row. The file is saved to the user's local application data
-    /// folder.</remarks>
-    /// <param name="items">The collection of items to export. Each item can be an object or an IReadOnlyDictionary{string, object?}. Cannot
-    /// be null.</param>
+    /// <summary>Exports the specified collection of items to the default CSV file.</summary>
+    /// <param name="items">The collection of items to export.</param>
+    /// <returns>A task that represents the asynchronous export operation.</returns>
+    public Task ExportAsync(IEnumerable items) => ExportAsync(items, DefaultFileName);
+
+    /// <summary>Asynchronously exports the specified collection of items to a CSV file.</summary>
+    /// <remarks>The CSV file does not include a header row and is saved to local application data.</remarks>
+    /// <param name="items">The collection of items to export. Cannot be null.</param>
     /// <param name="fileName">The name of the CSV file to create. Defaults to "results.csv" if not specified.</param>
     /// <returns>A task that represents the asynchronous export operation.</returns>
-    public async Task ExportAsync(IEnumerable items, string fileName = "results.csv")
+    public async Task ExportAsync(IEnumerable items, string fileName)
     {
         ArgumentNullException.ThrowIfNull(items);
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
 
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var path = Path.Combine(folder, fileName);
 
         await using var writer = new StreamWriter(path);
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            HasHeaderRecord = false
-        };
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false };
         await using var csv = new CsvWriter(writer, config);
 
         foreach (var item in items)

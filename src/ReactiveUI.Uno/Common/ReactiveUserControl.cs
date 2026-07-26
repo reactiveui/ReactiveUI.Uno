@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
@@ -16,12 +15,14 @@ namespace ReactiveUI.Uno;
 /// <summary>A <see cref="UserControl"/> that is reactive.</summary>
 /// <remarks>
 /// <para>
-/// This class is a <see cref="UserControl"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
-/// You can extend this class to get an implementation of <see cref="IViewFor{TViewModel}"/> rather than writing one yourself.
+/// This class is a <see cref="UserControl"/> that is also reactive. That is, it implements
+/// <see cref="IViewFor{TViewModel}"/>.
+/// You can extend this class to get an implementation of <see cref="IViewFor{TViewModel}"/>
+/// rather than writing one yourself.
 /// </para>
 /// <para>
-/// Note that the XAML for your control must specify the same base class, including the generic argument you provide for your view
-/// model. To do this, use the <c>TypeArguments</c> attribute as follows:
+/// Note that the XAML for your control must specify the same base class, including the generic
+/// argument you provide for your view model. To do this, use the <c>TypeArguments</c> attribute as follows:
 /// <code>
 /// <![CDATA[
 /// <rxui:ReactiveUserControl
@@ -40,9 +41,10 @@ namespace ReactiveUI.Uno;
 /// </code>
 /// </para>
 /// <para>
-/// Note that UWP and WinUI projects do not support the <c>TypeArguments</c> attribute. The XAML designer window in WPF projects also does not
-/// support generic types. To use <see cref="ReactiveUserControl{TViewModel}"/> in XAML documents you need to create a base class
-/// where you derive from <see cref="ReactiveUserControl{TViewModel}"/> with the type argument filled in.
+/// Note that UWP and WinUI projects do not support the <c>TypeArguments</c> attribute.
+/// The XAML designer window in WPF projects also does not support generic types.
+/// To use <see cref="ReactiveUserControl{TViewModel}"/> in XAML documents you need to create
+/// a base class where you derive from <see cref="ReactiveUserControl{TViewModel}"/> with the type argument filled in.
 /// <code>
 /// <![CDATA[
 /// internal class YourViewBase : ReactiveUserControl<YourViewModel> { /* No code needed here */ }
@@ -88,7 +90,7 @@ public class ReactiveUserControl<TViewModel> :
             nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactiveUserControl<TViewModel>),
-            new PropertyMetadata(null));
+            new(null));
 
     /// <summary>Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.</summary>
     protected ReactiveUserControl()

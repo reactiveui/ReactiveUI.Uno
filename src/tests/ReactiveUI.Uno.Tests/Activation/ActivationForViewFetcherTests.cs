@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml;
@@ -14,6 +13,9 @@ namespace ReactiveUI.Uno.Tests.Activation;
 /// </summary>
 public class ActivationForViewFetcherTests
 {
+    /// <summary>The expected affinity for framework element views.</summary>
+    private const int ExpectedAffinity = 10;
+
     /// <summary>The system under test.</summary>
     private ActivationForViewFetcher _sut = null!;
 
@@ -27,7 +29,7 @@ public class ActivationForViewFetcherTests
     public async Task GetAffinityForView_ReturnsHighAffinity_ForFrameworkElementTypes()
     {
         var affinity = _sut.GetAffinityForView(typeof(FrameworkElement));
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
     /// <summary>Validates that GetAffinityForView returns zero affinity for non-FrameworkElement types.</summary>
@@ -72,7 +74,8 @@ public class ActivationForViewFetcherTests
     /// <summary>Validates that ActivationForViewFetcher implements IActivationForViewFetcher interface.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
-    public async Task ActivationForViewFetcher_ImplementsIActivationForViewFetcher() => await Assert.That(_sut).IsAssignableTo<IActivationForViewFetcher>();
+    public async Task ActivationForViewFetcher_ImplementsIActivationForViewFetcher() =>
+        await Assert.That(_sut).IsAssignableTo<IActivationForViewFetcher>();
 
     /// <summary>Validates that GetAffinityForView returns high affinity for UserControl types.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
@@ -80,7 +83,7 @@ public class ActivationForViewFetcherTests
     public async Task GetAffinityForView_ReturnsHighAffinity_ForUserControlTypes()
     {
         var affinity = _sut.GetAffinityForView(typeof(UserControl));
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
     /// <summary>Validates that GetAffinityForView returns high affinity for Page types.</summary>
@@ -89,7 +92,7 @@ public class ActivationForViewFetcherTests
     public async Task GetAffinityForView_ReturnsHighAffinity_ForPageTypes()
     {
         var affinity = _sut.GetAffinityForView(typeof(Page));
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
     /// <summary>Validates that GetAffinityForView returns high affinity for ContentControl types.</summary>
@@ -98,7 +101,7 @@ public class ActivationForViewFetcherTests
     public async Task GetAffinityForView_ReturnsHighAffinity_ForContentControlTypes()
     {
         var affinity = _sut.GetAffinityForView(typeof(ContentControl));
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
     /// <summary>Validates that GetAffinityForView returns zero affinity for interface types.</summary>
@@ -110,7 +113,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsZero();
     }
 
-    /// <summary>Validates that GetAffinityForView returns zero affinity for abstract non-FrameworkElement types.</summary>
+    /// <summary>Validates that abstract non-framework element types receive zero affinity.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForView_ReturnsZeroAffinity_ForAbstractNonFrameworkElementTypes()
@@ -144,9 +147,5 @@ public class ActivationForViewFetcherTests
     }
 
     /// <summary>Simple mock implementation of IActivatableView for testing.</summary>
-    private sealed class MockActivatableView : IActivatableView
-    {
-        /// <summary>Gets the view model activator.</summary>
-        public ViewModelActivator Activator { get; } = new();
-    }
+    private sealed class MockActivatableView : IActivatableView;
 }

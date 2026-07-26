@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
@@ -10,7 +9,7 @@ using TUnit.Core;
 
 namespace ReactiveUI.Uno.Tests;
 
-/// <summary>Contains test cases for the AutoDataTemplateBindingHook class, ensuring its behavior adheres to expected functionality.</summary>
+/// <summary>Tests the behavior of <see cref="AutoDataTemplateBindingHook"/>.</summary>
 public class AutoDataTemplateBindingHookTests
 {
     /// <summary>Validates that ExecuteHook throws when getCurrentViewProperties is null.</summary>
@@ -20,7 +19,9 @@ public class AutoDataTemplateBindingHookTests
     {
         AutoDataTemplateBindingHook hook = new();
 
-        var exception = await Assert.That(() => hook.ExecuteHook(null!, new object(), () => [], null!, BindingDirection.OneWay)).Throws<ArgumentNullException>();
+        var exception = await Assert.That(
+            () => hook.ExecuteHook(null!, new(), () => [], null!, BindingDirection.OneWay))
+            .Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo("getCurrentViewProperties");
     }
 
@@ -32,9 +33,9 @@ public class AutoDataTemplateBindingHookTests
         AutoDataTemplateBindingHook hook = new();
         var sender = new object();
         var expr = (Expression<Func<object?>>)(() => sender);
-        ObservedChange<object, object>[] viewChanges = [new(sender, expr, new())];
+        IObservedChange<object, object>[] viewChanges = [new ObservedChange<object, object>(sender, expr, new())];
 
-        var result = hook.ExecuteHook(null, new object(), () => [], () => viewChanges, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, new(), () => [], () => viewChanges, BindingDirection.OneWay);
 
         await Assert.That(result).IsTrue();
     }
@@ -58,9 +59,9 @@ public class AutoDataTemplateBindingHookTests
 
         IObservedChange<object, object>[] viewModelChanges = [];
         var expr = (Expression<Func<object?>>)(() => ic.ItemsSource);
-        ObservedChange<object, object>[] viewChanges =
+        IObservedChange<object, object>[] viewChanges =
         [
-            new(ic, expr, new())
+            new ObservedChange<object, object>(ic, expr, new())
         ];
 
         var result = hook.ExecuteHook(null, ic, () => viewModelChanges, () => viewChanges, BindingDirection.OneWay);
@@ -86,9 +87,14 @@ public class AutoDataTemplateBindingHookTests
         }
 
         var expr = (Expression<Func<object?>>)(() => ic.ItemsSource);
-        ObservedChange<object, object>[] viewChanges = [new(ic, expr, new object())];
+        IObservedChange<object, object>[] viewChanges = [new ObservedChange<object, object>(ic, expr, new object())];
 
-        var result = hook.ExecuteHook(null, ic, Array.Empty<IObservedChange<object, object>>, () => viewChanges, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(
+            null,
+            ic,
+            Array.Empty<IObservedChange<object, object>>,
+            () => viewChanges,
+            BindingDirection.OneWay);
         await Assert.That(result).IsTrue();
         await Assert.That(ic.ItemTemplate).IsNotNull();
     }

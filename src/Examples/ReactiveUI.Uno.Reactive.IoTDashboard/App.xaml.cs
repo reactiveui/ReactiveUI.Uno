@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -49,22 +48,21 @@ public partial class App : Application
     private static void InitializeApplication(Window window)
     {
         var screen = new AppBootstrapper();
-        var telemetry = new LocalIoTTelemetryService();
+        var timeProvider = TimeProvider.System;
+        var telemetry = new LocalIoTTelemetryService(timeProvider);
 
         _ = RxAppBuilder.CreateReactiveUIBuilder()
             .WithUno(window)
             .WithRegistration(mutable =>
             {
                 mutable.RegisterConstant<IScreen>(screen);
+                mutable.RegisterConstant(timeProvider);
                 mutable.RegisterConstant<IIoTTelemetryService>(telemetry);
             })
             .BuildApp();
 
-        var viewModel = new DashboardViewModel(screen, telemetry);
+        var viewModel = new DashboardViewModel(screen, telemetry, timeProvider);
 
-        window.Content = new DashboardView
-        {
-            ViewModel = viewModel
-        };
+        window.Content = new DashboardView { ViewModel = viewModel };
     }
 }

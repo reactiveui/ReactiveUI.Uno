@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml;
@@ -188,7 +187,7 @@ public class ReactivePageTests
     public sealed class TestPageViewModel
     {
         /// <summary>Gets a value indicating whether the test view model was initialized.</summary>
-        public static bool IsInitialized => true;
+        public bool IsInitialized => true;
     }
 
     /// <summary>Test ReactivePage implementation for testing purposes.</summary>

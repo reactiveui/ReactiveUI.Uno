@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
@@ -20,6 +19,9 @@ namespace ReactiveUI.Uno;
 /// <summary>Creates a observable for a property if available that is based on a DependencyProperty.</summary>
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
+    /// <summary>The affinity assigned when a dependency property is available.</summary>
+    private const int DependencyPropertyAffinity = 6;
+
     /// <inheritdoc/>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     public int GetAffinityForObject(Type? type, string propertyName) => GetAffinityForObject(type, propertyName, false);
@@ -38,22 +40,34 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             return 0;
         }
 
-        return GetDependencyPropertyFetcher(type, propertyName) is null ? 0 : 6;
+        return GetDependencyPropertyFetcher(type, propertyName) is null ? 0 : DependencyPropertyAffinity;
     }
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName) =>
+    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName) =>
         GetNotificationForProperty(sender, expression, propertyName, false, false);
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged) =>
+    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged) =>
         GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings)
+    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged,
+        bool suppressWarnings)
     {
         ArgumentNullException.ThrowIfNull(sender);
 
@@ -73,7 +87,8 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
                 propertyName);
 
             var ret = new POCOObservableForProperty();
-            return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
+            return ret
+                .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
                 .Select(x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
         }
 
@@ -87,7 +102,8 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
                 propertyName);
 
             var ret = new POCOObservableForProperty();
-            return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
+            return ret
+                .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
                 .Select(x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
         }
 
@@ -102,7 +118,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         });
     }
 
-    /// <summary>Finds a static dependency property accessor declared on the supplied type or one of its base types.</summary>
+    /// <summary>Finds a static dependency property accessor on the supplied type or a base type.</summary>
     /// <param name="typeInfo">The type to inspect.</param>
     /// <param name="propertyName">The dependency property accessor name.</param>
     /// <returns>The matching property when found; otherwise, null.</returns>
@@ -156,7 +172,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         var typeInfo = type.GetTypeInfo();
 
         // Look for the DependencyProperty attached to this property name
-        var pi = ActuallyGetProperty(typeInfo, propertyName + "Property");
+        var pi = ActuallyGetProperty(typeInfo, $"{propertyName}Property");
         if (pi is not null)
         {
             var value = pi.GetValue(null);
@@ -164,7 +180,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             return value is null ? null : () => (DependencyProperty)value;
         }
 
-        var fi = ActuallyGetField(typeInfo, propertyName + "Property");
+        var fi = ActuallyGetField(typeInfo, $"{propertyName}Property");
         if (fi is not null)
         {
             var value = fi.GetValue(null);

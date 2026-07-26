@@ -1,6 +1,5 @@
-// Copyright (c) 2021 - 2026 ReactiveUI and Contributors. All rights reserved.
-// Licensed to reactiveui and contributors under one or more agreements.
-// The reactiveui and contributors licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
+// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
@@ -16,8 +15,11 @@ namespace ReactiveUI.Uno;
 /// <summary>Converts between a <see cref="bool"/> and XAML <see cref="Visibility"/>. to invert the result.</summary>
 public class BooleanToVisibilityTypeConverter : BindingTypeConverter<bool, Visibility>
 {
+    /// <summary>The affinity assigned to Boolean-to-visibility conversions.</summary>
+    private const int ConversionAffinity = 2;
+
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 2;
+    public override int GetAffinityForObjects() => ConversionAffinity;
 
     /// <inheritdoc/>
     public override bool TryConvert(bool from, object? conversionHint, [NotNullWhen(true)] out Visibility result)
