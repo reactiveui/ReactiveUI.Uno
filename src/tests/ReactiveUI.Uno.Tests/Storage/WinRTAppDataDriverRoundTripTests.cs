@@ -39,7 +39,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task ParseXmlishState_WithLfHeader_PreservesFullTypeName()
     {
-        var typeName = typeof(TestState).AssemblyQualifiedName!;
+        const string typeName = "ReactiveUI.Uno.Tests.Storage.TestState, ReactiveUI.Uno.Tests";
         var (parsedTypeName, xml) = WinRTAppDataDriver.ParseXmlishState($"{typeName}\n{XmlStatePayload}");
 
         await Assert.That(parsedTypeName).IsEqualTo(typeName);
@@ -51,7 +51,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task ParseXmlishState_WithCrLfHeader_PreservesFullTypeName()
     {
-        var typeName = typeof(TestState).AssemblyQualifiedName!;
+        const string typeName = "ReactiveUI.Uno.Tests.Storage.TestState, ReactiveUI.Uno.Tests";
         var (parsedTypeName, xml) = WinRTAppDataDriver.ParseXmlishState($"{typeName}\r\n{XmlStatePayload}");
 
         await Assert.That(parsedTypeName).IsEqualTo(typeName);
@@ -62,13 +62,13 @@ public partial class WinRTAppDataDriverTests
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ParseXmlishState_WithoutHeader_ThrowsInvalidDataException() =>
-        await Assert.That(() => WinRTAppDataDriver.ParseXmlishState(XmlStatePayload)).Throws<InvalidDataException>();
+        await Assert.That(static () => WinRTAppDataDriver.ParseXmlishState(XmlStatePayload)).Throws<InvalidDataException>();
 
     /// <summary>Validates that XML state parsing rejects an empty type header.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ParseXmlishState_WithEmptyHeader_ThrowsInvalidDataException() =>
-        await Assert.That(() => WinRTAppDataDriver.ParseXmlishState($"\n{XmlStatePayload}"))
+        await Assert.That(static () => WinRTAppDataDriver.ParseXmlishState($"\n{XmlStatePayload}"))
             .Throws<InvalidDataException>();
 
     /// <summary>Validates that JSON state can be saved and loaded when application storage is available.</summary>

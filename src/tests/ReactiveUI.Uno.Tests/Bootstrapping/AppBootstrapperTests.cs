@@ -97,7 +97,7 @@ public class AppBootstrapperTests
 
         await ExecuteNavigationAsync(bootstrapper.Router.Navigate.Execute(viewModel));
 
-        var currentVm = bootstrapper.Router.NavigationStack.LastOrDefault();
+        var currentVm = bootstrapper.Router.NavigationStack[^1];
         await Assert.That(currentVm).IsEqualTo(viewModel);
     }
 

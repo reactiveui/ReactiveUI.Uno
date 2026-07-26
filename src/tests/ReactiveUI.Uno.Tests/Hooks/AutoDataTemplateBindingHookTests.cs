@@ -20,7 +20,7 @@ public class AutoDataTemplateBindingHookTests
         AutoDataTemplateBindingHook hook = new();
 
         var exception = await Assert.That(
-            () => hook.ExecuteHook(null!, new(), () => [], null!, BindingDirection.OneWay))
+            () => hook.ExecuteHook(null!, new(), static () => [], null!, BindingDirection.OneWay))
             .Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo("getCurrentViewProperties");
     }
@@ -35,7 +35,7 @@ public class AutoDataTemplateBindingHookTests
         var expr = (Expression<Func<object?>>)(() => sender);
         IObservedChange<object, object>[] viewChanges = [new ObservedChange<object, object>(sender, expr, new())];
 
-        var result = hook.ExecuteHook(null, new(), () => [], () => viewChanges, BindingDirection.OneWay);
+        var result = hook.ExecuteHook(null, new(), static () => [], () => viewChanges, BindingDirection.OneWay);
 
         await Assert.That(result).IsTrue();
     }

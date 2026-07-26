@@ -37,7 +37,7 @@ public class ReactiveHelpersTests
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_ThrowsArgumentNullException_WhenSourceIsNull() =>
-        await Assert.That(() => ReactiveHelpers.CreatePropertyChangedPulse(null!, TestProperty))
+        await Assert.That(static () => ReactiveHelpers.CreatePropertyChangedPulse(null!, TestProperty))
             .Throws<ArgumentNullException>();
 
     /// <summary>Validates that a null pulse property name throws <see cref="ArgumentNullException"/>.</summary>
@@ -135,7 +135,7 @@ public class ReactiveHelpersTests
     [Test]
     public async Task CreatePropertyValueObservable_ThrowsArgumentNullException_WhenSourceIsNull() =>
         await Assert.That(
-            () => ReactiveHelpers.CreatePropertyValueObservable(null!, TestProperty, () => "value"))
+            static () => ReactiveHelpers.CreatePropertyValueObservable(null!, TestProperty, static () => "value"))
             .Throws<ArgumentNullException>();
 
     /// <summary>Validates that a null value-observable property name throws.</summary>
@@ -144,7 +144,7 @@ public class ReactiveHelpersTests
     public async Task CreatePropertyValueObservable_ThrowsArgumentNullException_WhenPropertyNameIsNull()
     {
         var source = new TestNotifyPropertyChanged();
-        await Assert.That(() => ReactiveHelpers.CreatePropertyValueObservable(source, null!, () => "value"))
+        await Assert.That(() => ReactiveHelpers.CreatePropertyValueObservable(source, null!, static () => "value"))
             .Throws<ArgumentNullException>();
     }
 
@@ -392,7 +392,9 @@ public class ReactiveHelpersTests
             ArgumentNullException.ThrowIfNull(observer);
 
             _observers.Add(observer);
-            return Disposable.Create(() => _observers.Remove(observer));
+            return Disposable.Create(
+                (Observers: _observers, Observer: observer),
+                static state => state.Observers.Remove(state.Observer));
         }
 
         /// <summary>Publishes a value to current subscribers.</summary>

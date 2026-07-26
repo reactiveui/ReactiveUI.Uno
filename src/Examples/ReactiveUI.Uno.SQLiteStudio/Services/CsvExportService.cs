@@ -21,7 +21,7 @@ public sealed class CsvExportService : ICsvExportService
     private const string DefaultFileName = "results.csv";
 
     /// <summary>Stores the lazy singleton CSV export service instance.</summary>
-    private static readonly Lazy<ICsvExportService> LazyInstance = new(() => new CsvExportService());
+    private static readonly Lazy<ICsvExportService> LazyInstance = new(static () => new CsvExportService());
 
     /// <summary>Initializes a new instance of the <see cref="CsvExportService"/> class.</summary>
     private CsvExportService()

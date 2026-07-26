@@ -7,6 +7,11 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Splat;
+#if REACTIVE_SHIM
+using ReactiveUI.Uno.Reactive.Internal;
+#else
+using ReactiveUI.Uno.Internal;
+#endif
 
 #if REACTIVE_SHIM
 
@@ -89,7 +94,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             var ret = new POCOObservableForProperty();
             return ret
                 .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
-                .Select(x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
+                .Select(static x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
         }
 
         var dependencyPropertyFetcher = GetDependencyPropertyFetcher(type, propertyName);
@@ -104,17 +109,25 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             var ret = new POCOObservableForProperty();
             return ret
                 .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
-                .Select(x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
+                .Select(static x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
         }
 
-        return Observable.Create<IObservedChange<object, object>>(subj =>
+        return ObservableFactory.CreateWithState<
+            IObservedChange<object, object>,
+            (object Sender, DependencyObject DependencyObject, Expression Expression, Func<DependencyProperty> Fetcher)>(
+            (sender, depSender, expression, dependencyPropertyFetcher),
+            static (state, observer) =>
         {
             var handler = new DependencyPropertyChangedCallback((_, _) =>
-                subj.OnNext(new ObservedChange<object, object>(sender, expression, default!)));
+                observer.OnNext(new ObservedChange<object, object>(state.Sender, state.Expression, default!)));
 
-            var dependencyProperty = dependencyPropertyFetcher();
-            var token = depSender.RegisterPropertyChangedCallback(dependencyProperty, handler);
-            return Disposable.Create(() => depSender.UnregisterPropertyChangedCallback(dependencyProperty, token));
+            var dependencyProperty = state.Fetcher();
+            var token = state.DependencyObject.RegisterPropertyChangedCallback(dependencyProperty, handler);
+            return Disposable.Create(
+                (state.DependencyObject, Property: dependencyProperty, Token: token),
+                static subscription => subscription.DependencyObject.UnregisterPropertyChangedCallback(
+                    subscription.Property,
+                    subscription.Token));
         });
     }
 

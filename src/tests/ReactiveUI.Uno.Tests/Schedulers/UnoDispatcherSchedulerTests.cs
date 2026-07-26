@@ -78,14 +78,14 @@ public class UnoDispatcherSchedulerTests
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_NullDispatcher_ThrowsArgumentNullException() =>
-        await Assert.That(() => new UnoDispatcherScheduler(null!)).Throws<ArgumentNullException>();
+        await Assert.That(static () => new UnoDispatcherScheduler(null!)).Throws<ArgumentNullException>();
 
     /// <summary>Test constructor with priority throws ArgumentNullException when dispatcher is null.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_NullDispatcherWithPriority_ThrowsArgumentNullException() =>
         await Assert.That(
-            () => new UnoDispatcherScheduler(null!, CoreDispatcherPriority.High)).Throws<ArgumentNullException>();
+            static () => new UnoDispatcherScheduler(null!, CoreDispatcherPriority.High)).Throws<ArgumentNullException>();
 
     /// <summary>Test Schedule method throws ArgumentNullException when action is null.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
@@ -116,7 +116,7 @@ public class UnoDispatcherSchedulerTests
 
         // Act & Assert
         await Assert.That(
-            () => _scheduler.SchedulePeriodic(State, negativePeriod, state => state))
+            () => _scheduler.SchedulePeriodic(State, negativePeriod, static state => state))
             .Throws<ArgumentOutOfRangeException>();
     }
 
@@ -131,7 +131,7 @@ public class UnoDispatcherSchedulerTests
                       .Returns(mockOperation);
 
         // Act
-        var disposable = _scheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
+        var disposable = _scheduler.Schedule("test", static (scheduler, state) => Disposable.Empty);
 
         // Assert
         await Assert.That(disposable).IsNotNull();
@@ -149,7 +149,7 @@ public class UnoDispatcherSchedulerTests
                       .Returns(mockOperation);
 
         // Act
-        var disposable = _scheduler.Schedule("test", TimeSpan.Zero, (scheduler, state) => Disposable.Empty);
+        var disposable = _scheduler.Schedule("test", TimeSpan.Zero, static (scheduler, state) => Disposable.Empty);
 
         // Assert
         await Assert.That(disposable).IsNotNull();
@@ -165,7 +165,7 @@ public class UnoDispatcherSchedulerTests
         var dueTime = TimeSpan.FromMilliseconds(ScheduledDelayMilliseconds);
 
         // Act
-        var disposable = _scheduler.Schedule("test", dueTime, (scheduler, state) => Disposable.Empty);
+        var disposable = _scheduler.Schedule("test", dueTime, static (scheduler, state) => Disposable.Empty);
 
         // Assert
         await Assert.That(disposable).IsNotNull();
@@ -178,7 +178,7 @@ public class UnoDispatcherSchedulerTests
     public async Task SchedulePeriodic_WithZeroPeriod_ReturnsValidDisposable()
     {
         // Act
-        using var disposable = _scheduler.SchedulePeriodic("test", TimeSpan.Zero, state => $"{state}1");
+        using var disposable = _scheduler.SchedulePeriodic("test", TimeSpan.Zero, static state => $"{state}1");
 
         // Assert
         await Assert.That(disposable).IsNotNull();
@@ -194,7 +194,7 @@ public class UnoDispatcherSchedulerTests
         var period = TimeSpan.FromMilliseconds(PeriodMilliseconds);
 
         // Act
-        using var disposable = _scheduler.SchedulePeriodic(0, period, state => state + 1);
+        using var disposable = _scheduler.SchedulePeriodic(0, period, static state => state + 1);
 
         // Assert
         await Assert.That(disposable).IsNotNull();
@@ -236,7 +236,7 @@ public class UnoDispatcherSchedulerTests
         _ = _mockDispatcher.RunAsync(Arg.Any<CoreDispatcherPriority>(), Arg.Any<DispatchedHandler>())
                       .Returns(mockOperation);
 
-        var disposable = _scheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
+        var disposable = _scheduler.Schedule("test", static (scheduler, state) => Disposable.Empty);
 
         // Act & Assert
         await Assert.That(() => disposable.Dispose()).ThrowsNothing();
@@ -276,12 +276,6 @@ public class UnoDispatcherSchedulerTests
         }
     }
 
-    /// <summary>Test that scheduler exposes periodic scheduling.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task Scheduler_ExposesSchedulePeriodic() =>
-        await Assert.That(_scheduler.GetType().GetMethod(nameof(UnoDispatcherScheduler.SchedulePeriodic))).IsNotNull();
-
     /// <summary>Test that scheduler implements ISequencer interface.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
@@ -299,7 +293,7 @@ public class UnoDispatcherSchedulerTests
                       .Returns(mockOperation);
 
         // Act
-        _ = _scheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
+        _ = _scheduler.Schedule("test", static (scheduler, state) => Disposable.Empty);
 
         // Assert
         _ = _mockDispatcher.Received(1).RunAsync(CoreDispatcherPriority.Normal, Arg.Any<DispatchedHandler>());
@@ -319,7 +313,7 @@ public class UnoDispatcherSchedulerTests
                       .Returns(mockOperation);
 
         // Act
-        _ = customScheduler.Schedule("test", (scheduler, state) => Disposable.Empty);
+        _ = customScheduler.Schedule("test", static (scheduler, state) => Disposable.Empty);
 
         // Assert
         _ = _mockDispatcher.Received(1).RunAsync(customPriority, Arg.Any<DispatchedHandler>());

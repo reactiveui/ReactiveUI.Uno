@@ -59,23 +59,14 @@ public partial class WinRTAppDataDriverTests
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
         var observable = _sut.SaveState(state);
 
-        // Each subscription should create a new cold observable
-        var subscription1Received = false;
-        var subscription2Received = false;
+        var firstSubscription = observable.ToTask();
+        var secondSubscription = observable.ToTask();
+        var firstTermination = AwaitTerminationAsync(firstSubscription);
+        var secondTermination = AwaitTerminationAsync(secondSubscription);
+        var firstTerminated = await firstTermination;
+        var secondTerminated = await secondTermination;
 
-        _ = observable.Subscribe(
-            _ => subscription1Received = true,
-            _ => subscription1Received = true);
-
-        _ = observable.Subscribe(
-            _ => subscription2Received = true,
-            _ => subscription2Received = true);
-
-        // Give observables time to complete
-        await Task.Delay(SubscriptionDelayMilliseconds);
-
-        // At least the subscriptions should have been triggered
-        await Assert.That(subscription1Received || subscription2Received).IsTrue();
+        await Assert.That(firstTerminated && secondTerminated).IsTrue();
     }
 
     /// <summary>Validates that SaveState returns a cold observable (doesn't execute until subscribed).</summary>
@@ -267,6 +258,7 @@ public partial class WinRTAppDataDriverTests
 
         await Assert.That((object)task).IsNotNull();
         await Assert.That((object)task).IsAssignableTo<Task>();
+        await Assert.That(await AwaitTerminationAsync(task)).IsTrue();
     }
 
     /// <summary>Validates that deeply nested objects can be handled by SaveState.</summary>

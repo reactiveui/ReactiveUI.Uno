@@ -16,7 +16,7 @@ internal static class Program
     private static async Task Main(string[] args)
     {
         var host = UnoPlatformHostBuilder.Create()
-            .App(() => new App())
+            .App(static () => new App())
             .UseWin32()
             .UseMacOS()
             .UseX11()

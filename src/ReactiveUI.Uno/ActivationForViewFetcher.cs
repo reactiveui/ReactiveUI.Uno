@@ -41,21 +41,25 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             return Observable.Empty<bool>();
         }
 
-        var viewLoaded = Observable.Create<bool>(observer =>
+        var viewLoaded = ObservableFactory.CreateWithState<bool, FrameworkElement>(fe, static (element, observer) =>
         {
             Windows.Foundation.TypedEventHandler<FrameworkElement, object> handler =
                 (_, _) => observer.OnNext(true);
 
-            fe.Loading += handler;
-            return Disposable.Create(() => fe.Loading -= handler);
+            element.Loading += handler;
+            return Disposable.Create(
+                (Element: element, Handler: handler),
+                static subscription => subscription.Element.Loading -= subscription.Handler);
         });
 
-        var viewUnloaded = Observable.Create<bool>(observer =>
+        var viewUnloaded = ObservableFactory.CreateWithState<bool, FrameworkElement>(fe, static (element, observer) =>
         {
             RoutedEventHandler handler = (_, _) => observer.OnNext(false);
 
-            fe.Unloaded += handler;
-            return Disposable.Create(() => fe.Unloaded -= handler);
+            element.Unloaded += handler;
+            return Disposable.Create(
+                (Element: element, Handler: handler),
+                static subscription => subscription.Element.Unloaded -= subscription.Handler);
         });
 
         // Observe IsHitTestVisible property changes using DependencyProperty (AOT-safe)
@@ -67,7 +71,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         return viewLoaded
                .Merge(viewUnloaded)
-               .Select(b => b ? isHitTestVisible.SkipWhile(x => !x) : Observable.Return(false))
+               .Select(b => b ? isHitTestVisible.SkipWhile(static x => !x) : Observable.Return(false))
                .Switch()
                .DistinctUntilChanged();
     }

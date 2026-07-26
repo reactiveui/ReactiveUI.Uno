@@ -129,7 +129,7 @@ public class ReactiveUIUnoDictionaryTests
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_IsPublicAndAccessible() =>
-        await Assert.That(() => new ReactiveUIUnoDictionary()).ThrowsNothing();
+        await Assert.That(static () => new ReactiveUIUnoDictionary()).ThrowsNothing();
 
     /// <summary>Test that the dictionary can be used as ResourceDictionary.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>

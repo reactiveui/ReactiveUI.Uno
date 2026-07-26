@@ -20,14 +20,14 @@ namespace ReactiveUI.Uno;
 public class AutoDataTemplateBindingHook : IPropertyBindingHook
 {
     /// <summary>Gets the default item template.</summary>
-    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(() =>
+    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
 #if REACTIVE_SHIM
         const string reactiveNamespace = "ReactiveUI.Uno.Reactive";
 #else
         const string reactiveNamespace = "ReactiveUI.Uno";
 #endif
-        var template =
+        const string? template =
 $$"""
 <DataTemplate
     xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'

@@ -64,8 +64,16 @@ public sealed class LocalIoTTelemetryService : IIoTTelemetryService
     public IObservable<SensorReading> Readings { get; }
 
     /// <inheritdoc/>
-    public IReadOnlyList<SensorReading> GetSnapshot() =>
-        _devices.Select((device, index) => CreateReading(index)).ToArray();
+    public IReadOnlyList<SensorReading> GetSnapshot()
+    {
+        var readings = new SensorReading[_devices.Length];
+        for (var index = 0; index < readings.Length; index++)
+        {
+            readings[index] = CreateReading(index);
+        }
+
+        return readings;
+    }
 
     /// <summary>Creates a telemetry sample for a simulated device.</summary>
     /// <param name="tick">The stream tick used to choose a device and generate a wave.</param>

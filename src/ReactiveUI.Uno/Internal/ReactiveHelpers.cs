@@ -33,12 +33,14 @@ internal static class ReactiveHelpers
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(propertyName);
 
-        return Observable.Create<Unit>(observer =>
+        return ObservableFactory.CreateWithState<Unit, (INotifyPropertyChanged Source, string PropertyName)>(
+            (source, propertyName),
+            static (state, observer) =>
         {
             void Handler(object? _, PropertyChangedEventArgs e)
             {
                 if (!string.IsNullOrEmpty(e.PropertyName)
-                    && !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                    && !string.Equals(e.PropertyName, state.PropertyName, StringComparison.Ordinal))
                 {
                     return;
                 }
@@ -46,8 +48,10 @@ internal static class ReactiveHelpers
                 observer.OnNext(Unit.Default);
             }
 
-            source.PropertyChanged += Handler;
-            return Disposable.Create(() => source.PropertyChanged -= Handler);
+            state.Source.PropertyChanged += Handler;
+            return Disposable.Create<(INotifyPropertyChanged Source, PropertyChangedEventHandler Handler)>(
+                (state.Source, Handler),
+                static subscription => subscription.Source.PropertyChanged -= subscription.Handler);
         });
     }
 
@@ -74,24 +78,28 @@ internal static class ReactiveHelpers
         ArgumentNullException.ThrowIfNull(propertyName);
         ArgumentNullException.ThrowIfNull(getPropertyValue);
 
-        return Observable.Create<T>(observer =>
+        return ObservableFactory.CreateWithState<T, (INotifyPropertyChanged Source, string PropertyName, Func<T> GetValue)>(
+            (source, propertyName, getPropertyValue),
+            static (state, observer) =>
         {
             // Emit initial value
-            observer.OnNext(getPropertyValue());
+            observer.OnNext(state.GetValue());
 
             void Handler(object? _, PropertyChangedEventArgs e)
             {
                 if (!string.IsNullOrEmpty(e.PropertyName)
-                    && !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                    && !string.Equals(e.PropertyName, state.PropertyName, StringComparison.Ordinal))
                 {
                     return;
                 }
 
-                observer.OnNext(getPropertyValue());
+                observer.OnNext(state.GetValue());
             }
 
-            source.PropertyChanged += Handler;
-            return Disposable.Create(() => source.PropertyChanged -= Handler);
+            state.Source.PropertyChanged += Handler;
+            return Disposable.Create<(INotifyPropertyChanged Source, PropertyChangedEventHandler Handler)>(
+                (state.Source, Handler),
+                static subscription => subscription.Source.PropertyChanged -= subscription.Handler);
         });
     }
 
@@ -120,17 +128,23 @@ internal static class ReactiveHelpers
         ArgumentNullException.ThrowIfNull(property);
         ArgumentNullException.ThrowIfNull(getPropertyValue);
 
-        return Observable.Create<T>(observer =>
+        return ObservableFactory.CreateWithState<T, (DependencyObject Source, DependencyProperty Property, Func<T> GetValue)>(
+            (source, property, getPropertyValue),
+            static (state, observer) =>
         {
             // Emit initial value
-            observer.OnNext(getPropertyValue());
+            observer.OnNext(state.GetValue());
 
             // Register for property changes using the provided DependencyProperty
-            var token = source.RegisterPropertyChangedCallback(
-                property,
-                (_, _) => observer.OnNext(getPropertyValue()));
+            var token = state.Source.RegisterPropertyChangedCallback(
+                state.Property,
+                (_, _) => observer.OnNext(state.GetValue()));
 
-            return Disposable.Create(() => source.UnregisterPropertyChangedCallback(property, token));
+            return Disposable.Create(
+                (state.Source, state.Property, Token: token),
+                static subscription => subscription.Source.UnregisterPropertyChangedCallback(
+                    subscription.Property,
+                    subscription.Token));
         });
     }
 

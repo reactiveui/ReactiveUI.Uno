@@ -30,7 +30,7 @@ public class WinRTAppDataDriver : ISuspensionDriver
     [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
     [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
     public IObservable<object?> LoadState() => Observable.FromAsync(
-    async () =>
+    static async () =>
     {
         var x = await ApplicationData.Current.RoamingFolder.GetFileAsync(XmlStateFileName);
         var t = await FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8);
@@ -104,7 +104,7 @@ public class WinRTAppDataDriver : ISuspensionDriver
     /// <inheritdoc/>
     public IObservable<Unit> InvalidateState() =>
         Observable.FromAsync(
-        async () =>
+        static async () =>
         {
             var folder = ApplicationData.Current.RoamingFolder;
 
