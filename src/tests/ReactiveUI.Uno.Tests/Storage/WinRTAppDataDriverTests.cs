@@ -98,6 +98,15 @@ public partial class WinRTAppDataDriverTests
         await Assert.That(driver.InvalidateState()).IsNotNull();
     }
 
+    /// <summary>Waits until a converted observable task completes or reports an error.</summary>
+    /// <param name="task">The converted observable task.</param>
+    /// <returns><see langword="true"/> after the task terminates.</returns>
+    private static async Task<bool> AwaitTerminationAsync(Task task)
+    {
+        await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        return task.IsCompleted;
+    }
+
     /// <summary>Determines whether an exception indicates unavailable application storage.</summary>
     /// <param name="exception">The exception thrown while accessing application storage.</param>
     /// <returns><c>true</c> if application storage is unavailable; otherwise, <c>false</c>.</returns>

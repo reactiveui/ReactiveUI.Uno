@@ -132,5 +132,6 @@ public partial class WinRTAppDataDriverTests
 
         await Assert.That((object)task).IsNotNull();
         await Assert.That((object)task).IsAssignableTo<Task>();
+        await Assert.That(await AwaitTerminationAsync(task)).IsTrue();
     }
 }
