@@ -27,7 +27,7 @@ public static class UnoReactiveUIBuilderExtensions
 #if WINDOWS
     /// <summary>Gets the Uno WinUI main thread scheduler.</summary>
     public static ISequencer UnoWinUIMainThreadScheduler { get; } =
-        new WaitForDispatcherScheduler(() => UnoWinUIDispatcherScheduler.Current);
+        new WaitForDispatcherScheduler(static () => UnoWinUIDispatcherScheduler.Current);
 #else
     /// <summary>Gets the Uno main thread scheduler.</summary>
     public static ISequencer UnoMainThreadScheduler { get; } =
@@ -124,7 +124,7 @@ public static class UnoReactiveUIBuilderExtensions
     /// <summary>Gets the current Uno main-thread scheduler.</summary>
     /// <returns>The Uno main-thread scheduler.</returns>
     internal static ISequencer GetUnoMainThreadRxScheduler() =>
-        new DeferredScheduler(() => UnoWinUIDispatcherScheduler.Current);
+        new DeferredScheduler(static () => UnoWinUIDispatcherScheduler.Current);
 #else
     /// <summary>Gets the current Uno main-thread scheduler.</summary>
     /// <returns>The Uno main-thread scheduler.</returns>
