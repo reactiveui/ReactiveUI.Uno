@@ -12,8 +12,8 @@
     <RoslynCommonAnalyzersVersion>3.39.0</RoslynCommonAnalyzersVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ReactiveUI" Version="24.0.0-beta.3" />
-    <PackageVersion Include="ReactiveUI.Reactive" Version="24.0.0-beta.3" />
+    <PackageVersion Include="ReactiveUI" Version="24.0.0" />
+    <PackageVersion Include="ReactiveUI.Reactive" Version="24.0.0" />
     <PackageVersion Include="ReactiveUI.Primitives" Version="7.1.0" />
     <PackageVersion Include="ReactiveUI.Primitives.Reactive" Version="7.1.0" />
     <PackageVersion Include="ReactiveUI.Primitives.Blazor" Version="7.1.0" />
@@ -30,7 +30,7 @@
   </ItemGroup>
   <!-- Test projects only -->
   <ItemGroup>
-    <PackageVersion Include="ReactiveUI.Testing" Version="24.0.0-beta.3" />
+    <PackageVersion Include="ReactiveUI.Testing" Version="24.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="NSubstitute" Version="6.0.0" />
     <PackageVersion Include="bunit" Version="2.7.2" />
