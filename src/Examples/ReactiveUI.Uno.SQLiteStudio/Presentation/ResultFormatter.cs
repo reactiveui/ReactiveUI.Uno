@@ -12,7 +12,12 @@ internal static class ResultFormatter
     /// <returns>A display string for the result pane.</returns>
     internal static string FormatResults(IEnumerable<object> results)
     {
-        var rows = results.Select(static item => item?.ToString() ?? string.Empty);
+        var rows = new List<string>();
+        foreach (var item in results)
+        {
+            rows.Add(item?.ToString() ?? string.Empty);
+        }
+
         var text = string.Join(Environment.NewLine, rows);
         return string.IsNullOrWhiteSpace(text) ? "(no rows)" : text;
     }

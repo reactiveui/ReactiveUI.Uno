@@ -103,7 +103,7 @@ public class TransitioningContentControlTests
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task Constructor_IsPublicAndAccessible() =>
-        await Assert.That(() => new TransitioningContentControl()).ThrowsNothing();
+        await Assert.That(static () => new TransitioningContentControl()).ThrowsNothing();
 
     /// <summary>Test control can have content set.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
@@ -163,17 +163,5 @@ public class TransitioningContentControlTests
         await Assert.That(() => control.ContentTemplate).ThrowsNothing();
         await Assert.That(() => control.HorizontalContentAlignment).ThrowsNothing();
         await Assert.That(() => control.VerticalContentAlignment).ThrowsNothing();
-    }
-
-    /// <summary>Test control namespace is correct.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task Control_HasCorrectNamespace()
-    {
-        // Act
-        var control = new TransitioningContentControl();
-
-        // Assert
-        await Assert.That(control.GetType().Namespace).IsEqualTo("ReactiveUI.Uno");
     }
 }

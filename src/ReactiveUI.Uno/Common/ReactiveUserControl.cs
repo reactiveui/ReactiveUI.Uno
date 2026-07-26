@@ -96,7 +96,7 @@ public class ReactiveUserControl<TViewModel> :
     protected ReactiveUserControl()
     {
         // needed so the others are optional.
-        _ = this.WhenActivated((Action<IDisposable> _) =>
+        _ = this.WhenActivated(static (Action<IDisposable> _) =>
         {
             // No-op
         });

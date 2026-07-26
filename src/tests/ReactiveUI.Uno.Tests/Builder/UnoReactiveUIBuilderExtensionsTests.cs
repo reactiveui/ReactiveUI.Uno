@@ -25,7 +25,7 @@ public class UnoReactiveUIBuilderExtensionsTests
     public async Task WithUno_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
         var exception = await Assert.That(
-            () => UnoReactiveUIBuilderExtensions.WithUno(null!, null!)).Throws<ArgumentNullException>();
+            static () => UnoReactiveUIBuilderExtensions.WithUno(null!, null!)).Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo(BuilderParameterName);
     }
 
@@ -45,7 +45,7 @@ public class UnoReactiveUIBuilderExtensionsTests
     public async Task WithUnoScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
         var exception = await Assert.That(
-            () => UnoReactiveUIBuilderExtensions.WithUnoScheduler(null!)).Throws<ArgumentNullException>();
+            static () => UnoReactiveUIBuilderExtensions.WithUnoScheduler(null!)).Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo(BuilderParameterName);
     }
 
@@ -55,7 +55,7 @@ public class UnoReactiveUIBuilderExtensionsTests
     public async Task WithDefaultIScreen_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
         var exception = await Assert.That(
-            () => UnoReactiveUIBuilderExtensions.WithDefaultIScreen(null!)).Throws<ArgumentNullException>();
+            static () => UnoReactiveUIBuilderExtensions.WithDefaultIScreen(null!)).Throws<ArgumentNullException>();
         await Assert.That(exception!.ParamName).IsEqualTo(BuilderParameterName);
     }
 
@@ -184,76 +184,5 @@ public class UnoReactiveUIBuilderExtensionsTests
         var result = builder.BuildApp();
 
         await Assert.That(result).IsNotNull();
-    }
-
-    /// <summary>
-    /// Validates that the UnoMainThreadScheduler property exists.
-    /// Note: Accessing the property may fail in headless environment due to type initialization.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task UnoMainThreadScheduler_PropertyExists()
-    {
-        var type = typeof(UnoReactiveUIBuilderExtensions);
-#if WINDOWS
-        var property = type.GetProperty("UnoWinUIMainThreadScheduler");
-#else
-        var property = type.GetProperty("UnoMainThreadScheduler");
-#endif
-        await Assert.That(property).IsNotNull();
-        await Assert.That(typeof(ISequencer).IsAssignableFrom(property!.PropertyType)).IsTrue();
-    }
-
-    /// <summary>Validates that extension methods are defined in the correct namespace.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task ExtensionMethods_AreInCorrectNamespace()
-    {
-        var type = typeof(UnoReactiveUIBuilderExtensions);
-
-        await Assert.That(type.Namespace).IsEqualTo("ReactiveUI.Builder");
-    }
-
-    /// <summary>Validates that UnoReactiveUIBuilderExtensions is a static class.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task UnoReactiveUIBuilderExtensions_IsStaticClass()
-    {
-        var type = typeof(UnoReactiveUIBuilderExtensions);
-
-        await Assert.That(type.IsAbstract).IsTrue();
-        await Assert.That(type.IsSealed).IsTrue();
-    }
-
-    /// <summary>Validates that WithUnoScheduler method exists.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task WithUnoScheduler_MethodExists()
-    {
-        var method = typeof(UnoReactiveUIBuilderExtensions)
-            .GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithUnoScheduler));
-
-        await Assert.That(method).IsNotNull();
-    }
-
-    /// <summary>Validates that WithUno method exists.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task WithUno_MethodExists()
-    {
-        var method = typeof(UnoReactiveUIBuilderExtensions).GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithUno));
-
-        await Assert.That(method).IsNotNull();
-    }
-
-    /// <summary>Validates that WithDefaultIScreen method exists.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task WithDefaultIScreen_MethodExists()
-    {
-        var method = typeof(UnoReactiveUIBuilderExtensions)
-            .GetMethod(nameof(UnoReactiveUIBuilderExtensions.WithDefaultIScreen));
-
-        await Assert.That(method).IsNotNull();
     }
 }

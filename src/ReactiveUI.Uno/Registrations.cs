@@ -24,29 +24,29 @@ public class Registrations : IWantsToRegisterStuff
     {
         ArgumentNullException.ThrowIfNull(registrar);
 
-        registrar.RegisterConstant<IPlatformOperations>(() => new PlatformOperations());
-        registrar.RegisterConstant<IActivationForViewFetcher>(() => new ActivationForViewFetcher());
-        registrar.RegisterConstant<ICreatesObservableForProperty>(() => new DependencyObjectObservableForProperty());
+        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
+        registrar.RegisterConstant<IActivationForViewFetcher>(static () => new ActivationForViewFetcher());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new DependencyObjectObservableForProperty());
 
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new StringConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new ByteToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableByteToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new ShortToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableShortToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new IntegerToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableIntegerToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new LongToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableLongToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new SingleToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableSingleToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new DoubleToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableDoubleToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new DecimalToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new NullableDecimalToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(() => new BooleanToVisibilityTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new ByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new ShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new IntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableIntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new LongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableLongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new SingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableSingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new BooleanToVisibilityTypeConverter());
 
-        registrar.RegisterConstant<IPropertyBindingHook>(() => new AutoDataTemplateBindingHook());
-        registrar.RegisterConstant<ISuspensionDriver>(() => new WinRTAppDataDriver());
+        registrar.RegisterConstant<IPropertyBindingHook>(static () => new AutoDataTemplateBindingHook());
+        registrar.RegisterConstant<ISuspensionDriver>(static () => new WinRTAppDataDriver());
 
         // Disables ViewCommand binding messages on Uno platform
         RxSchedulers.SuppressViewCommandBindingMessage = true;

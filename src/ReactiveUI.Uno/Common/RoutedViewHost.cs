@@ -5,6 +5,11 @@
 using System.Diagnostics.CodeAnalysis;
 using ReactiveUI;
 using Splat;
+#if REACTIVE_SHIM
+using ReactiveUI.Uno.Reactive.Internal;
+#else
+using ReactiveUI.Uno.Internal;
+#endif
 
 #if REACTIVE_SHIM
 
@@ -65,7 +70,7 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
         var platform = Locator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = () => default;
+        Func<string?> platformGetter = static () => default;
 
         if (platform is null)
         {
@@ -81,15 +86,12 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
             platformGetter = () => platform.GetOrientation();
         }
 
+        Action<SizeChangedEventHandler> addSizeChangedHandler = handler => SizeChanged += handler;
+        Action<SizeChangedEventHandler> removeSizeChangedHandler = handler => SizeChanged -= handler;
+
         ViewContractObservable = ModeDetector.InUnitTestRunner()
             ? Observable.Never<string?>()
-            : Observable.Create<string?>(observer =>
-                {
-                    SizeChangedEventHandler handler = (_, _) => observer.OnNext(platformGetter());
-
-                    SizeChanged += handler;
-                    return Disposable.Create(() => SizeChanged -= handler);
-                })
+            : CreateViewContractObservable(addSizeChangedHandler, removeSizeChangedHandler, platformGetter)
            .StartWith(platformGetter())
            .DistinctUntilChanged();
 
@@ -104,7 +106,7 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
             .StartWith(ViewContract);
         var viewModelAndContract = currentViewModelChanged.CombineLatest(
             viewContractChanged,
-            (viewModel, contract) => (viewModel, contract));
+            static (viewModel, contract) => (viewModel, contract));
 
         if (ModeDetector.InUnitTestRunner())
         {
@@ -156,6 +158,26 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
     /// The view locator.
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
+
+    /// <summary>Creates an observable that publishes the current view contract when the host size changes.</summary>
+    /// <param name="add">Adds a size-changed handler.</param>
+    /// <param name="remove">Removes a size-changed handler.</param>
+    /// <param name="getValue">Gets the current view contract.</param>
+    /// <returns>The view contract observable.</returns>
+    private static IObservable<string?> CreateViewContractObservable(
+        Action<SizeChangedEventHandler> add,
+        Action<SizeChangedEventHandler> remove,
+        Func<string?> getValue) =>
+        ObservableFactory.CreateWithState<string?, (Action<SizeChangedEventHandler> Add, Action<SizeChangedEventHandler> Remove, Func<string?> GetValue)>(
+            (add, remove, getValue),
+            static (state, observer) =>
+            {
+                SizeChangedEventHandler handler = (_, _) => observer.OnNext(state.GetValue());
+                state.Add(handler);
+                return Disposable.Create(
+                    (state.Remove, Handler: handler),
+                    static subscription => subscription.Remove(subscription.Handler));
+            });
 
     /// <summary>Resolves and displays the view for the supplied routable view model and contract.</summary>
     /// <param name="x">The view model and contract values used for view resolution.</param>

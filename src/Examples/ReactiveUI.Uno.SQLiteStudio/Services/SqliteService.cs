@@ -19,7 +19,7 @@ namespace ReactiveUI.Uno.SQLiteStudio.Services;
 public sealed class SqliteService : ISqliteService
 {
     /// <summary>Stores the lazy singleton SQLite service instance.</summary>
-    private static readonly Lazy<ISqliteService> LazyInstance = new(() => new SqliteService());
+    private static readonly Lazy<ISqliteService> LazyInstance = new(static () => new SqliteService());
 
     /// <summary>Stores the active SQLite connection.</summary>
     private SQLiteAsyncConnection? _connection;
@@ -121,7 +121,7 @@ public sealed class SqliteService : ISqliteService
         }
 
         var lowered = sql.Trim().ToLowerInvariant();
-        return lowered.StartsWith("select")
+        return lowered.StartsWith("select", StringComparison.Ordinal)
             ? await SqliteQueryMapper.QuerySelectAsync(conn, sql, lowered).ConfigureAwait(false)
             : await SqliteQueryMapper.ExecuteNonQueryAsync(conn, sql).ConfigureAwait(false);
     }

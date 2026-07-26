@@ -107,5 +107,5 @@ public partial class WinRTAppDataDriverTests
     /// <summary>Skips a test because application storage is unavailable.</summary>
     /// <param name="exception">The exception thrown while accessing application storage.</param>
     private static void SkipUnavailableApplicationStorage(Exception exception) =>
-        Skip.Test($"Application storage is not available in this environment: {exception.GetType().Name}");
+        Skip.Test($"Application storage is not available in this environment: {exception.Message}");
 }

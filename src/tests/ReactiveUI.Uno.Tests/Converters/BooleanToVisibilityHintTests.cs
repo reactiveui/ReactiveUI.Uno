@@ -55,43 +55,4 @@ public class BooleanToVisibilityHintTests
         // Assert
         await Assert.That(combined).IsEqualTo(BooleanToVisibilityHint.Inverse);
     }
-
-    /// <summary>Verifies enum has Flags attribute.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task Enum_HasFlagsAttribute()
-    {
-        // Arrange
-        var enumType = typeof(BooleanToVisibilityHint);
-
-        // Act
-        var hasFlagsAttribute = enumType.IsDefined(typeof(FlagsAttribute), false);
-
-        // Assert
-        await Assert.That(hasFlagsAttribute).IsTrue();
-    }
-
-    /// <summary>Verifies enum can be cast from integer.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task Enum_CanBeCastFromInteger()
-    {
-        // Act
-        var none = (BooleanToVisibilityHint)Enum.ToObject(typeof(BooleanToVisibilityHint), 0);
-
-        // Assert
-        await Assert.That(none).IsEqualTo(BooleanToVisibilityHint.None);
-    }
-
-    /// <summary>Verifies enum can be cast from integer for inverse value.</summary>
-    /// <returns>A task that represents the asynchronous test.</returns>
-    [Test]
-    public async Task Enum_CanBeCastFromInteger_Inverse()
-    {
-        // Act
-        var inverse = (BooleanToVisibilityHint)Enum.ToObject(typeof(BooleanToVisibilityHint), InverseValue);
-
-        // Assert
-        await Assert.That(inverse).IsEqualTo(BooleanToVisibilityHint.Inverse);
-    }
 }

@@ -86,23 +86,23 @@ public class RegistrationsTests
         UnoRegistrations sut = new();
 
         registrar
-            .When(x => x.RegisterConstant(Arg.Any<Func<IPlatformOperations>>()))
-            .Do(x => _ = x.Arg<Func<IPlatformOperations>>()!());
+            .When(static x => x.RegisterConstant(Arg.Any<Func<IPlatformOperations>>()))
+            .Do(static x => _ = x.Arg<Func<IPlatformOperations>>()!());
         registrar
-            .When(x => x.RegisterConstant(Arg.Any<Func<IActivationForViewFetcher>>()))
-            .Do(x => _ = x.Arg<Func<IActivationForViewFetcher>>()!());
+            .When(static x => x.RegisterConstant(Arg.Any<Func<IActivationForViewFetcher>>()))
+            .Do(static x => _ = x.Arg<Func<IActivationForViewFetcher>>()!());
         registrar
-            .When(x => x.RegisterConstant(Arg.Any<Func<ICreatesObservableForProperty>>()))
-            .Do(x => _ = x.Arg<Func<ICreatesObservableForProperty>>()!());
+            .When(static x => x.RegisterConstant(Arg.Any<Func<ICreatesObservableForProperty>>()))
+            .Do(static x => _ = x.Arg<Func<ICreatesObservableForProperty>>()!());
         registrar
-            .When(x => x.RegisterConstant(Arg.Any<Func<IPropertyBindingHook>>()))
-            .Do(x => _ = x.Arg<Func<IPropertyBindingHook>>()!());
+            .When(static x => x.RegisterConstant(Arg.Any<Func<IPropertyBindingHook>>()))
+            .Do(static x => _ = x.Arg<Func<IPropertyBindingHook>>()!());
         registrar
-            .When(x => x.RegisterConstant(Arg.Any<Func<ISuspensionDriver>>()))
-            .Do(x => _ = x.Arg<Func<ISuspensionDriver>>()!());
+            .When(static x => x.RegisterConstant(Arg.Any<Func<ISuspensionDriver>>()))
+            .Do(static x => _ = x.Arg<Func<ISuspensionDriver>>()!());
         registrar
-            .When(x => x.RegisterConstant(Arg.Any<Func<IBindingTypeConverter>>()))
-            .Do(x => _ = x.Arg<Func<IBindingTypeConverter>>()!());
+            .When(static x => x.RegisterConstant(Arg.Any<Func<IBindingTypeConverter>>()))
+            .Do(static x => _ = x.Arg<Func<IBindingTypeConverter>>()!());
 
         sut.Register(registrar);
 

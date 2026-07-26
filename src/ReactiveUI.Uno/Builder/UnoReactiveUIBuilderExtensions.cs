@@ -31,7 +31,7 @@ public static class UnoReactiveUIBuilderExtensions
 #else
     /// <summary>Gets the Uno main thread scheduler.</summary>
     public static ISequencer UnoMainThreadScheduler { get; } =
-        new WaitForDispatcherScheduler(() => UnoDispatcherScheduler.Current);
+        new WaitForDispatcherScheduler(static () => UnoDispatcherScheduler.Current);
 #endif
 
     /// <summary>Provides extension members for ReactiveUI builders.</summary>
@@ -73,7 +73,7 @@ public static class UnoReactiveUIBuilderExtensions
             return AddUnoDictionary(
                 builder
                     .WithRegistration(
-                        mutable => new UnoRegistrations().Register(new DependencyResolverRegistrar(mutable)))
+                        static mutable => new UnoRegistrations().Register(new DependencyResolverRegistrar(mutable)))
                     .WithMainThreadScheduler(GetUnoMainThreadScheduler(startupWindow))
                     .WithTaskPoolScheduler(GetUnoTaskPoolScheduler()),
                 startupWindow);
@@ -85,7 +85,7 @@ public static class UnoReactiveUIBuilderExtensions
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            return builder.WithRegistration(mutable => mutable.RegisterConstant<IScreen>(new AppBootstrapper()));
+            return builder.WithRegistration(static mutable => mutable.RegisterConstant<IScreen>(new AppBootstrapper()));
         }
     }
 
@@ -129,7 +129,7 @@ public static class UnoReactiveUIBuilderExtensions
     /// <summary>Gets the current Uno main-thread scheduler.</summary>
     /// <returns>The Uno main-thread scheduler.</returns>
     internal static ISequencer GetUnoMainThreadRxScheduler() =>
-        new DeferredScheduler(() => UnoDispatcherScheduler.Current);
+        new DeferredScheduler(static () => UnoDispatcherScheduler.Current);
 #endif
 
     /// <summary>Adds the Uno resource dictionary to the application when the startup window is activated.</summary>

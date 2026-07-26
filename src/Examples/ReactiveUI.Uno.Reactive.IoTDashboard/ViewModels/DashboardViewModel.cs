@@ -55,7 +55,7 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
             Devices.Add(new(reading));
         }
 
-        SelectedDevice = Devices.FirstOrDefault();
+        SelectedDevice = Devices.Count > 0 ? Devices[0] : null;
         if (SelectedDevice is not null)
         {
             SelectedDevice.IsSelected = true;
@@ -233,8 +233,7 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
                 return $"{Devices.Count} devices visible";
             }
 
-            var count = Devices.Count(
-                device => device.DisplayName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            var count = CountMatchingDevices(SearchText);
             return $"{count} devices match '{SearchText}'";
         }
     }
@@ -266,6 +265,23 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
         SelectDevice.Dispose();
     }
 
+    /// <summary>Counts devices whose display name matches the supplied search text.</summary>
+    /// <param name="searchText">The search text.</param>
+    /// <returns>The number of matching devices.</returns>
+    private int CountMatchingDevices(string searchText)
+    {
+        var count = 0;
+        foreach (var device in Devices)
+        {
+            if (device.DisplayName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     /// <summary>Toggles the live stream state.</summary>
     private void ToggleStream()
     {
@@ -292,7 +308,16 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     /// <returns>An observable that completes when the acknowledgement flow is complete.</returns>
     private IObservable<Unit> AcknowledgeAlertObservable()
     {
-        var alert = Alerts.FirstOrDefault(static item => !item.IsAcknowledged);
+        AlertEventViewModel? alert = null;
+        foreach (var item in Alerts)
+        {
+            if (!item.IsAcknowledged)
+            {
+                alert = item;
+                break;
+            }
+        }
+
         return alert is null
             ? Observable.Return(Unit.Default)
             : ConfirmAcknowledge.Handle(alert.Event)
@@ -350,7 +375,16 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     /// <param name="reading">The telemetry reading.</param>
     private void ApplyReading(SensorReading reading)
     {
-        var device = Devices.FirstOrDefault(tile => tile.DeviceId == reading.DeviceId);
+        DeviceTileViewModel? device = null;
+        foreach (var tile in Devices)
+        {
+            if (tile.DeviceId == reading.DeviceId)
+            {
+                device = tile;
+                break;
+            }
+        }
+
         if (device is null)
         {
             return;
@@ -400,7 +434,16 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     /// <param name="latestAlertText">The latest alert text.</param>
     private void UpdateAlertState(string latestAlertText)
     {
-        HasActiveAlert = Alerts.Any(static item => !item.IsAcknowledged);
+        HasActiveAlert = false;
+        foreach (var item in Alerts)
+        {
+            if (!item.IsAcknowledged)
+            {
+                HasActiveAlert = true;
+                break;
+            }
+        }
+
         LatestAlertText = HasActiveAlert ? latestAlertText : NoActiveAlertsText;
     }
 
