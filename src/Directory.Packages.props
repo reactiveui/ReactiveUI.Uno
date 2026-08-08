@@ -9,7 +9,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
-    <RoslynCommonAnalyzersVersion>3.40.2</RoslynCommonAnalyzersVersion>
+    <RoslynCommonAnalyzersVersion>3.41.6</RoslynCommonAnalyzersVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ReactiveUI" Version="24.0.0" />
