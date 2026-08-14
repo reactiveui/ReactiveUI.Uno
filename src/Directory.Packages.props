@@ -36,7 +36,7 @@
     <PackageVersion Include="bunit" Version="2.8.6" />
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.9.0" />
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.3" />
-    <PackageVersion Include="TUnit" Version="1.64.6" />
+    <PackageVersion Include="TUnit" Version="1.64.13" />
     <PackageVersion Include="Verify.TUnit" Version="31.28.0" />
   </ItemGroup>
   <!-- Example projects only -->
