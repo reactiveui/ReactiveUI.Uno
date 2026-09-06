@@ -34,8 +34,8 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="bunit" Version="2.9.0" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.10.0" />
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.3" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.11.0" />
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.4.0" />
     <PackageVersion Include="TUnit" Version="1.65.68" />
     <PackageVersion Include="Verify.TUnit" Version="32.0.0" />
   </ItemGroup>
