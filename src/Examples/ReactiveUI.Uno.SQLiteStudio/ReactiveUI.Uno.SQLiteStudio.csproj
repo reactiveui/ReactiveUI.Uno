@@ -58,7 +58,7 @@
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-desktop'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-desktop'">
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
     

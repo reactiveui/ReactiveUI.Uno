@@ -1,12 +1,14 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Models;
 
 namespace ReactiveUI.Uno.Reactive.IoTDashboard.ViewModels;
 
 /// <summary>Represents an alert shown in the operator alert feed.</summary>
+[System.Diagnostics.DebuggerDisplay("AlertEventViewModel: {Event}")]
 public sealed class AlertEventViewModel : ReactiveObject
 {
     /// <summary>Stores the local clock display format.</summary>
@@ -57,6 +59,7 @@ public sealed class AlertEventViewModel : ReactiveObject
 
     /// <summary>Raises a dependent property change notification.</summary>
     /// <param name="propertyName">The property name to notify.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void RaiseDependentPropertyChanged(string propertyName) =>
         ((IReactiveObject)this).RaisePropertyChanged(new(propertyName));
 }

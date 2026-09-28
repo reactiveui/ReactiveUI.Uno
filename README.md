@@ -30,8 +30,8 @@ The packages are built as Uno single-project libraries. The solution currently t
 
 | Target family | Target frameworks |
 | --- | --- |
-| Cross-platform .NET | `net9.0`, `net9.0-desktop`, `net10.0`, `net10.0-desktop`, `net10.0-browserwasm`, `net11.0`, `net11.0-desktop`, `net11.0-browserwasm` |
-| Windows desktop | `net9.0-windows10.0.19041.0`, `net10.0-windows10.0.19041.0`, `net11.0-windows10.0.19041.0` |
+| Cross-platform .NET | `net10.0`, `net10.0-desktop`, `net10.0-browserwasm`, `net11.0`, `net11.0-desktop`, `net11.0-browserwasm` |
+| Windows desktop | `net10.0-windows10.0.19041.0`, `net11.0-windows10.0.19041.0` |
 | Android | `net10.0-android`, `net11.0-android` |
 | iOS | `net10.0-ios`, `net11.0-ios` |
 

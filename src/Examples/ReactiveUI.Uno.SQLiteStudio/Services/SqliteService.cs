@@ -1,8 +1,9 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using SQLite;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Services;
@@ -16,6 +17,7 @@ namespace ReactiveUI.Uno.SQLiteStudio.Services;
 /// convenience methods for executing SQL commands and queries asynchronously. The service is designed for use in
 /// scenarios where a single, shared SQLite database is required, such as in mobile or desktop applications. All
 /// operations are performed asynchronously to avoid blocking the calling thread.</remarks>
+[System.Diagnostics.DebuggerDisplay("SqliteService: {_connection}")]
 public sealed class SqliteService : ISqliteService
 {
     /// <summary>Stores the lazy singleton SQLite service instance.</summary>
@@ -36,6 +38,7 @@ public sealed class SqliteService : ISqliteService
 
     /// <summary>Initializes the database connection asynchronously using the default database path.</summary>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task InitializeAsync() => InitializeCoreAsync(null);
 
     /// <summary>Initializes the database connection asynchronously with an explicit database file path.</summary>
@@ -51,9 +54,9 @@ public sealed class SqliteService : ISqliteService
     /// Ensures that the sample data exists in the Users table of the database. Creates the table and inserts default
     /// user records if none are present.
     /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     /// <remarks>This method is typically used to initialize the database with sample data for development or
     /// testing purposes. If the Users table already contains data, no changes are made.</remarks>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task EnsureSampleDataAsync()
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
@@ -73,9 +76,9 @@ public sealed class SqliteService : ISqliteService
     }
 
     /// <summary>Asynchronously retrieves the names of all user-defined tables in the database.</summary>
+    /// <returns>A read-only list of user-defined table names.</returns>
     /// <remarks>System tables and tables with names starting with 'sqlite_' are excluded from the results.
     /// The operation does not include views or other database objects.</remarks>
-    /// <returns>A read-only list of user-defined table names.</returns>
     public async Task<IReadOnlyList<string>> ListTablesAsync()
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
@@ -104,14 +107,14 @@ public sealed class SqliteService : ISqliteService
     }
 
     /// <summary>Executes the specified SQL query asynchronously.</summary>
+    /// <param name="sql">The SQL statement to execute. This can be a SELECT or a non-SELECT statement.</param>
+    /// <returns>A read-only list of objects representing query results or a status row.</returns>
     /// <remarks>The type and content of the returned objects depend on the SQL statement. For queries against
     /// the 'users' table, the list contains user row objects. For queries against 'sqlite_master', the list contains
     /// the names of the objects as strings. For other SELECT statements, the list contains the first column values as
     /// strings if possible. For non-SELECT statements, the list contains a status or error message. This method does
     /// not throw exceptions for SQL execution errors; instead, error messages are returned in the result
     /// list.</remarks>
-    /// <param name="sql">The SQL statement to execute. This can be a SELECT or a non-SELECT statement.</param>
-    /// <returns>A read-only list of objects representing query results or a status row.</returns>
     public async Task<IReadOnlyList<object>> QueryAsync(string sql)
     {
         var conn = await GetConnectionAsync().ConfigureAwait(false);
@@ -127,9 +130,9 @@ public sealed class SqliteService : ISqliteService
     }
 
     /// <summary>Initializes the database connection asynchronously, creating the database file if needed.</summary>
-    /// <remarks>Write-ahead logging and foreign keys are enabled where the SQLite provider supports them.</remarks>
     /// <param name="dbPath">The database file path, or null for the default local application data path.</param>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    /// <remarks>Write-ahead logging and foreign keys are enabled where the SQLite provider supports them.</remarks>
     private async Task InitializeCoreAsync(string? dbPath)
     {
         if (_connection is not null)
@@ -183,6 +186,7 @@ public sealed class SqliteService : ISqliteService
     }
 
     /// <summary>Represents a row from sqlite_master.</summary>
+    [System.Diagnostics.DebuggerDisplay("MasterRow: {Name}")]
     public sealed class MasterRow
     {
         /// <summary>Gets or sets the table name.</summary>
@@ -191,6 +195,7 @@ public sealed class SqliteService : ISqliteService
     }
 
     /// <summary>Represents a sample user row.</summary>
+    [System.Diagnostics.DebuggerDisplay("UserRow: {Id}")]
     public sealed class UserRow
     {
         /// <summary>Gets or sets the user identifier.</summary>

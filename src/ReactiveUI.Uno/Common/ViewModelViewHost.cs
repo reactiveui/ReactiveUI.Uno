@@ -1,8 +1,9 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ReactiveUI.Builder;
 using Splat;
 #if REACTIVE_SHIM
@@ -24,6 +25,7 @@ namespace ReactiveUI.Uno;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("ViewModelViewHost: {ViewContractObservable}")]
 [Preserve(AllMembers = true)]
 [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
@@ -96,11 +98,8 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
               .StartWith(platformGetter())
               .DistinctUntilChanged();
 
-        var contractChanged = this
-            .WhenAnyObservable(x => x.ViewContractObservable)
-            .Do(x => _viewContract = x)
-            .StartWith(ViewContract);
-        var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
+        var contractChanged = CreateContractObservable();
+        var viewModelChanged = CreateViewModelObservable();
         var viewModelAndContract = contractChanged
             .CombineLatest(viewModelChanged, static (contract, vm) => (ViewModel: vm, Contract: contract));
 
@@ -166,6 +165,7 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
     /// <param name="remove">Removes a size-changed handler.</param>
     /// <param name="getValue">Gets the current view contract.</param>
     /// <returns>The view contract observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IObservable<string?> CreateViewContractObservable(
         Action<SizeChangedEventHandler> add,
         Action<SizeChangedEventHandler> remove,
@@ -181,6 +181,30 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
                     static subscription => subscription.Remove(subscription.Handler));
             });
 
+    /// <summary>Creates the stream of view contracts published through <see cref="ViewContractObservable"/>.</summary>
+    /// <returns>The current view contract, followed by every contract the current source publishes.</returns>
+    private IObservable<string?> CreateContractObservable()
+    {
+        var contractSources = ReactiveHelpers.CreatePropertyValueObservable(
+            this,
+            nameof(ViewContractObservable),
+            ViewContractObservableProperty,
+            () => ViewContractObservable);
+
+        return PrimitivesLinqExtensions
+            .Switch(contractSources.Where(static source => source is not null))
+            .Do(x => _viewContract = x)
+            .StartWith(ViewContract);
+    }
+
+    /// <summary>Creates the stream of view models assigned to <see cref="ViewModel"/>.</summary>
+    /// <returns>The current view model, followed by every later assignment.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private IObservable<object?> CreateViewModelObservable() =>
+        ReactiveHelpers
+            .CreatePropertyValueObservable(this, nameof(ViewModel), ViewModelProperty, () => ViewModel)
+            .StartWith(ViewModel);
+
     /// <summary>Resolves and displays the view for the supplied view model and contract.</summary>
     /// <param name="viewModel">The view model to display.</param>
     /// <param name="contract">The optional view contract to use while resolving the view.</param>
@@ -193,7 +217,7 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var viewLocator = ViewLocator ?? CurrentViewLocator.GetCurrent();
         var viewInstance = viewLocator.ResolveView(viewModel, contract) ?? viewLocator.ResolveView(viewModel);
 
         if (viewInstance is null)

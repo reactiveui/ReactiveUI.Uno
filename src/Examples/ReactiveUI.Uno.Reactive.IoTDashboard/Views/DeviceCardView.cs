@@ -1,13 +1,15 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.UI.Text;
 using Windows.UI;
 
 namespace ReactiveUI.Uno.Reactive.IoTDashboard.Views;
 
 /// <summary>Displays one live IoT device tile.</summary>
+[System.Diagnostics.DebuggerDisplay("DeviceCardView: {SelectButton}")]
 public sealed partial class DeviceCardView : DeviceCardViewBase
 {
     /// <summary>Stores the opaque color alpha value.</summary>
@@ -75,6 +77,24 @@ public sealed partial class DeviceCardView : DeviceCardViewBase
     /// <summary>Gets the button used to select the device.</summary>
     public Button SelectButton { get; } = new() { Content = "Inspect", HorizontalAlignment = HorizontalAlignment.Right, Margin = new(0, StandardSpacing, 0, 0) };
 
+    /// <summary>Gets the device name text.</summary>
+    internal TextBlock NameText { get; } = CreateText("Device", TitleFontSize, FontWeights.SemiBold);
+
+    /// <summary>Gets the value text.</summary>
+    internal TextBlock ValueText { get; } = CreateText("0", ValueFontSize, FontWeights.Bold);
+
+    /// <summary>Gets the status text.</summary>
+    internal TextBlock StatusText { get; } = CreateText("Nominal", BodyFontSize, FontWeights.SemiBold);
+
+    /// <summary>Gets the trend text.</summary>
+    internal TextBlock TrendText { get; } = CreateText("0.0", BodyFontSize, FontWeights.Normal);
+
+    /// <summary>Gets the timestamp text.</summary>
+    internal TextBlock TimestampText { get; } = CreateText("--:--:--", MetadataFontSize, FontWeights.Normal);
+
+    /// <summary>Gets the selected marker text.</summary>
+    internal TextBlock SelectionText { get; } = CreateText("MONITORING", MetadataFontSize, FontWeights.SemiBold);
+
     /// <summary>Gets the card root.</summary>
     private Border CardRoot { get; } = new()
     {
@@ -83,26 +103,8 @@ public sealed partial class DeviceCardView : DeviceCardViewBase
         BorderThickness = new(SecondaryColumn),
         CornerRadius = new(CardCornerRadius),
         Padding = new(CardPadding),
-        Margin = new(0, 0, StandardSpacing, StandardSpacing)
+        Margin = new(0, 0, StandardSpacing, StandardSpacing),
     };
-
-    /// <summary>Gets the device name text.</summary>
-    private TextBlock NameText { get; } = CreateText("Device", TitleFontSize, FontWeights.SemiBold);
-
-    /// <summary>Gets the value text.</summary>
-    private TextBlock ValueText { get; } = CreateText("0", ValueFontSize, FontWeights.Bold);
-
-    /// <summary>Gets the status text.</summary>
-    private TextBlock StatusText { get; } = CreateText("Nominal", BodyFontSize, FontWeights.SemiBold);
-
-    /// <summary>Gets the trend text.</summary>
-    private TextBlock TrendText { get; } = CreateText("0.0", BodyFontSize, FontWeights.Normal);
-
-    /// <summary>Gets the timestamp text.</summary>
-    private TextBlock TimestampText { get; } = CreateText("--:--:--", MetadataFontSize, FontWeights.Normal);
-
-    /// <summary>Gets the selected marker text.</summary>
-    private TextBlock SelectionText { get; } = CreateText("MONITORING", MetadataFontSize, FontWeights.SemiBold);
 
     /// <summary>Creates a text block with dashboard styling.</summary>
     /// <param name="text">The initial text.</param>
@@ -122,6 +124,7 @@ public sealed partial class DeviceCardView : DeviceCardViewBase
     /// <param name="green">The green channel.</param>
     /// <param name="blue">The blue channel.</param>
     /// <returns>The configured color.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Color CreateOpaqueColor(byte red, byte green, byte blue) =>
         Color.FromArgb(OpaqueAlpha, red, green, blue);
 
@@ -176,30 +179,18 @@ public sealed partial class DeviceCardView : DeviceCardViewBase
         var disposables = new CompositeDisposable();
         _bindings = disposables;
 
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.DisplayName,
-            static view => view.NameText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.ValueText,
-            static view => view.ValueText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.StatusText,
-            static view => view.StatusText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.TrendText,
-            static view => view.TrendText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.TimestampText,
-            static view => view.TimestampText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.SelectionText,
-            static view => view.SelectionText.Text));
+        // The bindings observe the view model and write to the controls directly; see DashboardView.RegisterBindings.
+        if (ViewModel is not { } viewModel)
+        {
+            return;
+        }
+
+        NameText.Text = viewModel.DisplayName;
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.ValueText).Subscribe(text => ValueText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.StatusText).Subscribe(text => StatusText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.TrendText).Subscribe(text => TrendText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.TimestampText).Subscribe(text => TimestampText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.SelectionText).Subscribe(text => SelectionText.Text = text));
     }
 
     /// <summary>Disposes ReactiveUI bindings when the view leaves the visual tree.</summary>
