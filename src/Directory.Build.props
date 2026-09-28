@@ -50,6 +50,8 @@
     <NoWarn>$(NoWarn);NU1507;NETSDK1201;PRI257</NoWarn>
     <!-- Satisfy MSBuild's requirement when attribute-based TFM properties are enabled -->
     <RootElementName Condition="'$(UseAttributeForTargetFrameworkInfoPropertyNames)' == 'true' and '$(RootElementName)' == ''">Project</RootElementName>
+    <!-- ReactiveUI.Binding.Uno's Windows head needs Windows App SDK 2.5.1 or later; Uno.Sdk 6.7 defaults to 1.7. -->
+    <WinAppSdkVersion>2.5.1</WinAppSdkVersion>
   </PropertyGroup>
 
   <PropertyGroup>
