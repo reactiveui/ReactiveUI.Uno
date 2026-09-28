@@ -35,6 +35,7 @@
   <ItemGroup>
     <PackageReference Include="ReactiveUI" />
     <PackageReference Include="ReactiveUI.Primitives" />
+    <PackageReference Include="ReactiveUI.Binding.Uno" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
@@ -51,6 +52,7 @@
     <Using Include="ReactiveUI.Primitives.Signals" />
     <Using Include="ReactiveUI.Primitives.LinqExtensions" Alias="PrimitivesLinqExtensions" />
     <Using Include="ReactiveUI.Binding.ViewLocator" Alias="CurrentViewLocator" />
+    <Using Include="ReactiveUI.Binding.Uno.UnoBindingModule" Alias="UnoBindingModule" />
     <Using Include="ReactiveUI.Primitives.RxVoid" Alias="Unit" />
     <Using Include="ReactiveUI.Primitives.Signals.Signal" Alias="Observable" />
     <Using Include="ReactiveUI.Primitives.Disposables.Scope" Alias="Disposable" />

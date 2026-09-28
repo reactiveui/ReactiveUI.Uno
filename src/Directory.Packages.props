@@ -18,6 +18,8 @@
     <PackageVersion Include="ReactiveUI.Primitives.Reactive" Version="8.4.0" />
     <PackageVersion Include="ReactiveUI.Primitives.Blazor" Version="8.4.0" />
     <PackageVersion Include="ReactiveUI.Primitives.Blazor.Reactive" Version="8.4.0" />
+    <PackageVersion Include="ReactiveUI.Binding.Uno" Version="8.7.0" />
+    <PackageVersion Include="ReactiveUI.Binding.Uno.Reactive" Version="8.7.0" />
     <PackageVersion Include="Splat" Version="21.0.0" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />

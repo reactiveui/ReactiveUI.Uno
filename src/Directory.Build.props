@@ -55,17 +55,17 @@
   <PropertyGroup>
 
     <!-- Cross-platform targets (non-Windows only) -->
-    <UnoCrossPlatformTargets>net9.0;net9.0-desktop;net10.0;net10.0-desktop;net10.0-browserwasm;net11.0;net11.0-desktop;net11.0-browserwasm</UnoCrossPlatformTargets>
+    <UnoCrossPlatformTargets>net10.0;net10.0-desktop;net10.0-browserwasm;net11.0;net11.0-desktop;net11.0-browserwasm</UnoCrossPlatformTargets>
 
     <!-- Windows-specific desktop TFMs -->
-    <UnoWindowsDesktopTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
+    <UnoWindowsDesktopTargets>net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</UnoWindowsDesktopTargets>
 
     <!-- Mobile TFMs separated by platform -->
     <UnoMobileAndroidTargets>net10.0-android;net11.0-android</UnoMobileAndroidTargets>
     <UnoMobileAppleTargets>net10.0-ios;net11.0-ios</UnoMobileAppleTargets>
 
     <!-- Test project target frameworks -->
-    <TestProjectTargetFrameworks>net9.0;net10.0;net11.0</TestProjectTargetFrameworks>
+    <TestProjectTargetFrameworks>net10.0;net11.0</TestProjectTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -83,19 +83,19 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Cross-platform .NET 9 target (non-Windows only) - put platform-specific TFMs first per UNOB0013 -->
-    <UnoExampleCrossPlatformNet9>net9.0-desktop;net9.0</UnoExampleCrossPlatformNet9>
+    <!-- Cross-platform .NET 10 target (non-Windows only) - put platform-specific TFMs first per UNOB0013 -->
+    <UnoExampleCrossPlatformNet10>net10.0-desktop;net10.0</UnoExampleCrossPlatformNet10>
 
-    <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 9) -->
-    <UnoExampleWindowsDesktopTargets>net9.0-windows10.0.19041.0</UnoExampleWindowsDesktopTargets>
+    <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 10) -->
+    <UnoExampleWindowsDesktopTargets>net10.0-windows10.0.19041.0</UnoExampleWindowsDesktopTargets>
 
     <!-- Start with base TFMs that are always included -->
-    <UnoExampleTargetFrameworks>$(UnoExampleCrossPlatformNet9)</UnoExampleTargetFrameworks>
+    <UnoExampleTargetFrameworks>$(UnoExampleCrossPlatformNet10)</UnoExampleTargetFrameworks>
 
     <!-- Add Android targets (Linux, macOS, Windows can all compile Android) -->
     <!--<UnoExampleTargetFrameworks>$(UnoExampleTargetFrameworks);$(UnoExampleMobileAndroidTargets)</UnoExampleTargetFrameworks>-->
 
-    <!-- Add Windows Desktop TFMs only when building on Windows (includes net9.0-windows) -->
+    <!-- Add Windows Desktop TFMs only when building on Windows (includes net10.0-windows) -->
     <UnoExampleTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(UnoExampleTargetFrameworks);$(UnoExampleWindowsDesktopTargets)</UnoExampleTargetFrameworks>
 
     <!-- Add Apple Mobile TFMs when building on macOS or Windows (both can compile Apple frameworks) -->

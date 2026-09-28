@@ -65,7 +65,8 @@ public static class UnoReactiveUIBuilderExtensions
         /// <returns>The builder instance for chaining.</returns>
         /// <remarks>Use this scheduler to ensure that UI-related work is executed on the Uno main thread. This is
         /// particularly important for operations that interact with UI elements, as they must be performed on the main
-        /// thread to avoid threading issues.</remarks>
+        /// thread to avoid threading issues. It also adds ReactiveUI.Binding.Uno's module, which registers the view
+        /// thread invoker that moves each binding's writes onto the control's dispatcher queue.</remarks>
         public IReactiveUIBuilder WithUno(Window startupWindow)
         {
             ArgumentNullException.ThrowIfNull(builder);
@@ -75,6 +76,7 @@ public static class UnoReactiveUIBuilderExtensions
                 builder
                     .WithRegistration(
                         static mutable => new UnoRegistrations().Register(new DependencyResolverRegistrar(mutable)))
+                    .UsingSplatModule(new UnoBindingModule())
                     .WithMainThreadScheduler(startupWindow.GetUnoMainThreadScheduler())
                     .WithTaskPoolScheduler(GetUnoTaskPoolScheduler()),
                 startupWindow);
