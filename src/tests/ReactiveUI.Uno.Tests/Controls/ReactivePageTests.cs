@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Xaml;
@@ -89,7 +89,7 @@ public class ReactivePageTests
     [Test]
     public async Task ViewModel_CanBeSetToNull()
     {
-        var page = new TestReactivePage() { ViewModel = new() };
+        var page = new TestReactivePage { ViewModel = new() };
         page.ViewModel = null;
         await Assert.That(page.ViewModel).IsNull();
     }
@@ -122,8 +122,7 @@ public class ReactivePageTests
         var page = new TestReactivePage();
         var viewModel = new TestPageViewModel();
         page.ViewModel = viewModel;
-        var nonGenericViewModel = ((IViewFor)page).ViewModel;
-        await Assert.That(nonGenericViewModel).IsEqualTo(viewModel);
+        await Assert.That(((IViewFor)page).ViewModel).IsEqualTo(viewModel);
     }
 
     /// <summary>Validates that non-generic IViewFor.ViewModel setter works correctly.</summary>
@@ -142,7 +141,7 @@ public class ReactivePageTests
     [Test]
     public async Task IViewForViewModel_CanBeSetToNull()
     {
-        var page = new TestReactivePage() { ViewModel = new() };
+        var page = new TestReactivePage { ViewModel = new() };
         ((IViewFor)page).ViewModel = null;
         await Assert.That(page.ViewModel).IsNull();
     }
@@ -184,10 +183,11 @@ public class ReactivePageTests
     }
 
     /// <summary>Test view model for testing purposes.</summary>
+    [System.Diagnostics.DebuggerDisplay("TestPageViewModel: {Name}")]
     public sealed class TestPageViewModel
     {
-        /// <summary>Gets a value indicating whether the test view model was initialized.</summary>
-        public bool IsInitialized => true;
+        /// <summary>Gets the name that identifies the view model in test output.</summary>
+        public string Name { get; init; } = nameof(TestPageViewModel);
     }
 
     /// <summary>Test ReactivePage implementation for testing purposes.</summary>

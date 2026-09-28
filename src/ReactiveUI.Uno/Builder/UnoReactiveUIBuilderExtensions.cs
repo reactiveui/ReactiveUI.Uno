@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if __WASM__ || BROWSERWASM
@@ -10,6 +10,7 @@ using ReactiveUI.Primitives.Blazor.Concurrency;
 #endif
 using BlazorDispatcher = Microsoft.AspNetCore.Components.Dispatcher;
 #endif
+using System.Runtime.CompilerServices;
 #if REACTIVE_SHIM
 using ReactiveUI.Uno.Reactive;
 using UnoRegistrations = ReactiveUI.Uno.Reactive.Registrations;
@@ -60,11 +61,11 @@ public static class UnoReactiveUIBuilderExtensions
 #endif
 
         /// <summary>Gets the scheduler that schedules work on the Uno Platform main thread.</summary>
+        /// <param name="startupWindow">The startup window.</param>
+        /// <returns>The builder instance for chaining.</returns>
         /// <remarks>Use this scheduler to ensure that UI-related work is executed on the Uno main thread. This is
         /// particularly important for operations that interact with UI elements, as they must be performed on the main
         /// thread to avoid threading issues.</remarks>
-        /// <param name="startupWindow">The startup window.</param>
-        /// <returns>The builder instance for chaining.</returns>
         public IReactiveUIBuilder WithUno(Window startupWindow)
         {
             ArgumentNullException.ThrowIfNull(builder);
@@ -74,7 +75,7 @@ public static class UnoReactiveUIBuilderExtensions
                 builder
                     .WithRegistration(
                         static mutable => new UnoRegistrations().Register(new DependencyResolverRegistrar(mutable)))
-                    .WithMainThreadScheduler(GetUnoMainThreadScheduler(startupWindow))
+                    .WithMainThreadScheduler(startupWindow.GetUnoMainThreadScheduler())
                     .WithTaskPoolScheduler(GetUnoTaskPoolScheduler()),
                 startupWindow);
         }
@@ -89,35 +90,32 @@ public static class UnoReactiveUIBuilderExtensions
         }
     }
 
+    /// <summary>Provides extension members for the startup window.</summary>
+    /// <param name="startupWindow">The startup window.</param>
+    extension(Window startupWindow)
+    {
+        /// <summary>Creates the Uno main-thread scheduler from the startup window dispatcher.</summary>
+        /// <returns>The scheduler used to marshal work to the startup window dispatcher.</returns>
+        internal ISequencer GetUnoMainThreadScheduler()
+        {
+            ArgumentNullException.ThrowIfNull(startupWindow);
+
+#if WINDOWS
+            return new UnoWinUIDispatcherScheduler(startupWindow.DispatcherQueue);
+#else
+            return new UnoDispatcherScheduler(startupWindow.Dispatcher);
+#endif
+        }
+    }
+
     /// <summary>Gets the scheduler used for background work on the current platform.</summary>
     /// <returns>The scheduler used for background work.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ISequencer GetUnoTaskPoolScheduler() =>
 #if __WASM__ || BROWSERWASM
         new BlazorRendererSequencer(BlazorDispatcher.CreateDefault());
 #else
         TaskPoolSequencer.Default;
-#endif
-
-#if WINDOWS
-    /// <summary>Creates the Uno main-thread scheduler from the startup window dispatcher.</summary>
-    /// <param name="startupWindow">The startup window.</param>
-    /// <returns>The scheduler used to marshal work to the startup window dispatcher.</returns>
-    internal static ISequencer GetUnoMainThreadScheduler(Window startupWindow)
-    {
-        ArgumentNullException.ThrowIfNull(startupWindow);
-
-        return new UnoWinUIDispatcherScheduler(startupWindow.DispatcherQueue);
-    }
-#else
-    /// <summary>Creates the Uno main-thread scheduler from the startup window dispatcher.</summary>
-    /// <param name="startupWindow">The startup window.</param>
-    /// <returns>The scheduler used to marshal work to the startup window dispatcher.</returns>
-    internal static ISequencer GetUnoMainThreadScheduler(Window startupWindow)
-    {
-        ArgumentNullException.ThrowIfNull(startupWindow);
-
-        return new UnoDispatcherScheduler(startupWindow.Dispatcher);
-    }
 #endif
 
 #if WINDOWS
@@ -133,14 +131,14 @@ public static class UnoReactiveUIBuilderExtensions
 #endif
 
     /// <summary>Adds the Uno resource dictionary to the application when the startup window is activated.</summary>
-    /// <remarks>This method ensures that the Uno.ReactiveUIUnoDictionary is added to the application's merged
-    /// resource dictionaries after the startup window is activated. This setup is performed only once per application
-    /// startup.</remarks>
     /// <param name="builder">The reactive UI builder to configure. Cannot be null.</param>
     /// <param name="startupWindow">
     /// The window whose activation triggers the addition of the Uno dictionary. Cannot be null.
     /// </param>
     /// <returns>The same instance of <paramref name="builder"/> for method chaining.</returns>
+    /// <remarks>This method ensures that the Uno.ReactiveUIUnoDictionary is added to the application's merged
+    /// resource dictionaries after the startup window is activated. This setup is performed only once per application
+    /// startup.</remarks>
     private static IReactiveUIBuilder AddUnoDictionary(IReactiveUIBuilder builder, Window startupWindow)
     {
         ArgumentNullException.ThrowIfNull(builder);

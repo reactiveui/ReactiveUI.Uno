@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.UI.Text;
@@ -15,6 +15,7 @@ namespace ReactiveUI.Uno.SQLiteStudio.Views;
 /// </summary>
 /// <remarks>MainView binds UI elements to the associated view model, enabling users to compose and execute
 /// queries, export results, and manage database tables.</remarks>
+[System.Diagnostics.DebuggerDisplay("MainView: {QueryEditor}")]
 public sealed partial class MainView : MainViewBase
 {
     /// <summary>Stores the minimum SQL editor height.</summary>
@@ -47,42 +48,42 @@ public sealed partial class MainView : MainViewBase
     }
 
     /// <summary>Gets the SQL editor text box.</summary>
-    private TextBox QueryEditor { get; } = new()
+    internal TextBox QueryEditor { get; } = new()
     {
         MinHeight = QueryEditorMinimumHeight,
         AcceptsReturn = true,
         TextWrapping = TextWrapping.Wrap,
         Background = CreateBrush(Microsoft.UI.Colors.White),
         BorderBrush = CreateBrush(Microsoft.UI.Colors.Gainsboro),
-        Foreground = CreateBrush(Microsoft.UI.Colors.Black)
+        Foreground = CreateBrush(Microsoft.UI.Colors.Black),
     };
 
     /// <summary>Gets the command button that executes the current SQL query.</summary>
-    private AppBarButton ExecuteButton { get; } = new() { Icon = new SymbolIcon(Symbol.Play), Label = "Run" };
+    internal AppBarButton ExecuteButton { get; } = new() { Icon = new SymbolIcon(Symbol.Play), Label = "Run" };
 
     /// <summary>Gets the command button that exports the current result set to CSV.</summary>
-    private AppBarButton ExportButton { get; } = new() { Icon = new SymbolIcon(Symbol.Save), Label = "Export CSV" };
+    internal AppBarButton ExportButton { get; } = new() { Icon = new SymbolIcon(Symbol.Save), Label = "Export CSV" };
 
     /// <summary>Gets the command button that lists database tables.</summary>
-    private AppBarButton ListTablesButton { get; } = new() { Icon = new SymbolIcon(Symbol.List), Label = "List Tables" };
+    internal AppBarButton ListTablesButton { get; } = new() { Icon = new SymbolIcon(Symbol.List), Label = "List Tables" };
 
     /// <summary>Gets the command button that creates the sample users table.</summary>
-    private AppBarButton CreateUsersButton { get; } = new() { Icon = new SymbolIcon(Symbol.Add), Label = "Create Users" };
+    internal AppBarButton CreateUsersButton { get; } = new() { Icon = new SymbolIcon(Symbol.Add), Label = "Create Users" };
 
     /// <summary>Gets the command button that drops the sample users table.</summary>
-    private AppBarButton DropUsersButton { get; } = new() { Icon = new SymbolIcon(Symbol.Delete), Label = "Drop Users" };
+    internal AppBarButton DropUsersButton { get; } = new() { Icon = new SymbolIcon(Symbol.Delete), Label = "Drop Users" };
 
     /// <summary>Gets the command button that selects the sample SELECT statement.</summary>
-    private AppBarButton SampleSelectButton { get; } = new() { Icon = new SymbolIcon(Symbol.Find), Label = "Sample SELECT" };
+    internal AppBarButton SampleSelectButton { get; } = new() { Icon = new SymbolIcon(Symbol.Find), Label = "Sample SELECT" };
 
     /// <summary>Gets the command button that inserts a sample user row.</summary>
-    private AppBarButton SampleInsertButton { get; } = new() { Icon = new SymbolIcon(Symbol.AddFriend), Label = "Sample INSERT" };
+    internal AppBarButton SampleInsertButton { get; } = new() { Icon = new SymbolIcon(Symbol.AddFriend), Label = "Sample INSERT" };
 
     /// <summary>Gets the command button that deletes the sample inserted row.</summary>
-    private AppBarButton SampleDeleteButton { get; } = new() { Icon = new SymbolIcon(Symbol.Delete), Label = "Sample DELETE" };
+    internal AppBarButton SampleDeleteButton { get; } = new() { Icon = new SymbolIcon(Symbol.Delete), Label = "Sample DELETE" };
 
     /// <summary>Gets the read-only text box that displays query results.</summary>
-    private TextBox ResultsViewer { get; } = new()
+    internal TextBox ResultsViewer { get; } = new()
     {
         AcceptsReturn = true,
         Background = CreateBrush(Microsoft.UI.Colors.White),
@@ -90,11 +91,11 @@ public sealed partial class MainView : MainViewBase
         BorderThickness = new(1),
         Foreground = CreateBrush(Microsoft.UI.Colors.Black),
         IsReadOnly = true,
-        TextWrapping = TextWrapping.Wrap
+        TextWrapping = TextWrapping.Wrap,
     };
 
     /// <summary>Gets the status text displayed at the bottom of the view.</summary>
-    private TextBlock StatusText { get; } = new() { Padding = new(CompactSpacing), Foreground = CreateBrush(Microsoft.UI.Colors.Black) };
+    internal TextBlock StatusText { get; } = new() { Padding = new(CompactSpacing), Foreground = CreateBrush(Microsoft.UI.Colors.Black) };
 
     /// <summary>Creates a solid color brush for code-built WinUI elements.</summary>
     /// <param name="color">The color to apply.</param>
@@ -138,7 +139,7 @@ public sealed partial class MainView : MainViewBase
             FontSize = HeaderTitleFontSize,
             FontWeight = FontWeights.SemiBold,
             Foreground = CreateBrush(Microsoft.UI.Colors.White),
-            Text = "ReactiveUI.Uno SQLite Studio"
+            Text = "ReactiveUI.Uno SQLite Studio",
         };
         header.Children.Add(title);
 
@@ -146,7 +147,7 @@ public sealed partial class MainView : MainViewBase
         {
             Background = CreateBrush(Microsoft.UI.Colors.DarkSlateGray),
             DefaultLabelPosition = CommandBarDefaultLabelPosition.Right,
-            Foreground = CreateBrush(Microsoft.UI.Colors.White)
+            Foreground = CreateBrush(Microsoft.UI.Colors.White),
         };
 
         commandBar.PrimaryCommands.Add(ExecuteButton);
@@ -203,52 +204,42 @@ public sealed partial class MainView : MainViewBase
 
     /// <summary>Registers ReactiveUI bindings into the supplied disposable scope.</summary>
     /// <param name="disposables">The binding scope.</param>
+    /// <remarks>
+    /// The bindings observe the view model and write to the controls directly. On Uno's non-Windows targets
+    /// <c>DependencyObject</c> is an interface, which the ReactiveUI.Binding generator does not yet recognise, so a
+    /// generated binding rooted on a control would read it once instead of following its changes.
+    /// </remarks>
     private void RegisterBindings(CompositeDisposable disposables)
     {
-        disposables.Add(this.Bind(
-            ViewModel,
-            static vm => vm.QueryText,
-            static view => view.QueryEditor.Text));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.ExecuteQuery,
-            static view => view.ExecuteButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.ExportCsv,
-            static view => view.ExportButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.ListTables,
-            static view => view.ListTablesButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.CreateUsersTable,
-            static view => view.CreateUsersButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.DropUsersTable,
-            static view => view.DropUsersButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.SampleSelect,
-            static view => view.SampleSelectButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.SampleInsert,
-            static view => view.SampleInsertButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.SampleDelete,
-            static view => view.SampleDeleteButton));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.ResultsText,
-            static view => view.ResultsViewer.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.Status,
-            static view => view.StatusText.Text));
+        if (ViewModel is not { } viewModel)
+        {
+            return;
+        }
+
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.QueryText).Subscribe(text =>
+        {
+            if (QueryEditor.Text != text)
+            {
+                QueryEditor.Text = text;
+            }
+        }));
+        TextChangedEventHandler queryEdited = (_, _) => viewModel.QueryText = QueryEditor.Text;
+        QueryEditor.TextChanged += queryEdited;
+        disposables.Add(Disposable.Create(
+            (Box: QueryEditor, Handler: queryEdited),
+            static subscription => subscription.Box.TextChanged -= subscription.Handler));
+
+        ExecuteButton.Command = viewModel.ExecuteQuery;
+        ExportButton.Command = viewModel.ExportCsv;
+        ListTablesButton.Command = viewModel.ListTables;
+        CreateUsersButton.Command = viewModel.CreateUsersTable;
+        DropUsersButton.Command = viewModel.DropUsersTable;
+        SampleSelectButton.Command = viewModel.SampleSelect;
+        SampleInsertButton.Command = viewModel.SampleInsert;
+        SampleDeleteButton.Command = viewModel.SampleDelete;
+
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.ResultsText).Subscribe(text => ResultsViewer.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.Status).Subscribe(text => StatusText.Text = text));
     }
 
     /// <summary>Disposes ReactiveUI bindings when the view leaves the visual tree.</summary>

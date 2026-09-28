@@ -1,8 +1,9 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using ReactiveUI;
 using Splat;
 #if REACTIVE_SHIM
@@ -24,6 +25,7 @@ namespace ReactiveUI.Uno;
 /// the View and wire up the ViewModel whenever a new ViewModel is
 /// navigated to. Put this control as the only control in your Window.
 /// </summary>
+[System.Diagnostics.DebuggerDisplay("RoutedViewHost: {Router}")]
 [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
 {
@@ -95,18 +97,7 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
            .StartWith(platformGetter())
            .DistinctUntilChanged();
 
-        IRoutableViewModel? currentViewModel = null;
-        var currentViewModelChanged = this
-            .WhenAnyObservable(x => x.Router.CurrentViewModel)
-            .Do(x => currentViewModel = x)
-            .StartWith(currentViewModel);
-        var viewContractChanged = this
-            .WhenAnyObservable(x => x.ViewContractObservable)
-            .Do(x => _viewContract = x)
-            .StartWith(ViewContract);
-        var viewModelAndContract = currentViewModelChanged.CombineLatest(
-            viewContractChanged,
-            static (viewModel, contract) => (viewModel, contract));
+        var viewModelAndContract = CreateViewModelAndContractObservable();
 
         if (ModeDetector.InUnitTestRunner())
         {
@@ -164,6 +155,7 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
     /// <param name="remove">Removes a size-changed handler.</param>
     /// <param name="getValue">Gets the current view contract.</param>
     /// <returns>The view contract observable.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IObservable<string?> CreateViewContractObservable(
         Action<SizeChangedEventHandler> add,
         Action<SizeChangedEventHandler> remove,
@@ -179,21 +171,47 @@ public class RoutedViewHost : TransitioningContentControl, IActivatableView, IEn
                     static subscription => subscription.Remove(subscription.Handler));
             });
 
-    /// <summary>Resolves and displays the view for the supplied routable view model and contract.</summary>
-    /// <param name="x">The view model and contract values used for view resolution.</param>
-    private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
+    /// <summary>Creates the stream of routed view models paired with the view contract to resolve them with.</summary>
+    /// <returns>The current routed view model and view contract, published whenever either changes.</returns>
+    private IObservable<(IRoutableViewModel? ViewModel, string? Contract)> CreateViewModelAndContractObservable()
     {
-        if (x.viewModel is null)
+        IRoutableViewModel? currentViewModel = null;
+        var routers = ReactiveHelpers.CreatePropertyValueObservable(this, nameof(Router), RouterProperty, () => Router);
+        var currentViewModelChanged = PrimitivesLinqExtensions
+            .Switch(routers.Where(static router => router is not null).Select(static router => router.CurrentViewModel))
+            .Do(x => currentViewModel = x)
+            .StartWith(currentViewModel);
+        var contractSources = ReactiveHelpers.CreatePropertyValueObservable(
+            this,
+            nameof(ViewContractObservable),
+            ViewContractObservableProperty,
+            () => ViewContractObservable);
+        var viewContractChanged = PrimitivesLinqExtensions
+            .Switch(contractSources.Where(static source => source is not null))
+            .Do(x => _viewContract = x)
+            .StartWith(ViewContract);
+
+        return currentViewModelChanged.CombineLatest(
+            viewContractChanged,
+            static (viewModel, contract) => (ViewModel: viewModel, Contract: contract));
+    }
+
+    /// <summary>Resolves and displays the view for the supplied routable view model and contract.</summary>
+    /// <param name="target">The view model and contract values used for view resolution.</param>
+    /// <exception cref="InvalidOperationException">No view is registered for the view model.</exception>
+    private void ResolveViewForViewModel((IRoutableViewModel? ViewModel, string? Contract) target)
+    {
+        if (target.ViewModel is null)
         {
             Content = DefaultContent;
             return;
         }
 
-        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = viewLocator.ResolveView(x.viewModel, x.contract)
-            ?? viewLocator.ResolveView(x.viewModel)
-            ?? throw new InvalidOperationException($"Couldn't find view for '{x.viewModel}'.");
-        view.ViewModel = x.viewModel;
+        var viewLocator = ViewLocator ?? CurrentViewLocator.GetCurrent();
+        var view = viewLocator.ResolveView(target.ViewModel, target.Contract)
+            ?? viewLocator.ResolveView(target.ViewModel)
+            ?? throw new InvalidOperationException($"Couldn't find view for '{target.ViewModel}'.");
+        view.ViewModel = target.ViewModel;
         Content = view;
     }
 }

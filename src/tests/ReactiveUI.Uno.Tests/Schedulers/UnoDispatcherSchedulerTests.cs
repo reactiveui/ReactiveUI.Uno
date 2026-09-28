@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using NSubstitute;
@@ -12,6 +12,7 @@ using Windows.UI.Core;
 namespace ReactiveUI.Uno.Tests.Schedulers;
 
 /// <summary>Tests for UnoDispatcherScheduler functionality.</summary>
+[System.Diagnostics.DebuggerDisplay("UnoDispatcherSchedulerTests: {_mockDispatcher}")]
 public class UnoDispatcherSchedulerTests
 {
     /// <summary>The state supplied to scheduled test actions.</summary>
@@ -267,8 +268,7 @@ public class UnoDispatcherSchedulerTests
         // but we test the access to validate the property exists
         try
         {
-            var current = UnoDispatcherScheduler.Current;
-            await Assert.That(current).IsNotNull();
+            await Assert.That(UnoDispatcherScheduler.Current).IsNotNull();
         }
         catch (InvalidOperationException)
         {

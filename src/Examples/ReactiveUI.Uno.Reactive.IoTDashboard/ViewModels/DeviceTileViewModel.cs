@@ -1,16 +1,21 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Models;
 
 namespace ReactiveUI.Uno.Reactive.IoTDashboard.ViewModels;
 
 /// <summary>Represents one device tile on the dashboard.</summary>
+[System.Diagnostics.DebuggerDisplay("DeviceTileViewModel: {DeviceId}")]
 public sealed class DeviceTileViewModel : ReactiveObject
 {
     /// <summary>Stores the local clock display format.</summary>
     private const string LocalClockFormat = "HH':'mm':'ss";
+
+    /// <summary>Stores the smallest telemetry change treated as a new value.</summary>
+    private const double TelemetryTolerance = 1e-9;
 
     /// <summary>Initializes a new instance of the <see cref="DeviceTileViewModel"/> class.</summary>
     /// <param name="reading">The initial device reading.</param>
@@ -45,7 +50,7 @@ public sealed class DeviceTileViewModel : ReactiveObject
         get;
         private set
         {
-            if (field.Equals(value))
+            if (Math.Abs(field - value) < TelemetryTolerance)
             {
                 return;
             }
@@ -93,7 +98,7 @@ public sealed class DeviceTileViewModel : ReactiveObject
         get;
         private set
         {
-            if (field.Equals(value))
+            if (Math.Abs(field - value) < TelemetryTolerance)
             {
                 return;
             }
@@ -153,11 +158,13 @@ public sealed class DeviceTileViewModel : ReactiveObject
     /// <param name="value">The sensor value.</param>
     /// <param name="unit">The sensor unit.</param>
     /// <returns>The formatted value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string FormatValue(double value, string unit) =>
         string.Create(CultureInfo.InvariantCulture, $"{value:0.0} {unit}");
 
     /// <summary>Raises a dependent property change notification.</summary>
     /// <param name="propertyName">The property name to notify.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void RaiseDependentPropertyChanged(string propertyName) =>
         ((IReactiveObject)this).RaisePropertyChanged(new(propertyName));
 }

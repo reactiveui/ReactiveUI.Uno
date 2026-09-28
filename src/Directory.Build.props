@@ -138,7 +138,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="PublicApiGenerator"/>
-    <PackageReference Include="Verify.TUnit"/>
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NSubstitute" />
   </ItemGroup>

@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
@@ -17,6 +17,7 @@ namespace ReactiveUI.Uno.SQLiteStudio.Presentation;
 /// IRoutableViewModel interface. Service dependencies are supplied explicitly so the view model remains testable and
 /// avoids service-locator fallbacks. This view model is intended for applications that require dynamic data querying
 /// and export functionality, and is suitable for binding in reactive user interfaces.</remarks>
+[System.Diagnostics.DebuggerDisplay("MainViewModel: {UrlPathSegment}")]
 public class MainViewModel : ReactiveObject, IRoutableViewModel
 {
     /// <summary>Stores the default query used by the sample database.</summary>
@@ -48,11 +49,11 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     private ObservableCollection<object> _resultsBacking = [];
 
     /// <summary>Initializes a new instance of the <see cref="MainViewModel"/> class.</summary>
-    /// <remarks>The view model sets up commands for querying, exporting, and managing database tables, and is
-    /// intended for use in reactive UI scenarios.</remarks>
     /// <param name="hostScreen">The navigation host screen used for routing and view model location.</param>
     /// <param name="sqlite">The SQLite service used for database operations.</param>
     /// <param name="csv">The CSV export service used for exporting result data.</param>
+    /// <remarks>The view model sets up commands for querying, exporting, and managing database tables, and is
+    /// intended for use in reactive UI scenarios.</remarks>
     public MainViewModel(IScreen hostScreen, ISqliteService sqlite, ICsvExportService csv)
     {
         ArgumentNullException.ThrowIfNull(hostScreen);

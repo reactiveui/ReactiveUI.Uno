@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -12,6 +12,7 @@ namespace ReactiveUI.Uno.SQLiteStudio;
 
 /// <summary>Represents the application entry point.</summary>
 /// <remarks>Configures services, creates the main window, and initializes navigation and data services.</remarks>
+[System.Diagnostics.DebuggerDisplay("App: {_window}")]
 public partial class App : Application
 {
     /// <summary>Stores the application window.</summary>
@@ -24,10 +25,10 @@ public partial class App : Application
     public App() => InitializeComponent();
 
     /// <summary>Handles launch activation and initializes the main window and services.</summary>
+    /// <param name="args">The launch activation arguments.</param>
     /// <remarks>This method sets up dependency injection, registers application services, and navigates to
     /// the main view. It also ensures that sample data is seeded asynchronously after initialization. This override is
     /// typically called by the system when the application is launched by the user.</remarks>
-    /// <param name="args">The launch activation arguments.</param>
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         try

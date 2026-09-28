@@ -1,13 +1,15 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Models;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Services;
 
 namespace ReactiveUI.Uno.Reactive.IoTDashboard.ViewModels;
 
 /// <summary>Coordinates the live IoT dashboard state and commands.</summary>
+[System.Diagnostics.DebuggerDisplay("DashboardViewModel: {UrlPathSegment}")]
 public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDisposable
 {
     /// <summary>Stores the text used when no active alert is available.</summary>
@@ -65,8 +67,8 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
         RefreshSnapshot = ReactiveCommand.CreateFromTask(RefreshSnapshotAsync);
         ResetSimulation = ReactiveCommand.Create(Reset);
         SelectDevice = ReactiveCommand.Create<DeviceTileViewModel>(Select);
-        AcknowledgeAlert = ReactiveCommand.CreateFromObservable(
-            AcknowledgeAlertObservable,
+        AcknowledgeAlert = ReactiveCommand.CreateFromTask(
+            AcknowledgeAlertAsync,
             _canAcknowledgeAlert);
 
         _telemetrySubscription = _telemetry.Readings
@@ -305,34 +307,24 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
     }
 
     /// <summary>Acknowledges the most recent active alert.</summary>
-    /// <returns>An observable that completes when the acknowledgement flow is complete.</returns>
-    private IObservable<Unit> AcknowledgeAlertObservable()
+    /// <returns>A task that completes when the acknowledgement flow is complete.</returns>
+    private async Task AcknowledgeAlertAsync()
     {
         AlertEventViewModel? alert = null;
         foreach (var item in Alerts)
         {
-            if (!item.IsAcknowledged)
+            if (item.IsAcknowledged)
             {
-                alert = item;
-                break;
+                continue;
             }
+
+            alert = item;
+            break;
         }
 
-        return alert is null
-            ? Observable.Return(Unit.Default)
-            : ConfirmAcknowledge.Handle(alert.Event)
-                .Select(approved => CompleteAcknowledge(alert, approved));
-    }
-
-    /// <summary>Completes an alert acknowledgement after the view handles the interaction.</summary>
-    /// <param name="alert">The alert being acknowledged.</param>
-    /// <param name="approved">A value indicating whether acknowledgement was approved.</param>
-    /// <returns>The command completion value.</returns>
-    private Unit CompleteAcknowledge(AlertEventViewModel alert, bool approved)
-    {
-        if (!approved)
+        if (alert is null || !await ConfirmAcknowledge.Handle(alert.Event).ConfigureAwait(true))
         {
-            return Unit.Default;
+            return;
         }
 
         alert.IsAcknowledged = true;
@@ -341,8 +333,6 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
             .ToString(LocalClockFormat, CultureInfo.InvariantCulture);
         InteractionMessage = $"Operator acknowledged {alert.Event.DeviceName} at {acknowledgedAt}.";
         UpdateAlertState($"Acknowledged {alert.Event.DeviceName}.");
-
-        return Unit.Default;
     }
 
     /// <summary>Resets counters and alert state.</summary>
@@ -378,11 +368,13 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
         DeviceTileViewModel? device = null;
         foreach (var tile in Devices)
         {
-            if (tile.DeviceId == reading.DeviceId)
+            if (tile.DeviceId != reading.DeviceId)
             {
-                device = tile;
-                break;
+                continue;
             }
+
+            device = tile;
+            break;
         }
 
         if (device is null)
@@ -437,11 +429,13 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
         HasActiveAlert = false;
         foreach (var item in Alerts)
         {
-            if (!item.IsAcknowledged)
+            if (item.IsAcknowledged)
             {
-                HasActiveAlert = true;
-                break;
+                continue;
             }
+
+            HasActiveAlert = true;
+            break;
         }
 
         LatestAlertText = HasActiveAlert ? latestAlertText : NoActiveAlertsText;
@@ -449,6 +443,7 @@ public sealed class DashboardViewModel : ReactiveObject, IRoutableViewModel, IDi
 
     /// <summary>Raises a dependent property change notification.</summary>
     /// <param name="propertyName">The property name to notify.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void RaiseDependentPropertyChanged(string propertyName) =>
         ((IReactiveObject)this).RaisePropertyChanged(new(propertyName));
 }

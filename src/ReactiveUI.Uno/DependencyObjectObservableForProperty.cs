@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
@@ -22,24 +22,19 @@ namespace ReactiveUI.Uno;
 #endif
 
 /// <summary>Creates a observable for a property if available that is based on a DependencyProperty.</summary>
-public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
+[RequiresUnreferencedCode("Uses reflection to find the DependencyProperty static fields and properties.")]
+public class DependencyObjectObservableForProperty : ICreatesObservableForProperty, IEnableLogger
 {
     /// <summary>The affinity assigned when a dependency property is available.</summary>
     private const int DependencyPropertyAffinity = 6;
 
-    /// <inheritdoc/>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public int GetAffinityForObject(Type? type, string propertyName) => GetAffinityForObject(type, propertyName, false);
-
-    /// <inheritdoc/>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public int GetAffinityForObject(Type? type, string propertyName, bool beforeChanged)
+    /// <summary>Returns the dependency-object affinity when the type declares a <c>{propertyName}Property</c> static member.</summary>
+    /// <param name="type">The type that owns the property.</param>
+    /// <param name="propertyName">The property name, without the <c>Property</c> suffix.</param>
+    /// <param name="beforeChanged">Ignored; before-change requests fall back to plain object observation.</param>
+    /// <returns>The dependency-object affinity for a <see cref="DependencyObject"/> type with such a member; otherwise zero.</returns>
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged)
     {
-        if (type is null)
-        {
-            return 0;
-        }
-
         if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
         {
             return 0;
@@ -48,26 +43,16 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return GetDependencyPropertyFetcher(type, propertyName) is null ? 0 : DependencyPropertyAffinity;
     }
 
-    /// <inheritdoc/>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(
-        object sender,
-        Expression expression,
-        string propertyName) =>
-        GetNotificationForProperty(sender, expression, propertyName, false, false);
-
-    /// <inheritdoc/>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(
-        object sender,
-        Expression expression,
-        string propertyName,
-        bool beforeChanged) =>
-        GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
-
-    /// <inheritdoc/>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
-    public IObservable<IObservedChange<object, object>> GetNotificationForProperty(
+    /// <summary>Returns an observable that raises whenever the dependency property changes on <paramref name="sender"/>.</summary>
+    /// <param name="sender">The <see cref="DependencyObject"/> to observe.</param>
+    /// <param name="expression">The expression carried on each notification.</param>
+    /// <param name="propertyName">The property name, without the <c>Property</c> suffix.</param>
+    /// <param name="beforeChanged"><see langword="true"/> observes the property as a plain object property, since a dependency property has no before-change notification.</param>
+    /// <param name="suppressWarnings">Passed through to the plain-object observer when it is used.</param>
+    /// <returns>An observable that registers a property-changed callback and unregisters it on disposal.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="sender"/> is null.</exception>
+    /// <exception cref="ArgumentException"><paramref name="sender"/> is not a <see cref="DependencyObject"/>.</exception>
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
         string propertyName,
@@ -91,10 +76,8 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
                 type.FullName,
                 propertyName);
 
-            var ret = new POCOObservableForProperty();
-            return ret
-                .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
-                .Select(static x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
+            return new POCOObservableForProperty()
+                .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings);
         }
 
         var dependencyPropertyFetcher = GetDependencyPropertyFetcher(type, propertyName);
@@ -106,20 +89,18 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
                 type.FullName,
                 propertyName);
 
-            var ret = new POCOObservableForProperty();
-            return ret
-                .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings)
-                .Select(static x => new ObservedChange<object, object>(x.Sender, x.Expression, x.Value!));
+            return new POCOObservableForProperty()
+                .GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings);
         }
 
         return ObservableFactory.CreateWithState<
-            IObservedChange<object, object>,
+            IObservedChange<object, object?>,
             (object Sender, DependencyObject DependencyObject, Expression Expression, Func<DependencyProperty> Fetcher)>(
             (sender, depSender, expression, dependencyPropertyFetcher),
             static (state, observer) =>
         {
             var handler = new DependencyPropertyChangedCallback((_, _) =>
-                observer.OnNext(new ObservedChange<object, object>(state.Sender, state.Expression, default!)));
+                observer.OnNext(new ObservedChange<object, object?>(state.Sender, state.Expression, default)));
 
             var dependencyProperty = state.Fetcher();
             var token = state.DependencyObject.RegisterPropertyChangedCallback(dependencyProperty, handler);
@@ -135,14 +116,13 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     /// <param name="typeInfo">The type to inspect.</param>
     /// <param name="propertyName">The dependency property accessor name.</param>
     /// <returns>The matching property when found; otherwise, null.</returns>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
     {
         var current = typeInfo;
         while (current is not null)
         {
             var ret = current.GetDeclaredProperty(propertyName);
-            if (ret?.IsStatic() == true)
+            if (ret?.GetMethod?.IsStatic == true)
             {
                 return ret;
             }
@@ -157,7 +137,6 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     /// <param name="typeInfo">The type to inspect.</param>
     /// <param name="propertyName">The dependency field name.</param>
     /// <returns>The matching field when found; otherwise, null.</returns>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
     {
         var current = typeInfo;
@@ -179,7 +158,6 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     /// <param name="type">The dependency object type to inspect.</param>
     /// <param name="propertyName">The CLR property name.</param>
     /// <returns>A dependency property fetcher when the backing dependency property exists; otherwise, null.</returns>
-    [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
     private static Func<DependencyProperty>? GetDependencyPropertyFetcher(Type type, string propertyName)
     {
         var typeInfo = type.GetTypeInfo();

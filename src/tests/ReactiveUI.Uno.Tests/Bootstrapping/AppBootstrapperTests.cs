@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using TUnit.Assertions.Extensions;
@@ -126,9 +126,8 @@ public class AppBootstrapperTests
     public async Task IScreen_Router_ReturnsSameInstance()
     {
         var bootstrapper = new AppBootstrapper();
-        var screenRouter = ((IScreen)bootstrapper).Router;
 
-        await Assert.That(screenRouter).IsEqualTo(bootstrapper.Router);
+        await Assert.That(((IScreen)bootstrapper).Router).IsEqualTo(bootstrapper.Router);
     }
 
     /// <summary>Validates that AppBootstrapper implements IReactiveObject.</summary>
@@ -194,10 +193,7 @@ public class AppBootstrapperTests
     {
         /// <summary>Initializes a new instance of the <see cref="TestRoutableViewModel"/> class.</summary>
         /// <param name="hostScreen">The host screen used by the routable view model.</param>
-        public TestRoutableViewModel(IScreen hostScreen)
-        {
-            HostScreen = hostScreen;
-        }
+        public TestRoutableViewModel(IScreen hostScreen) => HostScreen = hostScreen;
 
         /// <inheritdoc/>
         public string UrlPathSegment => "test";

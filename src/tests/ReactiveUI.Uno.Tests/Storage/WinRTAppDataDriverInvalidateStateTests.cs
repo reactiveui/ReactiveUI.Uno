@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using TUnit.Assertions.Extensions;
@@ -13,6 +13,7 @@ using RxVoid = ReactiveUI.Primitives.RxVoid;
 namespace ReactiveUI.Uno.Tests.Storage;
 
 /// <summary>Contains InvalidateState tests for the WinRT application data driver.</summary>
+[System.Diagnostics.DebuggerDisplay("WinRTAppDataDriverTests: {ToString(),nq}")]
 public partial class WinRTAppDataDriverTests
 {
     /// <summary>Validates that InvalidateState returns a non-null observable.</summary>

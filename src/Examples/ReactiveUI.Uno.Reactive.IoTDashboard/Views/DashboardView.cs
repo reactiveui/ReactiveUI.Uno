@@ -1,7 +1,8 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.UI.Text;
 using ReactiveUI.Uno.Reactive.IoTDashboard.Models;
 using ReactiveUI.Uno.Reactive.IoTDashboard.ViewModels;
@@ -10,6 +11,7 @@ using Windows.UI;
 namespace ReactiveUI.Uno.Reactive.IoTDashboard.Views;
 
 /// <summary>Displays the live IoT dashboard sample.</summary>
+[System.Diagnostics.DebuggerDisplay("DashboardView: {DeviceGrid}")]
 public sealed partial class DashboardView : DashboardViewBase
 {
     /// <summary>Stores the opaque color alpha value.</summary>
@@ -114,8 +116,8 @@ public sealed partial class DashboardView : DashboardViewBase
     /// <summary>Stores the bottom command row index.</summary>
     private const int BottomCommandRow = 1;
 
-    /// <summary>Tracks whether device cards have been created.</summary>
-    private bool _deviceCardsCreated;
+    /// <summary>Tracks whether device cards have been created; set to 1 once they exist.</summary>
+    private int _deviceCardsCreated;
 
     /// <summary>Stores the current view binding scope.</summary>
     private CompositeDisposable? _bindings;
@@ -128,57 +130,57 @@ public sealed partial class DashboardView : DashboardViewBase
         Unloaded += OnUnloaded;
     }
 
+    /// <summary>Gets the search text box.</summary>
+    internal TextBox SearchBox { get; } = new() { PlaceholderText = "Filter devices", Margin = new(0, CompactSpacing, 0, 0) };
+
+    /// <summary>Gets the stream state text.</summary>
+    internal TextBlock StreamStateText { get; } =
+        CreateText("Live stream running", ProminentFontSize, FontWeights.SemiBold);
+
+    /// <summary>Gets the sample count text.</summary>
+    internal TextBlock SampleCountText { get; } =
+        CreateText("0 samples processed", ProminentFontSize, FontWeights.SemiBold);
+
+    /// <summary>Gets the selected device text.</summary>
+    internal TextBlock SelectedDeviceText { get; } =
+        CreateText("Select a device", BodyFontSize, FontWeights.Normal);
+
+    /// <summary>Gets the latest update text.</summary>
+    internal TextBlock LastUpdatedText { get; } =
+        CreateText("Last update --:--:--", BodyFontSize, FontWeights.Normal);
+
+    /// <summary>Gets the filter summary text.</summary>
+    internal TextBlock FilterSummaryText { get; } =
+        CreateText("6 devices visible", CompactFontSize, FontWeights.Normal);
+
+    /// <summary>Gets the latest alert text.</summary>
+    internal TextBlock LatestAlertText { get; } =
+        CreateText("No active alerts.", BodyFontSize, FontWeights.SemiBold);
+
+    /// <summary>Gets the interaction message text.</summary>
+    internal TextBlock InteractionMessageText { get; } =
+        CreateText("No operator interaction yet.", CompactFontSize, FontWeights.Normal);
+
+    /// <summary>Gets the status message text.</summary>
+    internal TextBlock StatusMessageText { get; } = CreateText("Ready", CompactFontSize, FontWeights.Normal);
+
+    /// <summary>Gets the stream toggle button.</summary>
+    internal Button ToggleStreamButton { get; } = new() { Content = "Pause / Resume" };
+
+    /// <summary>Gets the snapshot refresh button.</summary>
+    internal Button RefreshButton { get; } = new() { Content = "Refresh Snapshot" };
+
+    /// <summary>Gets the acknowledge alert button.</summary>
+    internal Button AcknowledgeButton { get; } = new() { Content = "Acknowledge Alert" };
+
+    /// <summary>Gets the reset button.</summary>
+    internal Button ResetButton { get; } = new() { Content = "Reset" };
+
     /// <summary>Gets the grid that hosts device cards.</summary>
     private Grid DeviceGrid { get; } = new() { ColumnSpacing = StandardSpacing, RowSpacing = StandardSpacing };
 
     /// <summary>Gets the alert list.</summary>
     private ListView AlertList { get; } = new() { MaxHeight = AlertListMaximumHeight };
-
-    /// <summary>Gets the search text box.</summary>
-    private TextBox SearchBox { get; } = new() { PlaceholderText = "Filter devices", Margin = new(0, CompactSpacing, 0, 0) };
-
-    /// <summary>Gets the stream state text.</summary>
-    private TextBlock StreamStateText { get; } =
-        CreateText("Live stream running", ProminentFontSize, FontWeights.SemiBold);
-
-    /// <summary>Gets the sample count text.</summary>
-    private TextBlock SampleCountText { get; } =
-        CreateText("0 samples processed", ProminentFontSize, FontWeights.SemiBold);
-
-    /// <summary>Gets the selected device text.</summary>
-    private TextBlock SelectedDeviceText { get; } =
-        CreateText("Select a device", BodyFontSize, FontWeights.Normal);
-
-    /// <summary>Gets the latest update text.</summary>
-    private TextBlock LastUpdatedText { get; } =
-        CreateText("Last update --:--:--", BodyFontSize, FontWeights.Normal);
-
-    /// <summary>Gets the filter summary text.</summary>
-    private TextBlock FilterSummaryText { get; } =
-        CreateText("6 devices visible", CompactFontSize, FontWeights.Normal);
-
-    /// <summary>Gets the latest alert text.</summary>
-    private TextBlock LatestAlertText { get; } =
-        CreateText("No active alerts.", BodyFontSize, FontWeights.SemiBold);
-
-    /// <summary>Gets the interaction message text.</summary>
-    private TextBlock InteractionMessageText { get; } =
-        CreateText("No operator interaction yet.", CompactFontSize, FontWeights.Normal);
-
-    /// <summary>Gets the status message text.</summary>
-    private TextBlock StatusMessageText { get; } = CreateText("Ready", CompactFontSize, FontWeights.Normal);
-
-    /// <summary>Gets the stream toggle button.</summary>
-    private Button ToggleStreamButton { get; } = new() { Content = "Pause / Resume" };
-
-    /// <summary>Gets the snapshot refresh button.</summary>
-    private Button RefreshButton { get; } = new() { Content = "Refresh Snapshot" };
-
-    /// <summary>Gets the acknowledge alert button.</summary>
-    private Button AcknowledgeButton { get; } = new() { Content = "Acknowledge Alert" };
-
-    /// <summary>Gets the reset button.</summary>
-    private Button ResetButton { get; } = new() { Content = "Reset" };
 
     /// <summary>Handles an alert acknowledgement interaction.</summary>
     /// <param name="context">The interaction context.</param>
@@ -209,6 +211,7 @@ public sealed partial class DashboardView : DashboardViewBase
     /// <param name="green">The green channel.</param>
     /// <param name="blue">The blue channel.</param>
     /// <returns>The configured color.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Color CreateOpaqueColor(byte red, byte green, byte blue) =>
         Color.FromArgb(OpaqueAlpha, red, green, blue);
 
@@ -265,7 +268,7 @@ public sealed partial class DashboardView : DashboardViewBase
             BorderThickness = new(SecondaryContentColumnRatio),
             CornerRadius = new(StandardSpacing),
             Padding = new(PanelPadding),
-            Child = stack
+            Child = stack,
         };
     }
 
@@ -362,12 +365,11 @@ public sealed partial class DashboardView : DashboardViewBase
     /// <param name="viewModel">The dashboard view model.</param>
     private void EnsureDeviceCards(DashboardViewModel viewModel)
     {
-        if (_deviceCardsCreated)
+        if (Interlocked.Exchange(ref _deviceCardsCreated, 1) != 0)
         {
             return;
         }
 
-        _deviceCardsCreated = true;
         for (var index = 0; index < viewModel.Devices.Count; index++)
         {
             var device = viewModel.Devices[index];
@@ -415,60 +417,44 @@ public sealed partial class DashboardView : DashboardViewBase
 
     /// <summary>Registers ReactiveUI bindings into the supplied disposable scope.</summary>
     /// <param name="disposables">The binding scope.</param>
+    /// <remarks>
+    /// The bindings observe the view model and write to the controls directly. On Uno's non-Windows targets
+    /// <c>DependencyObject</c> is an interface, which the ReactiveUI.Binding generator does not yet recognise, so a
+    /// generated binding rooted on a control would read it once instead of following its changes.
+    /// </remarks>
     private void RegisterBindings(CompositeDisposable disposables)
     {
-        disposables.Add(this.Bind(
-            ViewModel,
-            static vm => vm.SearchText,
-            static view => view.SearchBox.Text));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.ToggleStreaming,
-            static view => view.ToggleStreamButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.RefreshSnapshot,
-            static view => view.RefreshButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.AcknowledgeAlert,
-            static view => view.AcknowledgeButton));
-        disposables.Add(this.BindCommand(
-            ViewModel,
-            static vm => vm.ResetSimulation,
-            static view => view.ResetButton));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.StreamStateText,
-            static view => view.StreamStateText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.SampleCountText,
-            static view => view.SampleCountText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.SelectedDeviceSummary,
-            static view => view.SelectedDeviceText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.LastUpdatedText,
-            static view => view.LastUpdatedText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.FilterSummary,
-            static view => view.FilterSummaryText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.LatestAlertText,
-            static view => view.LatestAlertText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.InteractionMessage,
-            static view => view.InteractionMessageText.Text));
-        disposables.Add(this.OneWayBind(
-            ViewModel,
-            static vm => vm.StatusMessage,
-            static view => view.StatusMessageText.Text));
+        if (ViewModel is not { } viewModel)
+        {
+            return;
+        }
+
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.SearchText).Subscribe(text =>
+        {
+            if (SearchBox.Text != text)
+            {
+                SearchBox.Text = text;
+            }
+        }));
+        TextChangedEventHandler searchEdited = (_, _) => viewModel.SearchText = SearchBox.Text;
+        SearchBox.TextChanged += searchEdited;
+        disposables.Add(Disposable.Create(
+            (Box: SearchBox, Handler: searchEdited),
+            static subscription => subscription.Box.TextChanged -= subscription.Handler));
+
+        ToggleStreamButton.Command = viewModel.ToggleStreaming;
+        RefreshButton.Command = viewModel.RefreshSnapshot;
+        AcknowledgeButton.Command = viewModel.AcknowledgeAlert;
+        ResetButton.Command = viewModel.ResetSimulation;
+
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.StreamStateText).Subscribe(text => StreamStateText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.SampleCountText).Subscribe(text => SampleCountText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.SelectedDeviceSummary).Subscribe(text => SelectedDeviceText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.LastUpdatedText).Subscribe(text => LastUpdatedText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.FilterSummary).Subscribe(text => FilterSummaryText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.LatestAlertText).Subscribe(text => LatestAlertText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.InteractionMessage).Subscribe(text => InteractionMessageText.Text = text));
+        disposables.Add(viewModel.WhenAnyValue(static vm => vm.StatusMessage).Subscribe(text => StatusMessageText.Text = text));
         disposables.Add(this.BindInteraction(
             ViewModel,
             static vm => vm.ConfirmAcknowledge,

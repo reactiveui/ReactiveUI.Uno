@@ -1,5 +1,5 @@
-// Copyright (c) 2019-2026 ReactiveUI Association Incorporated. All rights reserved.
-// ReactiveUI Association Incorporated licenses this file to you under the MIT license.
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if REACTIVE_SHIM
@@ -15,6 +15,7 @@ namespace ReactiveUI.Uno;
 /// application. It implements the IScreen interface, which is used by ReactiveUI for view model routing. This class is
 /// typically used to configure the application's initial navigation state and to provide a central location for routing
 /// logic.</remarks>
+[System.Diagnostics.DebuggerDisplay("AppBootstrapper: {Router}")]
 public sealed class AppBootstrapper() : ReactiveObject, IScreen
 {
     /// <summary>Gets the Router associated with this Screen.</summary>
