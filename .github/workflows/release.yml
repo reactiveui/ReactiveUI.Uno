@@ -29,6 +29,12 @@ on:
         type: string
         default: ''
 
+      versionOverride:
+        description: 'Optional exact version (e.g. 25.0.0), used instead of bump and channel. The package major tracks the ReactiveUI major, so set this when ReactiveUI moves to a new major.'
+        required: false
+        type: string
+        default: ''
+
 permissions:
   contents: write
   id-token: write
@@ -43,8 +49,10 @@ jobs:
       useUNO: true
       # Release tags are unprefixed (e.g. 23.2.28); the workflow default is 'v'.
       minverTagPrefix: ''
-      bump: ${{ inputs.bump }}
-      preRelease: ${{ inputs.channel != 'none' && inputs.channel || '' }}
+      # An exact version replaces the bump and channel; the shared workflow rejects them together.
+      bump: ${{ inputs.versionOverride == '' && inputs.bump || '' }}
+      preRelease: ${{ inputs.versionOverride == '' && inputs.channel != 'none' && inputs.channel || '' }}
+      versionOverride: ${{ inputs.versionOverride }}
       sourceRef: ${{ inputs.sourceRef }}
     secrets:
       CERTUM_USER_ID: ${{ secrets.CERTUM_USER_ID }}
