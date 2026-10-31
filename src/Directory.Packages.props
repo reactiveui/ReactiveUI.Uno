@@ -44,6 +44,6 @@
   <ItemGroup>
     <PackageVersion Include="ReactiveUI.SourceGenerators" Version="4.2.0" />
     <PackageVersion Include="SQLite-net-pcl" Version="1.11.285" />
-    <PackageVersion Include="CsvHelper" Version="33.1.0" />
+    <PackageVersion Include="CsvHelper" Version="34.0.0" />
   </ItemGroup>
 </Project>
