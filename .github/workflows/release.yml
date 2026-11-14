@@ -44,7 +44,7 @@ jobs:
   release:
     uses: reactiveui/actions-common/.github/workflows/workflow-common-release.yml@main
     with:
-      solutionFile: reactiveui.uno.slnx
+      solutionFile: ReactiveUI.Uno.slnx
       installWorkloads: true
       useUNO: true
       # Release tags are unprefixed (e.g. 23.2.28); the workflow default is 'v'.
