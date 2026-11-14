@@ -86,10 +86,10 @@
 
   <PropertyGroup>
     <!-- Cross-platform .NET 10 target (non-Windows only) - put platform-specific TFMs first per UNOB0013 -->
-    <UnoExampleCrossPlatformNet10>net10.0-desktop;net10.0</UnoExampleCrossPlatformNet10>
+    <UnoExampleCrossPlatformNet10>net10.0-desktop;net10.0;net11.0-desktop;net11.0</UnoExampleCrossPlatformNet10>
 
     <!-- Windows-specific desktop TFMs (includes Windows-specific .NET 10) -->
-    <UnoExampleWindowsDesktopTargets>net10.0-windows10.0.19041.0</UnoExampleWindowsDesktopTargets>
+    <UnoExampleWindowsDesktopTargets>net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</UnoExampleWindowsDesktopTargets>
 
     <!-- Start with base TFMs that are always included -->
     <UnoExampleTargetFrameworks>$(UnoExampleCrossPlatformNet10)</UnoExampleTargetFrameworks>

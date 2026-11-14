@@ -9,7 +9,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- StyleSharp.Analyzers, PerformanceSharp.Analyzers and SecuritySharp.Analyzers ship from the
          same release pipeline and always share a version. -->
-    <RoslynCommonAnalyzersVersion>5.1.2</RoslynCommonAnalyzersVersion>
+    <RoslynCommonAnalyzersVersion>5.2.0</RoslynCommonAnalyzersVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ReactiveUI" Version="26.0.1" />
@@ -22,23 +22,23 @@
     <PackageVersion Include="ReactiveUI.Binding.Uno.Reactive" Version="9.1.0" />
     <PackageVersion Include="Splat" Version="21.0.0" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.403" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="11.0.100" />
     <PackageVersion Include="MinVer" Version="8.0.0" />
     <PackageVersion Include="StyleSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)" />
     <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)" />
     <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)" />
-    <PackageVersion Include="Roslynator.Analyzers" Version="5.0.0" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="5.0.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
   <!-- Test projects only -->
   <ItemGroup>
     <PackageVersion Include="ReactiveUI.Testing" Version="26.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
-    <PackageVersion Include="bunit" Version="2.11.3" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.11.2" />
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.4.1" />
-    <PackageVersion Include="TUnit" Version="1.72.16" />
+    <PackageVersion Include="bunit" Version="2.15.2" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.5.3" />
+    <PackageVersion Include="TUnit" Version="1.84.0" />
   </ItemGroup>
   <!-- Example projects only -->
   <ItemGroup>
