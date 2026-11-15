@@ -19,5 +19,7 @@ jobs:
       productNamespacePrefix: ReactiveUI.Uno
       useUNO: true
       installWorkloads: true
+      testProjects: |
+        tests/**/*.csproj
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

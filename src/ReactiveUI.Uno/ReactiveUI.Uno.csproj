@@ -12,13 +12,6 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-    <!--
-      UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.
-      https://aka.platform.uno/singleproject-features
-    -->
-    <UnoFeatures Condition="!$(TargetFramework.EndsWith('browserwasm'))">
-      SkiaRenderer;
-    </UnoFeatures>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -40,10 +33,6 @@
 
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
     <PackageReference Include="ReactiveUI.Primitives.Blazor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Resources\ReactiveUI.Uno.xaml" />
   </ItemGroup>
 
   <ItemGroup>

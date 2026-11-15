@@ -14,13 +14,6 @@ namespace ReactiveUI.Uno;
 /// <seealso cref="ResourceDictionary" />
 public class ReactiveUIUnoDictionary : ResourceDictionary
 {
-    /// <summary>Resource URI for the ReactiveUI Uno dictionary.</summary>
-#if REACTIVE_SHIM
-    private const string DictionaryUri = "ms-appx:///ReactiveUI.Uno.Reactive/Resources/ReactiveUI.Uno.Reactive.xaml";
-#else
-    private const string DictionaryUri = "ms-appx:///ReactiveUI.Uno/Resources/ReactiveUI.Uno.xaml";
-#endif
-
     /// <summary>Initializes a new instance of the <see cref="ReactiveUIUnoDictionary"/> class.</summary>
-    public ReactiveUIUnoDictionary() => Source = new(DictionaryUri, UriKind.Absolute);
+    public ReactiveUIUnoDictionary() => this["__rxui_touch__"] = new ViewModelViewHost();
 }

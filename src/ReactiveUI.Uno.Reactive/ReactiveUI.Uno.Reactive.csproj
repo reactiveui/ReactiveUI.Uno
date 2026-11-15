@@ -15,13 +15,6 @@
     <RootNamespace>ReactiveUI.Uno.Reactive</RootNamespace>
     <DefineConstants>$(DefineConstants);REACTIVE_SHIM</DefineConstants>
 
-    <!--
-      UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.
-      https://aka.platform.uno/singleproject-features
-    -->
-    <UnoFeatures Condition="!$(TargetFramework.EndsWith('browserwasm'))">
-      SkiaRenderer;
-    </UnoFeatures>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -49,10 +42,6 @@
 
   <ItemGroup Condition="$(TargetFramework.EndsWith('0-browserwasm'))">
     <PackageReference Include="ReactiveUI.Primitives.Blazor.Reactive" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Resources\ReactiveUI.Uno.Reactive.xaml" />
   </ItemGroup>
 
   <ItemGroup>
