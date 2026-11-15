@@ -42,7 +42,7 @@
     },
     "ReactiveUI.Uno.SQLiteStudio (Desktop WSL2)": {
       "commandName": "WSL2",
-      "commandLineArgs": "{ProjectDir}/bin/Debug/net9.0-desktop/ReactiveUI.Uno.SQLiteStudio.dll",
+      "commandLineArgs": "{ProjectDir}/bin/Debug/net11.0-desktop/ReactiveUI.Uno.SQLiteStudio.dll",
       "distributionName": "",
       "compatibleTargetFramework": "desktop"
     }

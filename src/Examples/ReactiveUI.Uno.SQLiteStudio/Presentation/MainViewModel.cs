@@ -178,12 +178,13 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     }
 
     /// <summary>Exports the current result set to CSV.</summary>
+    /// <param name="cancellationToken">Cancels the export.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    private async Task ExportCsvAsync()
+    private async Task ExportCsvAsync(CancellationToken cancellationToken)
     {
         try
         {
-            await _csv.ExportAsync(_resultsBacking).ConfigureAwait(true);
+            await _csv.ExportAsync(_resultsBacking, cancellationToken).ConfigureAwait(true);
             Status = "Exported results.csv";
         }
         catch (Exception ex)

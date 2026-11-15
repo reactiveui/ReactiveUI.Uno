@@ -75,6 +75,7 @@
     <Using Include="ReactiveUI.Reactive" />
     <Using Include="ReactiveUI.Reactive.Builder" />
     <Using Include="ReactiveUI.Reactive.Interfaces" />
+    <Using Include="ReactiveUI.Binding.Reactive" />
     <Using Include="ReactiveUI.Primitives.Reactive" />
     <Using Include="ReactiveUI.Primitives.Reactive.Concurrency" />
     <Using Include="ReactiveUI.Uno.Reactive" />

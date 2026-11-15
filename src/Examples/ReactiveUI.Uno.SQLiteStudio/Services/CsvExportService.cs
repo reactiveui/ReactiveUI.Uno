@@ -6,7 +6,6 @@ using System.Collections;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using CsvHelper;
-using CsvHelper.Configuration;
 
 namespace ReactiveUI.Uno.SQLiteStudio.Services;
 
@@ -36,16 +35,18 @@ public sealed class CsvExportService : ICsvExportService
 
     /// <summary>Exports the specified collection of items to the default CSV file.</summary>
     /// <param name="items">The collection of items to export.</param>
+    /// <param name="cancellationToken">Cancels the export.</param>
     /// <returns>A task that represents the asynchronous export operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task ExportAsync(IEnumerable items) => ExportAsync(items, DefaultFileName);
+    public Task ExportAsync(IEnumerable items, CancellationToken cancellationToken) => ExportAsync(items, DefaultFileName, cancellationToken);
 
     /// <summary>Asynchronously exports the specified collection of items to a CSV file.</summary>
     /// <param name="items">The collection of items to export. Cannot be null.</param>
     /// <param name="fileName">The name of the CSV file to create. Defaults to "results.csv" if not specified.</param>
+    /// <param name="cancellationToken">Cancels the export.</param>
     /// <returns>A task that represents the asynchronous export operation.</returns>
     /// <remarks>The CSV file does not include a header row and is saved to local application data.</remarks>
-    public async Task ExportAsync(IEnumerable items, string fileName)
+    public async Task ExportAsync(IEnumerable items, string fileName, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(items);
         ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
@@ -54,11 +55,12 @@ public sealed class CsvExportService : ICsvExportService
         var path = Path.Combine(folder, fileName);
 
         await using var writer = new StreamWriter(path);
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false };
-        await using var csv = new CsvWriter(writer, config);
+        var config = new CsvWriterOptions { FormatProvider = CultureInfo.InvariantCulture, HasHeader = false };
+        await using var csv = CsvWriter.Create(writer, config, leaveOpen: true);
 
         foreach (var item in items)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (item is IReadOnlyDictionary<string, object?> dict)
             {
                 foreach (var kvp in dict)
@@ -67,15 +69,16 @@ public sealed class CsvExportService : ICsvExportService
                     csv.WriteField(kvp.Value?.ToString() ?? string.Empty);
                 }
 
-                await csv.NextRecordAsync().ConfigureAwait(false);
+                await csv.EndRecordAsync(cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 csv.WriteField(item?.ToString() ?? string.Empty);
-                await csv.NextRecordAsync().ConfigureAwait(false);
+                await csv.EndRecordAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
-        await writer.FlushAsync().ConfigureAwait(false);
+        await csv.FlushAsync(cancellationToken).ConfigureAwait(false);
+        await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 }

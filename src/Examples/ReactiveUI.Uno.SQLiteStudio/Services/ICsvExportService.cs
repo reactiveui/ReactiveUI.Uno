@@ -13,12 +13,14 @@ public interface ICsvExportService
 {
     /// <summary>Asynchronously exports the specified collection of items to the default CSV file.</summary>
     /// <param name="items">The collection of items to export. Each item should represent a CSV row.</param>
+    /// <param name="cancellationToken">Cancels the export.</param>
     /// <returns>A task that represents the asynchronous export operation.</returns>
-    Task ExportAsync(System.Collections.IEnumerable items);
+    Task ExportAsync(System.Collections.IEnumerable items, CancellationToken cancellationToken);
 
     /// <summary>Asynchronously exports the specified collection of items to a CSV file.</summary>
     /// <param name="items">The collection of items to export. Each item should represent a CSV row.</param>
     /// <param name="fileName">The name of the CSV file to create. Cannot be null or empty.</param>
+    /// <param name="cancellationToken">Cancels the export.</param>
     /// <returns>A task that represents the asynchronous export operation.</returns>
-    Task ExportAsync(System.Collections.IEnumerable items, string fileName);
+    Task ExportAsync(System.Collections.IEnumerable items, string fileName, CancellationToken cancellationToken);
 }

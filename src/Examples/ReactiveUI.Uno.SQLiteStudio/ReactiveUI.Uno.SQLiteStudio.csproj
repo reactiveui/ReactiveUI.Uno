@@ -82,6 +82,7 @@
     <Using Include="Microsoft.UI.Xaml" />
     <Using Include="ReactiveUI" />
     <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Binding" />
     <Using Include="ReactiveUI.Primitives" />
     <Using Include="ReactiveUI.Primitives.Concurrency" />
     <Using Include="ReactiveUI.Primitives.Signals" />
