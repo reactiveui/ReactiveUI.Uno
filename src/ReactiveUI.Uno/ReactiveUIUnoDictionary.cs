@@ -2,6 +2,8 @@
 // ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 #if REACTIVE_SHIM
 
 namespace ReactiveUI.Uno.Reactive;
@@ -15,5 +17,9 @@ namespace ReactiveUI.Uno;
 public class ReactiveUIUnoDictionary : ResourceDictionary
 {
     /// <summary>Initializes a new instance of the <see cref="ReactiveUIUnoDictionary"/> class.</summary>
-    public ReactiveUIUnoDictionary() => this["__rxui_touch__"] = new ViewModelViewHost();
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(ViewModelViewHost))]
+    public ReactiveUIUnoDictionary()
+    {
+        // Preserve the XAML control without constructing an unused view or resolving services during startup.
+    }
 }

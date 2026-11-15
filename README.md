@@ -138,7 +138,7 @@ _ = RxAppBuilder.CreateReactiveUIBuilder()
 | `RoutedViewHost` | `Router`, `DefaultContent`, `ViewContract`, `ViewContractObservable`, `ViewLocator` | `TransitioningContentControl` that displays the view for `Router.CurrentViewModel`. |
 | `ViewModelViewHost` | `ViewModel`, `DefaultContent`, `ViewContract`, `ViewContractObservable`, `ViewLocator` | `TransitioningContentControl` that displays the view for a single view model object, useful inside data templates. |
 | `TransitioningContentControl` | Inherits `ContentControl` | Base content host used by `RoutedViewHost` and `ViewModelViewHost`. |
-| `ReactiveUIUnoDictionary` | `Source` is set to the embedded package dictionary | Loads the package resource dictionary. `WithUno(Window)` adds it automatically. |
+| `ReactiveUIUnoDictionary` | Preserves `ViewModelViewHost` for XAML loading | `WithUno(Window)` adds this resource dictionary automatically. |
 
 ### Activation, Binding, and Platform Services
 
