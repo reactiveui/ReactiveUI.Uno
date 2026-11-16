@@ -26,7 +26,6 @@ namespace ReactiveUI.Uno;
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
 [System.Diagnostics.DebuggerDisplay("ViewModelViewHost: {ViewContractObservable}")]
-[Preserve(AllMembers = true)]
 [RequiresUnreferencedCode("The method uses reflection and may not work in AOT environments.")]
 public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
