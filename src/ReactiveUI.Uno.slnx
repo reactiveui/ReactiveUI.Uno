@@ -26,6 +26,8 @@
     <Project Path="tests/ReactiveUI.Uno.Tests/ReactiveUI.Uno.Tests.csproj" />
   </Folder>
   <Project Path="ReactiveUI.Uno.Reactive/ReactiveUI.Uno.Reactive.csproj" />
+  <Project Path="ReactiveUI.Uno.Unsafe.Reactive/ReactiveUI.Uno.Unsafe.Reactive.csproj" />
+  <Project Path="ReactiveUI.Uno.Unsafe/ReactiveUI.Uno.Unsafe.csproj" />
   <Project Path="ReactiveUI.Uno/ReactiveUI.Uno.csproj" />
   <Properties Name="TestCaseManagementSettings" Scope="PostLoad">
     <Property Name="CategoryFile" Value="ReactiveUI.vsmdi" />

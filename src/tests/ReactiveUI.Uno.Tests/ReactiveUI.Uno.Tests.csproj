@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" SetTargetFramework="TargetFramework=$(TargetFramework)" />
+    <ProjectReference Include="..\..\ReactiveUI.Uno.Unsafe\ReactiveUI.Uno.Unsafe.csproj" SetTargetFramework="TargetFramework=$(TargetFramework)" />
   </ItemGroup>
 
   <Target Name="RemoveReactiveUIPrimitivesR3BridgeAnalyzer" BeforeTargets="CoreCompile">

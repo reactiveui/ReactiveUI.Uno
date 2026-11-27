@@ -15,7 +15,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task LoadState_ReturnsNonNullObservable()
     {
-        var observable = _sut.LoadState();
+        var observable = _unsafeSut.LoadState();
 
         await Assert.That(observable).IsNotNull();
     }
@@ -25,7 +25,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task LoadState_ReturnsObservableOfObject()
     {
-        var observable = _sut.LoadState();
+        var observable = _unsafeSut.LoadState();
 
         await Assert.That(observable).IsAssignableTo<IObservable<object?>>();
     }
@@ -35,7 +35,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task LoadState_ObservableCanBeSubscribed()
     {
-        var observable = _sut.LoadState();
+        var observable = _unsafeSut.LoadState();
         var subscribed = false;
 
         _ = observable.Subscribe(
@@ -54,7 +54,7 @@ public partial class WinRTAppDataDriverTests
     public async Task LoadState_ReturnsColdObservable()
     {
         // Creating the observable should not throw even without subscription
-        var observable = _sut.LoadState();
+        var observable = _unsafeSut.LoadState();
 
         await Assert.That(observable).IsNotNull();
 
@@ -67,7 +67,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task LoadState_ExecutesWhenSubscribed()
     {
-        var observable = _sut.LoadState();
+        var observable = _unsafeSut.LoadState();
 
         var executed = false;
 
@@ -87,7 +87,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task LoadState_ObservableErrorsOnNonWindowsPlatform()
     {
-        var observable = _sut.LoadState();
+        var observable = _unsafeSut.LoadState();
 
         Exception? caughtException = null;
         var completed = false;
@@ -109,8 +109,8 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task LoadState_ReturnsNewObservableEachCall()
     {
-        var observable1 = _sut.LoadState();
-        var observable2 = _sut.LoadState();
+        var observable1 = _unsafeSut.LoadState();
+        var observable2 = _unsafeSut.LoadState();
 
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
@@ -120,7 +120,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task LoadState_ObservableCanBeConvertedToTask()
     {
-        var observable = _sut.LoadState();
+        var observable = _unsafeSut.LoadState();
 
         // Should be able to get task from observable
         var task = observable.ToTask();

@@ -2,10 +2,7 @@
 // ReactiveUI and Contributors licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
@@ -24,25 +21,8 @@ public class WinRTAppDataDriver : ISuspensionDriver
     /// <summary>The JSON state file name.</summary>
     private const string JsonStateFileName = "appData.json";
 
-    /// <summary>The data-contract state file name.</summary>
+    /// <summary>The data-contract state file name, written by <c>WinRTAppDataDriverUnsafe</c> in ReactiveUI.Uno.Unsafe.</summary>
     private const string XmlStateFileName = "appData.xmlish";
-
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
-    [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
-    public IObservable<object?> LoadState() => Observable.FromAsync(
-    static async () =>
-    {
-        var x = await ApplicationData.Current.RoamingFolder.GetFileAsync(XmlStateFileName);
-        var t = await FileIO.ReadTextAsync(x, UnicodeEncoding.Utf8);
-
-        var (typeName, xml) = ParseXmlishState(t);
-        var serializer = new DataContractSerializer(Type.GetType(typeName, throwOnError: true)!);
-
-        // NB: WinRT is terrible
-        return serializer.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(xml)));
-    });
 
     /// <inheritdoc/>
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
@@ -58,31 +38,6 @@ public class WinRTAppDataDriver : ISuspensionDriver
             return JsonSerializer.Deserialize(json, typeInfo);
         });
     }
-
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [RequiresDynamicCode("SaveState implementations may use serialization which requires dynamic code generation")]
-    [RequiresUnreferencedCode("SaveState implementations may use serialization which may require unreferenced code")]
-    public IObservable<Unit> SaveState<T>(T state) => Observable.FromAsync(
-    async () =>
-    {
-        ArgumentNullException.ThrowIfNull(state);
-
-        await using var ms = new MemoryStream();
-        await using var writer = new StreamWriter(ms, Encoding.UTF8);
-        var serializer = new DataContractSerializer(state.GetType());
-        await writer.WriteLineAsync(state.GetType().AssemblyQualifiedName);
-        await writer.FlushAsync();
-
-        serializer.WriteObject(ms, state);
-
-        var x = await ApplicationData.Current.RoamingFolder.CreateFileAsync(
-            XmlStateFileName,
-            CreationCollisionOption.ReplaceExisting);
-        await FileIO.WriteBytesAsync(x, ms.ToArray());
-
-        return Unit.Default;
-    });
 
     /// <inheritdoc/>
     public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
@@ -105,6 +60,7 @@ public class WinRTAppDataDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
+    /// <remarks>Deletes the JSON state and any data-contract state saved by the unsafe driver.</remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IObservable<Unit> InvalidateState() =>
         Observable.FromAsync(
@@ -117,30 +73,6 @@ public class WinRTAppDataDriver : ISuspensionDriver
 
             return Unit.Default;
         });
-
-    /// <summary>Splits the persisted XML state into the saved type name and XML payload.</summary>
-    /// <param name="content">The persisted XML state content.</param>
-    /// <returns>The saved type name and XML payload.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="content"/> is <c>null</c>.</exception>
-    /// <exception cref="InvalidDataException">Thrown when the persisted state header is missing or empty.</exception>
-    internal static (string TypeName, string Xml) ParseXmlishState(string content)
-    {
-        ArgumentNullException.ThrowIfNull(content);
-
-        var line = content.IndexOf('\n');
-        if (line < 0)
-        {
-            throw new InvalidDataException("Persisted state is missing a type header.");
-        }
-
-        var typeName = content[..line].TrimEnd('\r');
-        if (string.IsNullOrWhiteSpace(typeName))
-        {
-            throw new InvalidDataException("Persisted state has an empty type header.");
-        }
-
-        return (typeName, content[(line + 1)..]);
-    }
 
     /// <summary>Deletes a state file when it exists.</summary>
     /// <param name="folder">The storage folder containing the state file.</param>

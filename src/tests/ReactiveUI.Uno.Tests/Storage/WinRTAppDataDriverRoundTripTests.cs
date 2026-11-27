@@ -19,8 +19,8 @@ public partial class WinRTAppDataDriverTests
 
         try
         {
-            await _sut.SaveState(state).ToTask();
-            var loaded = await _sut.LoadState().ToTask();
+            await _unsafeSut.SaveState(state).ToTask();
+            var loaded = await _unsafeSut.LoadState().ToTask();
 
             await Assert.That(loaded).IsNotNull();
             await Assert.That(loaded).IsAssignableTo<TestState>();
@@ -40,7 +40,7 @@ public partial class WinRTAppDataDriverTests
     public async Task ParseXmlishState_WithLfHeader_PreservesFullTypeName()
     {
         const string typeName = "ReactiveUI.Uno.Tests.Storage.TestState, ReactiveUI.Uno.Tests";
-        var (parsedTypeName, xml) = WinRTAppDataDriver.ParseXmlishState($"{typeName}\n{XmlStatePayload}");
+        var (parsedTypeName, xml) = WinRTAppDataDriverUnsafe.ParseXmlishState($"{typeName}\n{XmlStatePayload}");
 
         await Assert.That(parsedTypeName).IsEqualTo(typeName);
         await Assert.That(xml).IsEqualTo(XmlStatePayload);
@@ -52,7 +52,7 @@ public partial class WinRTAppDataDriverTests
     public async Task ParseXmlishState_WithCrLfHeader_PreservesFullTypeName()
     {
         const string typeName = "ReactiveUI.Uno.Tests.Storage.TestState, ReactiveUI.Uno.Tests";
-        var (parsedTypeName, xml) = WinRTAppDataDriver.ParseXmlishState($"{typeName}\r\n{XmlStatePayload}");
+        var (parsedTypeName, xml) = WinRTAppDataDriverUnsafe.ParseXmlishState($"{typeName}\r\n{XmlStatePayload}");
 
         await Assert.That(parsedTypeName).IsEqualTo(typeName);
         await Assert.That(xml).IsEqualTo(XmlStatePayload);
@@ -62,13 +62,13 @@ public partial class WinRTAppDataDriverTests
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ParseXmlishState_WithoutHeader_ThrowsInvalidDataException() =>
-        await Assert.That(static () => WinRTAppDataDriver.ParseXmlishState(XmlStatePayload)).Throws<InvalidDataException>();
+        await Assert.That(static () => WinRTAppDataDriverUnsafe.ParseXmlishState(XmlStatePayload)).Throws<InvalidDataException>();
 
     /// <summary>Validates that XML state parsing rejects an empty type header.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task ParseXmlishState_WithEmptyHeader_ThrowsInvalidDataException() =>
-        await Assert.That(static () => WinRTAppDataDriver.ParseXmlishState($"\n{XmlStatePayload}"))
+        await Assert.That(static () => WinRTAppDataDriverUnsafe.ParseXmlishState($"\n{XmlStatePayload}"))
             .Throws<InvalidDataException>();
 
     /// <summary>Validates that JSON state can be saved and loaded when application storage is available.</summary>
@@ -102,7 +102,7 @@ public partial class WinRTAppDataDriverTests
 
         try
         {
-            await _sut.SaveState(state).ToTask();
+            await _unsafeSut.SaveState(state).ToTask();
             await _sut.SaveState(state, TestStateJsonContext.Default.TestState).ToTask();
             await _sut.InvalidateState().ToTask();
             await _sut.InvalidateState().ToTask();

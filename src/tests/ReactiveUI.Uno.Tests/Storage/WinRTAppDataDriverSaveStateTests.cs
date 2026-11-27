@@ -23,7 +23,7 @@ public partial class WinRTAppDataDriverTests
     [Test]
     public async Task SaveState_ThrowsArgumentNullException_WhenStateIsNull()
     {
-        var observable = _sut.SaveState<object>(null!);
+        var observable = _unsafeSut.SaveState<object>(null!);
 
         // The ArgumentNullException is thrown during observable execution
         await Assert.That(() => observable.ToTask()).Throws<ArgumentNullException>();
@@ -35,7 +35,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_ReturnsNonNullObservable_WhenStateIsValid()
     {
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -46,7 +46,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_ReturnsObservableOfRxVoid()
     {
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsAssignableTo<IObservable<RxVoid>>();
     }
@@ -57,7 +57,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_ObservableCanBeSubscribedMultipleTimes()
     {
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         var firstSubscription = observable.ToTask();
         var secondSubscription = observable.ToTask();
@@ -77,7 +77,7 @@ public partial class WinRTAppDataDriverTests
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
 
         // Creating the observable should not throw even without subscription
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
 
@@ -91,7 +91,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_ExecutesWhenSubscribed()
     {
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         var completed = false;
         var errored = false;
@@ -114,7 +114,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesEmptyStringProperty()
     {
         var state = new TestState { Name = string.Empty, Value = 0 };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -125,7 +125,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesNestedState()
     {
         var state = new NestedTestState { Id = 1, Inner = new TestState { Name = "Inner", Value = NestedInnerValue } };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -136,7 +136,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesNullInnerState()
     {
         var state = new NestedTestState { Id = 1, Inner = null };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -150,7 +150,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_ObservableErrorsOnNonWindowsPlatform()
     {
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         Exception? caughtException = null;
         var completed = false;
@@ -173,8 +173,8 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_ReturnsNewObservableEachCall()
     {
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
-        var observable1 = _sut.SaveState(state);
-        var observable2 = _sut.SaveState(state);
+        var observable1 = _unsafeSut.SaveState(state);
+        var observable2 = _unsafeSut.SaveState(state);
 
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }
@@ -185,7 +185,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesSpecialCharactersInStrings()
     {
         var state = new TestState { Name = "Test<>&'\"", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -196,7 +196,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesUnicodeCharacters()
     {
         var state = new TestState { Name = "测试 テスト 🎉", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -207,7 +207,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesLongStrings()
     {
         var state = new TestState { Name = new('x', LongStringLength), Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -218,7 +218,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesNegativeValues()
     {
         var state = new TestState { Name = "Test", Value = NegativeStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -229,7 +229,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesMaxIntValue()
     {
         var state = new TestState { Name = "Test", Value = int.MaxValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -240,7 +240,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_HandlesMinIntValue()
     {
         var state = new TestState { Name = "Test", Value = int.MinValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         await Assert.That(observable).IsNotNull();
     }
@@ -251,7 +251,7 @@ public partial class WinRTAppDataDriverTests
     public async Task SaveState_ObservableCanBeConvertedToTask()
     {
         var state = new TestState { Name = "Test", Value = DefaultStateValue };
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
 
         // Should be able to get task from observable
         var task = observable.ToTask();
@@ -269,7 +269,7 @@ public partial class WinRTAppDataDriverTests
         var innerState = new TestState { Name = "Level1", Value = DeepNestedValue };
         var state = new NestedTestState { Id = 1, Inner = innerState };
 
-        var observable = _sut.SaveState(state);
+        var observable = _unsafeSut.SaveState(state);
         await Assert.That(observable).IsNotNull();
     }
 
@@ -281,8 +281,8 @@ public partial class WinRTAppDataDriverTests
         var state1 = new TestState { Name = "Test1", Value = 1 };
         var state2 = new TestState { Name = "Test2", Value = SecondStateValue };
 
-        var observable1 = _sut.SaveState(state1);
-        var observable2 = _sut.SaveState(state2);
+        var observable1 = _unsafeSut.SaveState(state1);
+        var observable2 = _unsafeSut.SaveState(state2);
 
         await Assert.That(observable1).IsNotSameReferenceAs(observable2);
     }

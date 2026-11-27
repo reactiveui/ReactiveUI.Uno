@@ -48,15 +48,46 @@ public partial class WinRTAppDataDriverTests
     /// <summary>Stores the suspension driver under test.</summary>
     private WinRTAppDataDriver _sut = null!;
 
-    /// <summary>Sets up the test by creating a new instance of WinRTAppDataDriver.</summary>
+    /// <summary>Stores the reflection-based suspension driver under test.</summary>
+    private WinRTAppDataDriverUnsafe _unsafeSut = null!;
+
+    /// <summary>Sets up the test by creating new instances of both drivers.</summary>
     [Before(Test)]
-    public void SetUp() => _sut = new();
+    public void SetUp()
+    {
+        _sut = new();
+        _unsafeSut = new();
+    }
 
     /// <summary>Validates that WinRTAppDataDriver implements ISuspensionDriver interface.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
     [Test]
     public async Task WinRTAppDataDriver_ImplementsISuspensionDriver() =>
         await Assert.That(_sut).IsAssignableTo<ISuspensionDriver>();
+
+    /// <summary>Validates that WinRTAppDataDriverUnsafe implements IUnsafeSuspensionDriver interface.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task WinRTAppDataDriverUnsafe_ImplementsIUnsafeSuspensionDriver() =>
+        await Assert.That(_unsafeSut).IsAssignableTo<IUnsafeSuspensionDriver>();
+
+    /// <summary>Validates that WinRTAppDataDriverUnsafe returns observables for the typed and invalidate operations.</summary>
+    /// <returns>A task that represents the asynchronous test.</returns>
+    [Test]
+    public async Task WinRTAppDataDriverUnsafe_TypedAndInvalidateOperations_ReturnObservables()
+    {
+        TestState state = new();
+        var save = _unsafeSut.SaveState(state, TestStateJsonContext.Default.TestState);
+        var load = _unsafeSut.LoadState(TestStateJsonContext.Default.TestState);
+        var invalidate = _unsafeSut.InvalidateState();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(save).IsNotNull();
+            await Assert.That(load).IsNotNull();
+            await Assert.That(invalidate).IsNotNull();
+        }
+    }
 
     /// <summary>Validates that multiple instances can be created independently.</summary>
     /// <returns>A task that represents the asynchronous test.</returns>
