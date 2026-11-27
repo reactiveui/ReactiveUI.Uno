@@ -1,0 +1,36 @@
+<Project Sdk="Uno.Sdk/7.0.22">
+  <PropertyGroup>
+    <TargetFrameworks>$(UnoTargetFrameworks)</TargetFrameworks>
+    <UnoSingleProject>true</UnoSingleProject>
+    <OutputType>Library</OutputType>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageDescription>Reflection-based ReactiveUI.Uno APIs that are not safe to trim or to compile ahead of time, such as WinRTAppDataDriverUnsafe.</PackageDescription>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <Content>
+      <Pack>false</Pack>
+    </Content>
+  </ItemDefinitionGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Uno\ReactiveUI.Uno.csproj" />
+    <PackageReference Include="ReactiveUI.Unsafe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+    <Using Include="ReactiveUI.Primitives.RxVoid" Alias="Unit" />
+    <Using Include="ReactiveUI.Primitives.Signals.Signal" Alias="Observable" />
+  </ItemGroup>
+</Project>

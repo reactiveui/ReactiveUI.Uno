@@ -51,7 +51,7 @@
     <!-- Satisfy MSBuild's requirement when attribute-based TFM properties are enabled -->
     <RootElementName Condition="'$(UseAttributeForTargetFrameworkInfoPropertyNames)' == 'true' and '$(RootElementName)' == ''">Project</RootElementName>
     <!-- Keep Uno's Windows heads aligned with the Windows App SDK used by ReactiveUI.Binding.Uno. -->
-    <WinAppSdkVersion>2.6.5</WinAppSdkVersion>
+    <WinAppSdkVersion>2.7.0</WinAppSdkVersion>
   </PropertyGroup>
 
   <PropertyGroup>
