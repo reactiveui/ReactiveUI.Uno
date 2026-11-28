@@ -42,6 +42,9 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     /// <summary>Stores the SQLite database service.</summary>
     private readonly ISqliteService _db;
 
+    /// <summary>Stores the editor draft in the app's roaming folder.</summary>
+    private readonly WinRTAppDataDriver _drafts = new();
+
     /// <summary>Stores the CSV export service.</summary>
     private readonly ICsvExportService _csv;
 
@@ -67,6 +70,9 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
         _csv = csv;
 
         ExecuteQuery = ReactiveCommand.CreateFromTask(ExecuteQueryAsync);
+        SaveDraft = ReactiveCommand.CreateFromTask(SaveDraftAsync);
+        RestoreDraft = ReactiveCommand.CreateFromTask(RestoreDraftAsync);
+        ForgetDraft = ReactiveCommand.CreateFromTask(ForgetDraftAsync);
         ExportCsv = ReactiveCommand.CreateFromTask(
             ExportCsvAsync,
             this.WhenAnyValue(static x => x.Results, static results => results is { Count: > 0 }));
@@ -160,6 +166,15 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
     /// observable to determine if deletion is currently possible.</remarks>
     public ReactiveCommand<RxVoid, RxVoid> SampleDelete { get; }
 
+    /// <summary>Gets the command that saves the editor text without running the query.</summary>
+    internal ReactiveCommand<RxVoid, RxVoid> SaveDraft { get; }
+
+    /// <summary>Gets the command that replaces the editor text with its saved draft.</summary>
+    internal ReactiveCommand<RxVoid, RxVoid> RestoreDraft { get; }
+
+    /// <summary>Gets the command that deletes the saved draft.</summary>
+    internal ReactiveCommand<RxVoid, RxVoid> ForgetDraft { get; }
+
     /// <summary>Executes the current SQL query.</summary>
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task ExecuteQueryAsync()
@@ -175,6 +190,44 @@ public class MainViewModel : ReactiveObject, IRoutableViewModel
         {
             Status = ex.Message;
         }
+    }
+
+    /// <summary>Saves the current query as JSON.</summary>
+    /// <param name="cancellationToken">Cancels the subscription to the storage operation.</param>
+    /// <returns>A task that completes after the draft is saved.</returns>
+    private async Task SaveDraftAsync(CancellationToken cancellationToken)
+    {
+        await Observable.ToTask(_drafts.SaveState(QueryText, QueryDraftJsonContext.Default.String), cancellationToken).ConfigureAwait(true);
+        Status = "Draft saved";
+    }
+
+    /// <summary>Restores the draft when the user previously saved one.</summary>
+    /// <param name="cancellationToken">Cancels the subscription to the storage operation.</param>
+    /// <returns>A task that completes after the storage lookup.</returns>
+    private async Task RestoreDraftAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var draft = await Observable.ToTask(_drafts.LoadState(QueryDraftJsonContext.Default.String), cancellationToken).ConfigureAwait(true);
+            if (draft is not null)
+            {
+                QueryText = draft;
+                Status = "Draft restored";
+            }
+        }
+        catch (FileNotFoundException)
+        {
+            Status = "No saved draft";
+        }
+    }
+
+    /// <summary>Clears saved state and leaves the current editor text available.</summary>
+    /// <param name="cancellationToken">Cancels the subscription to the storage operation.</param>
+    /// <returns>A task that completes after stored state has been cleared.</returns>
+    private async Task ForgetDraftAsync(CancellationToken cancellationToken)
+    {
+        await Observable.ToTask(_drafts.InvalidateState(), cancellationToken).ConfigureAwait(true);
+        Status = "Saved draft cleared";
     }
 
     /// <summary>Exports the current result set to CSV.</summary>
