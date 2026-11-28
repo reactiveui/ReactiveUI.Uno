@@ -1,17 +1,17 @@
-[![Build](https://github.com/reactiveui/reactiveui.uno/actions/workflows/ci-build.yml/badge.svg)](https://github.com/reactiveui/reactiveui.uno/actions/workflows/ci-build.yml)
-[![Code Coverage](https://codecov.io/gh/reactiveui/reactiveui.uno/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/reactiveui.uno)
-[![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute)
-[![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)
-[![ReactiveUI.Uno](https://img.shields.io/nuget/v/ReactiveUI.Uno.svg)](https://www.nuget.org/packages/ReactiveUI.Uno/)
-[![ReactiveUI.Uno.Reactive](https://img.shields.io/nuget/v/ReactiveUI.Uno.Reactive.svg)](https://www.nuget.org/packages/ReactiveUI.Uno.Reactive/)
+<div align="center">
 
-<br>
-<a href="https://github.com/reactiveui/reactiveui">
-  <img width="160" height="160" src="https://raw.githubusercontent.com/reactiveui/styleguide/master/logo/main.png">
-</a>
-<br>
+<a href="https://github.com/reactiveui/ReactiveUI.Uno"><img src="https://raw.githubusercontent.com/reactiveui/styleguide/master/logo/logo.svg" alt="ReactiveUI.Uno" width="128"></a>
 
 # ReactiveUI for Uno Platform
+
+[![Build](https://img.shields.io/github/actions/workflow/status/reactiveui/ReactiveUI.Uno/ci-build.yml?branch=main&label=build&logo=githubactions&logoColor=white)](https://github.com/reactiveui/ReactiveUI.Uno/actions/workflows/ci-build.yml)
+[![NuGet](https://img.shields.io/nuget/v/ReactiveUI.Uno?label=nuget&logo=nuget&logoColor=white&color=004880)](https://www.nuget.org/packages/ReactiveUI.Uno)
+[![Downloads](https://img.shields.io/nuget/dt/ReactiveUI.Uno?label=downloads&logo=nuget&logoColor=white&color=004880)](https://www.nuget.org/packages/ReactiveUI.Uno)
+[![Coverage](https://img.shields.io/codecov/c/github/reactiveui/ReactiveUI.Uno?label=coverage&logo=codecov&logoColor=white)](https://codecov.io/gh/reactiveui/ReactiveUI.Uno)
+[![License](https://img.shields.io/github/license/reactiveui/ReactiveUI.Uno?color=blue)](https://github.com/reactiveui/ReactiveUI.Uno/blob/main/LICENSE)
+[![Discussions](https://img.shields.io/badge/discussions-ask%20a%20question-8A2BE2?logo=github&logoColor=white)](https://github.com/reactiveui/ReactiveUI.Uno/discussions)
+
+</div>
 
 ReactiveUI.Uno integrates [ReactiveUI](https://reactiveui.net/) with the [Uno Platform](https://platform.uno/) so the same MVVM code can run on Windows, desktop, WebAssembly, Android, and Apple targets. It provides Uno-aware view bases, activation, routing hosts, dependency-property observation, binding hooks, boolean visibility conversion, scheduler integration, resource dictionaries, and suspension storage.
 
@@ -702,19 +702,6 @@ See [our sponsors](https://www.reactiveui.net/sponsors/) for more information.
 JetBrains, Claude, Anthropic, OpenAI and Codex names and logos are trademarks of their respective owners.
 Snyk and the Snyk logo are trademarks of Snyk Ltd.
 
-## Sponsorship
-
-The core team members, ReactiveUI contributors, and ecosystem contributors do this open-source work in their free time. If you use ReactiveUI and would like us to invest more time in it, please donate.
-
-[Become a sponsor](https://github.com/sponsors/reactivemarbles).
-
-This is how we use the donations:
-
-- Allow the core team to work on ReactiveUI.
-- Thank contributors if they invested a large amount of time in contributing.
-- Support projects in the ecosystem.
-
-
 ## Core Team
 
 <table>
@@ -750,21 +737,30 @@ This is how we use the donations:
   </tbody>
 </table>
 
-## Support
-
-If you have a question, please see whether [GitHub Discussions](https://github.com/reactiveui/ReactiveUI.Uno/discussions) or [GitHub issues](https://github.com/reactiveui/ReactiveUI.Uno/issues) have already answered it.
-
-If you want to discuss something or need help, use the [ReactiveUI Slack room](https://reactiveui.net/slack).
-
-Please do not open GitHub issues for support requests.
-
 ## Contribute
 
-ReactiveUI.Uno is developed under an OSI-approved open source license, making it freely usable and distributable, including commercial use.
+ReactiveUI.Uno is part of [ReactiveUI](https://github.com/reactiveui) and is released under the [MIT license](https://github.com/reactiveui/ReactiveUI.Uno/blob/main/LICENSE). We welcome contributions of every size, from bug reports and documentation to features and tests.
 
-Before submitting a pull request, open a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss the change. We are first-time PR contributor friendly.
+- **Questions:** ask in [GitHub Discussions](https://github.com/reactiveui/ReactiveUI.Uno/discussions).
+- **Bugs and feature requests:** open a [GitHub issue](https://github.com/reactiveui/ReactiveUI.Uno/issues/new/choose).
+- **Larger changes:** open an issue or discussion first, so we can agree on the approach before you start.
+- **Contributor guide:** read [reactiveui.net/contribute](https://www.reactiveui.net/contribute/) for [building and testing](https://www.reactiveui.net/contribute/building-and-testing/) and [pull requests](https://www.reactiveui.net/contribute/pull-requests/).
 
-See the [Contribution Guidelines](https://www.reactiveui.net/contribute/) for more information.
+### Coding standards
+
+Every pull request must meet these standards. The build checks most of them.
+
+- Follow the [ReactiveUI C# style guide](https://www.reactiveui.net/contribute/software-style-guide/code-style/).
+- The repository's `.editorconfig` and the StyleSharp, PerformanceSharp and SecuritySharp analyzers run on every build. Fix each finding in the code. Do not suppress it or relax the `.editorconfig`.
+- Add tests for every bug fix and new feature.
+- Document public APIs with XML documentation comments.
+- Write commit messages in the [Conventional Commits](https://www.reactiveui.net/contribute/software-style-guide/commit-message-convention/) format.
+- Follow the [Code of Conduct](https://github.com/reactiveui/.github/blob/main/CODE_OF_CONDUCT.md).
+
+### Support the project
+
+- Sponsor the maintainers on GitHub Sponsors: [reactivemarbles](https://github.com/sponsors/reactivemarbles), [glennawatson](https://github.com/sponsors/glennawatson) and [chrispulman](https://github.com/sponsors/chrispulman).
+- Ask your employer to support open source, for example with the [balanced employee IP agreement](https://github.com/github/balanced-employee-ip-agreement).
 
 ## License
 
