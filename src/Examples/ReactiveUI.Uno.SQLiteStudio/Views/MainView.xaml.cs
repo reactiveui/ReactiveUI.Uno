@@ -97,6 +97,15 @@ public sealed partial class MainView : MainViewBase
     /// <summary>Gets the status text displayed at the bottom of the view.</summary>
     internal TextBlock StatusText { get; } = new() { Padding = new(CompactSpacing), Foreground = CreateBrush(Microsoft.UI.Colors.Black) };
 
+    /// <summary>Gets the menu item that writes a draft to app storage.</summary>
+    private AppBarButton SaveDraftButton { get; } = new() { Label = "Save draft" };
+
+    /// <summary>Gets the menu item that restores a saved draft to the editor.</summary>
+    private AppBarButton RestoreDraftButton { get; } = new() { Label = "Restore draft" };
+
+    /// <summary>Gets the menu item that deletes a saved draft.</summary>
+    private AppBarButton ForgetDraftButton { get; } = new() { Label = "Forget draft" };
+
     /// <summary>Creates a solid color brush for code-built WinUI elements.</summary>
     /// <param name="color">The color to apply.</param>
     /// <returns>The configured brush.</returns>
@@ -160,6 +169,9 @@ public sealed partial class MainView : MainViewBase
         commandBar.PrimaryCommands.Add(SampleSelectButton);
         commandBar.PrimaryCommands.Add(SampleInsertButton);
         commandBar.PrimaryCommands.Add(SampleDeleteButton);
+        commandBar.SecondaryCommands.Add(SaveDraftButton);
+        commandBar.SecondaryCommands.Add(RestoreDraftButton);
+        commandBar.SecondaryCommands.Add(ForgetDraftButton);
 
         Grid.SetRow(commandBar, 1);
         header.Children.Add(commandBar);
@@ -230,6 +242,12 @@ public sealed partial class MainView : MainViewBase
             static subscription => subscription.Box.TextChanged -= subscription.Handler));
 
         ExecuteButton.Command = viewModel.ExecuteQuery;
+        SaveDraftButton.Command = viewModel.SaveDraft;
+        RestoreDraftButton.Command = viewModel.RestoreDraft;
+        ForgetDraftButton.Command = viewModel.ForgetDraft;
+        disposables.Add(viewModel.SaveDraft.ThrownExceptions.Subscribe(error => viewModel.Status = error.Message));
+        disposables.Add(viewModel.RestoreDraft.ThrownExceptions.Subscribe(error => viewModel.Status = error.Message));
+        disposables.Add(viewModel.ForgetDraft.ThrownExceptions.Subscribe(error => viewModel.Status = error.Message));
         ExportButton.Command = viewModel.ExportCsv;
         ListTablesButton.Command = viewModel.ListTables;
         CreateUsersButton.Command = viewModel.CreateUsersTable;

@@ -19,7 +19,7 @@ The package family has two variants:
 
 | Package | Use when | Reactive foundation |
 | --- | --- | --- |
-| `ReactiveUI.Uno` | New Uno applications or libraries that should use ReactiveUI 24 with `ReactiveUI.Primitives` and avoid a direct `System.Reactive` dependency. | `ReactiveUI`, `ReactiveUI.Primitives`, `ReactiveUI.Primitives.Blazor` on browser WebAssembly targets. |
+| `ReactiveUI.Uno` | Uno applications or libraries that use ReactiveUI with `ReactiveUI.Primitives`. | `ReactiveUI`, `ReactiveUI.Primitives`, `ReactiveUI.Primitives.Blazor` on browser WebAssembly targets. |
 | `ReactiveUI.Uno.Reactive` | Existing ReactiveUI/System.Reactive applications that need Rx-compatible `Unit`, `IScheduler`, and Rx operators while sharing the same Uno integration code. | `ReactiveUI.Reactive`, `ReactiveUI.Primitives.Reactive`, `ReactiveUI.Primitives.Blazor.Reactive` on browser WebAssembly targets. |
 
 Both packages use the same source code. `ReactiveUI.Uno.Reactive` compiles it with the `REACTIVE_SHIM` symbol and publishes the public types under `ReactiveUI.Uno.Reactive`.
@@ -51,16 +51,7 @@ Use the Rx-compatible variant for existing System.Reactive-facing code:
 dotnet add package ReactiveUI.Uno.Reactive
 ```
 
-The repository uses central package management. At the time of this branch, the core package references are:
-
-| Package | Version |
-| --- | --- |
-| `ReactiveUI` | `24.0.0-beta.3` |
-| `ReactiveUI.Reactive` | `24.0.0-beta.3` |
-| `ReactiveUI.Primitives` | `6.0.0` |
-| `ReactiveUI.Primitives.Reactive` | `6.0.0` |
-| `ReactiveUI.Primitives.Blazor` | `6.0.0` |
-| `ReactiveUI.Primitives.Blazor.Reactive` | `6.0.0` |
+The repository pins the versions used by the libraries and examples in [Directory.Packages.props](src/Directory.Packages.props).
 
 ## Namespace Map
 
@@ -164,8 +155,8 @@ On browser WebAssembly targets, `WithUno(Window)` uses `ReactiveUI.Primitives.Bl
 
 | API | Return type in `ReactiveUI.Uno` | Return type in `ReactiveUI.Uno.Reactive` | Purpose |
 | --- | --- | --- | --- |
-| `WinRTAppDataDriver.LoadState()` | `IObservable<object?>` | `IObservable<object?>` | Loads DataContract XML state from `ApplicationData.Current.RoamingFolder/appData.xmlish`. This path is marked `RequiresDynamicCode` and `RequiresUnreferencedCode`. |
-| `WinRTAppDataDriver.SaveState<T>(T state)` | `IObservable<RxVoid>` | `IObservable<Unit>` | Saves DataContract XML state to `appData.xmlish`. This path is marked `RequiresDynamicCode` and `RequiresUnreferencedCode`. |
+| `WinRTAppDataDriverUnsafe.LoadState()` | `IObservable<object?>` | `IObservable<object?>` | Loads DataContract XML state from `ApplicationData.Current.RoamingFolder/appData.xmlish`. This path is marked `RequiresDynamicCode` and `RequiresUnreferencedCode`. |
+| `WinRTAppDataDriverUnsafe.SaveState<T>(T state)` | `IObservable<RxVoid>` | `IObservable<Unit>` | Saves DataContract XML state to `appData.xmlish`. This path is marked `RequiresDynamicCode` and `RequiresUnreferencedCode`. |
 | `WinRTAppDataDriver.LoadState<T>(JsonTypeInfo<T> typeInfo)` | `IObservable<T?>` | `IObservable<T?>` | Loads JSON state from `appData.json` using source-generated `JsonTypeInfo<T>`. Prefer this for AOT/trimming. |
 | `WinRTAppDataDriver.SaveState<T>(T state, JsonTypeInfo<T> typeInfo)` | `IObservable<RxVoid>` | `IObservable<Unit>` | Saves JSON state using source-generated `JsonTypeInfo<T>`. Prefer this for AOT/trimming. |
 | `WinRTAppDataDriver.InvalidateState()` | `IObservable<RxVoid>` | `IObservable<Unit>` | Deletes both XML and JSON persisted state files when present. |
@@ -568,10 +559,12 @@ IObservable<Unit> saved = new WinRTAppDataDriver()
     .SaveState(state, AppStateJsonContext.Default.AppState);
 ```
 
-The legacy XML overloads are available for compatibility:
+SQLite Studio uses the generated JSON contract for a string. Open the command bar menu to save a query draft, restore it after editing or clear it from storage. [Query draft commands](src/Examples/ReactiveUI.Uno.SQLiteStudio/Presentation/MainViewModel.cs)
+
+For existing DataContract XML state, reference `ReactiveUI.Uno.Unsafe` or `ReactiveUI.Uno.Unsafe.Reactive` to use the legacy driver.
 
 ```csharp
-IObservable<object?> loaded = new WinRTAppDataDriver().LoadState();
+IObservable<object?> loaded = new WinRTAppDataDriverUnsafe().LoadState();
 ```
 
 Use them only when DataContract serialization is acceptable for your platform and deployment mode.
@@ -580,7 +573,7 @@ Use them only when DataContract serialization is acceptable for your platform an
 
 Choose `ReactiveUI.Uno` when:
 
-- You are building a new app on ReactiveUI 24.
+- You are building an app with ReactiveUI.Primitives.
 - You want `ReactiveUI.Primitives` scheduler and disposable types.
 - You do not want to expose `System.Reactive.Unit` or `System.Reactive.Concurrency.IScheduler` in your app APIs.
 - You target browser WebAssembly and want the Primitives Blazor scheduler without adding `System.Reactive.Wasm`.
